@@ -7,6 +7,8 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+alembic/versions
+test_admin_panel.html
 .Python
 build/
 develop-eggs/

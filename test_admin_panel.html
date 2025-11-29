@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin – Murphy Exercises</title>
+<style>
+    body { font-family: Arial; max-width: 800px; margin: 20px auto; }
+    textarea, input, select { width: 100%; padding: 8px; margin-top: 8px; }
+    .box { border: 1px solid #ccc; padding: 15px; border-radius: 6px; margin-top: 20px; }
+    .q { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<h2>➕ Create Murphy Exercise</h2>
+
+<div class="box">
+    <label>Exercise Type</label>
+    <select id="type">
+        <option value="choose">Choose the correct alternative</option>
+        <option value="match">Match the beginning with the ending</option>
+        <option value="fill_from_box">Complete with verbs from box</option>
+        <option value="put_in_form">Put the verbs in correct form</option>
+    </select>
+
+    <label>Condition / Description</label>
+    <textarea id="condition" rows="3"></textarea>
+
+    <div id="dynamic-area"></div>
+
+    <button onclick="addQuestion()" style="margin-top:10px;">+ Add Question</button>
+
+    <h3>JSON Preview</h3>
+    <pre id="json" style="background:#f5f5f5; padding:10px;"></pre>
+
+    <button onclick="generateJSON()" style="margin-top:10px;">Save</button>
+</div>
+
+<script>
+let questions = [];
+
+function renderUI() {
+    const type = document.getElementById("type").value;
+    const area = document.getElementById("dynamic-area");
+
+    area.innerHTML = "";
+    questions = [];
+
+    addQuestion();
+}
+
+function addQuestion() {
+    const type = document.getElementById("type").value;
+    const area = document.getElementById("dynamic-area");
+
+    let index = questions.length;
+    questions.push({});
+
+    let html = "";
+
+    if (type === "choose") {
+        html = `
+        <div class='q'>
+            <label>Sentence ${index+1}</label>
+            <textarea class='sentence' rows="2"></textarea>
+
+            <label>Options (comma separated)</label>
+            <input type='text' class='options' placeholder="has been, was">
+
+            <label>Correct Answer</label>
+            <input type='text' class='answer' placeholder="has been">
+        </div>`;
+    }
+
+    if (type === "match") {
+        html = `
+        <div class='q'>
+            <label>Left side (${index+1})</label>
+            <input class='left'>
+
+            <label>Right side options (comma separated)</label>
+            <input class='right' placeholder="in 2018, since January">
+
+            <label>Correct match key</label>
+            <input class='answer' placeholder="in 2018">
+        </div>`;
+    }
+
+    if (type === "fill_from_box") {
+        html = `
+        <div class='q'>
+            <label>Sentence ${index+1}</label>
+            <textarea class='sentence' rows="2"></textarea>
+
+            <label>Correct Answer</label>
+            <input type='text' class='answer' placeholder="has been">
+        </div>`;
+    }
+
+    if (type === "put_in_form") {
+        html = `
+        <div class='q'>
+            <label>Sentence ${index+1}</label>
+            <textarea class='sentence' rows="2"></textarea>
+
+            <label>Correct Answer</label>
+            <input type='text' class='answer'>
+        </div>`;
+    }
+
+    area.innerHTML += html;
+}
+
+function generateJSON() {
+    const type = document.getElementById("type").value;
+    const condition = document.getElementById("condition").value;
+
+    const qDivs = document.querySelectorAll(".q");
+
+    let list = [];
+
+    qDivs.forEach(q => {
+        if (type === "choose") {
+            list.push({
+                sentence: q.querySelector(".sentence").value,
+                options: q.querySelector(".options").value.split(",").map(s=>s.trim()),
+                answer: q.querySelector(".answer").value.trim()
+            });
+        }
+
+        if (type === "match") {
+            list.push({
+                left: q.querySelector(".left").value,
+                right_options: q.querySelector(".right").value.split(",").map(s=>s.trim()),
+                answer: q.querySelector(".answer").value.trim()
+            });
+        }
+
+        if (type === "fill_from_box") {
+            list.push({
+                sentence: q.querySelector(".sentence").value,
+                answer: q.querySelector(".answer").value
+            });
+        }
+
+        if (type === "put_in_form") {
+            list.push({
+                sentence: q.querySelector(".sentence").value,
+                answer: q.querySelector(".answer").value
+            });
+        }
+    });
+
+    let finalJSON = {
+        type: type,
+        condition: condition,
+        items: list
+    };
+
+    document.getElementById("json").textContent = JSON.stringify(finalJSON, null, 4);
+    console.log(finalJSON);
+}
+renderUI();
+document.getElementById("type").onchange = renderUI;
+</script>
+</body>
+</html>
