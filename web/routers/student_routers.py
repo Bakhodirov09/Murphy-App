@@ -16,6 +16,10 @@ async def get_first_lesson_date(months_ago: int, weekday: int):
 
     return target_month + timedelta(days=offset)
 
+@router.get('/dashboard', status_code=status.HTTP_200_OK)
+async def dashboard():
+    return {'ok': False, 'message': "Students' dashboard is on the proccess"}
+
 @router.post('/ok', status_code=status.HTTP_201_CREATED)
 async def ok(request: Request, db: db_dependency):
     token = request.cookies.get('token')
