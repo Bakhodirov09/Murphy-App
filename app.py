@@ -17,14 +17,16 @@ async def link_btn(chat_id):
     return link_button
 
 @dp.message_handler(commands='start')
-async def start_handler(message: types.Message, state: FSMContext):
-    text = f"""
-👋 Hello, Dear: <b>{message.from_user.full_name}</b> {f'({message.from_user.username})' if message.from_user.username.startswith('@') else f'(@{message.from_user.username})' if message.from_user.username else ''}.
-Welcome to our bot. Please click 'Murphy-Homework Web-Site' button, and start doing your Murphy-Homeworks.
+async def start_handler(message: types.Message):
+    text = "We are sorry, but we are adding questions to the Murphy-App for students, and working on its security. 🛡\nMurphy-App for students is ready: 87.5%."
+#     text = f"""
+# 👋 Hello, Dear: <b>{message.from_user.full_name}</b> {f'({message.from_user.username})' if message.from_user.username.startswith('@') else f'(@{message.from_user.username})' if message.from_user.username else ''}.
+# Welcome to our bot. Please click 'Murphy-Homework Web-Site' button, and start doing your Murphy-Homeworks.
+#
+# ✊ GOOD LUCK...!
+# """
+    await message.answer(text=text)
 
-✊ GOOD LUCK...!
-"""
-    await message.answer(text=text, reply_markup=await link_btn(message.chat.id), parse_mode='HTML')
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

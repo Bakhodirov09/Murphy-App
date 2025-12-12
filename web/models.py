@@ -1,17 +1,17 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, UniqueConstraint, Enum, BigInteger
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, Enum
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
-
+from web.general import tashkent
 from web.database import Base
 
 
 class BaseModel(Base):
     __abstract__ = True
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(tashkent))
+    updated_at = Column(DateTime, default=datetime.now(tashkent), onupdate=datetime.now(tashkent))
 
 
 class GroupsModel(BaseModel):
@@ -19,6 +19,7 @@ class GroupsModel(BaseModel):
 
     group_name = Column(String(50), unique=True, nullable=False)
     group_days = Column(Enum('Odd Days', 'Even Days', name='days_enum'), default='Odd Days', nullable=False)
+    # group_level = Column(Enum('Intermediate', 'Upper-Intermediate', 'IELTS', name='level_enum'), nullable=False)
     students = relationship(
         "StudentsModel",
         back_populates="group",
@@ -31,6 +32,7 @@ class StudentsModel(BaseModel):
 
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
+    avatar_url = Column(String(500))
 
     group_id = Column(
         UUID(as_uuid=True),
@@ -46,7 +48,8 @@ class WeeksModel(BaseModel):
     __tablename__ = "weeks"
 
     level = Column(Enum('Intermediate', 'Upper-Intermediate', 'IELTS', name='level_enum'), nullable=False)
-    week_number = Column(Integer, unique=True, index=True, nullable=False)
+    week_number = Column(Integer, index=True, nullable=False)
+    week_topic = Column(String(100), nullable=True)
 
     essential_from_unit = Column(Integer, index=True, nullable=False)
     essential_to_unit = Column(Integer, index=True, nullable=False)
@@ -62,8 +65,9 @@ class EssentialUnitsModel(BaseModel):
 
     level = Column(Enum('Intermediate', 'Upper-Intermediate', 'IELTS', name='level_enum'), nullable=False)
     unit_number = Column(Integer, nullable=False)
-    words = relationship('EssentialWordsModel', back_populates='unit', cascade='all, delete-orphan')
 
+    words = relationship('EssentialWordsModel', back_populates='unit', cascade='all, delete-orphan')
+    results = relationship('StudentResultsModel', back_populates='vocabulary_unit', cascade='all, delete-orphan')
 
 class EssentialWordsModel(BaseModel):
     __tablename__ = 'essential_words'
@@ -122,10 +126,20 @@ class StudentResultsModel(BaseModel):
 
     exercise_id = Column(UUID(as_uuid=True), ForeignKey('murphy_exercises.id'), nullable=True)
     exercise_question_id = Column(UUID(as_uuid=True), ForeignKey('murphy_exercise_questions.id'), nullable=True)
+    vocabulary_unit_id = Column(UUID(as_uuid=True), ForeignKey('essential_units.id'), nullable=True)
     vocabulary_id = Column(UUID(as_uuid=True), ForeignKey('essential_words.id'), nullable=True)
 
     student = relationship('StudentsModel', back_populates='results')
     week = relationship('WeeksModel')
     vocabulary = relationship('EssentialWordsModel', back_populates='results')
+    vocabulary_unit = relationship('EssentialUnitsModel', back_populates='results')
     exercise = relationship('MurphyExercisesModel', back_populates='results')
     exercise_question = relationship('MurphyExerciseQuestionsModel', back_populates='results')
+
+class WeekScheduleModel(BaseModel):
+    __tablename__ = "week_schedule"
+
+    group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"), nullable=False)
+
+    week_number = Column(Integer, nullable=False)
+    lesson_date = Column(DateTime(timezone=True), nullable=False)

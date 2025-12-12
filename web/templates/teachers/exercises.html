@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin – Murphy Exercises</title>
+<style>
+</style>
+</head>
+<body>
+
+<h2>➕ Create Murphy Exercise</h2>
+
+<div class="box">
+    <label>Exercise Type</label>
+    <select id="type">
+        <option value="choose">Choose the correct alternative</option>
+        <option value="match">Match the beginning with the ending</option>
+        <option value="fill_from_box">Complete with verbs from box</option>
+        <option value="put_in_form">Put the verbs in correct form</option>
+    </select>
+
+    <label>Condition / Description</label>
+    <textarea id="condition" rows="3"></textarea>
+
+    <div id="dynamic-area"></div>
+
+    <button onclick="addQuestion()" style="margin-top:10px;">+ Add Question</button>
+
+    <h3>JSON Preview</h3>
+    <pre id="json" style="background:#f5f5f5; padding:10px;"></pre>
+
+    <button onclick="generateJSON()" style="margin-top:10px;">Save</button>
+</div>
+
+</body>
+</html>

@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# Bu script FastAPI app ni ishga tushiradi
+# Run Web
+uvicorn web.app:app --reload &
 
-# 1. Virtual environment (agar ishlatayotgan bo‘lsang)
-# source /yo‘ling/venv/bin/activate
+# Save ran web's pid
+WEB_PID=$!
 
-# 2. FastAPI app ni ishga tushirish
-uvicorn web.app:app --reload --host 0.0.0.0 --port 8000
+# Run bot
+python3 app.py
+
+# If the bot stops unexpectedly, web will stop automatically.
+kill $WEB_PID

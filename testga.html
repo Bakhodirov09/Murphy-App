@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+  .exercise-panel {
+    background: var(--panel);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.exercise-panel textarea,
+.exercise-panel select,
+.exercise-panel input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+</style>
+<body>
+<div class="exercise-panel">
+    <h2>Add Exercise</h2>
+
+    <label>Exercise Type</label>
+    <select id="exType">
+        <option value="gap_fill">Gap Fill</option>
+        <option value="multiple_choice">Multiple Choice</option>
+        <option value="correct_form">Correct Form</option>
+    </select>
+
+    <label>Question</label>
+    <textarea id="exQuestion" placeholder="Enter question..."></textarea>
+
+    <!-- Dynamic fields -->
+    <div id="exDynamic"></div>
+
+    <button id="exSaveBtn" class="btn" style="margin-top: 12px;">Save Exercise</button>
+</div>
+
+</body>
+<script>
+  const typeSelect = document.getElementById("exType");
+const dynamicBox = document.getElementById("exDynamic");
+const saveBtn = document.getElementById("exSaveBtn");
+
+function renderDynamicFields() {
+    const t = typeSelect.value;
+
+    if (t === "gap_fill") {
+        dynamicBox.innerHTML = `
+            <label>Correct Answer</label>
+            <input id="exAnswer" placeholder="Correct answer">
+        `;
+    }
+
+    if (t === "multiple_choice") {
+        dynamicBox.innerHTML = `
+            <label>Option A</label>
+            <input id="optA">
+            <label>Option B</label>
+            <input id="optB">
+            <label>Option C</label>
+            <input id="optC">
+            <label>Correct Option (A/B/C)</label>
+            <input id="correctOpt">
+        `;
+    }
+
+    if (t === "correct_form") {
+        dynamicBox.innerHTML = `
+            <label>Correct Form</label>
+            <input id="exCorrectForm">
+        `;
+    }
+}
+
+typeSelect.onchange = renderDynamicFields;
+renderDynamicFields();
+
+// SAVE
+saveBtn.onclick = async () => {
+    const type = typeSelect.value;
+    const question = document.getElementById("exQuestion").value;
+
+    let payload = { type, question };
+
+    if (type === "gap_fill") {
+        payload.answer = document.getElementById("exAnswer").value;
+    }
+    if (type === "multiple_choice") {
+        payload.options = {
+            A: document.getElementById("optA").value,
+            B: document.getElementById("optB").value,
+            C: document.getElementById("optC").value,
+        };
+        payload.correct = document.getElementById("correctOpt").value;
+    }
+    if (type === "correct_form") {
+        payload.correct_form = document.getElementById("exCorrectForm").value;
+    }
+
+    const response = await fetch(`/teacher/week/${currentWeekId}/add-exercise`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    const res = await response.json();
+    if (res.ok) {
+        alert("Exercise added!");
+        exQuestion.value = "";
+        dynamicBox.innerHTML = "";
+        renderDynamicFields();
+        loadExercises();
+    }
+};
+
+</script>
+</html>

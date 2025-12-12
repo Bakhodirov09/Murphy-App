@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: rgb(255, 207, 0);
+      height: 100vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      font-size: 15px;
+      color: #6d6d6d;
+      margin-bottom: 30px;
+    }
+
+    .input-box {
+      width: 92%;
+      height: 50px;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      padding: 0 15px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input-box:focus {
+      border-color: #f5b800;
+      box-shadow: 0 0 0 3px #ffe9a3;
+    }
+
+    .btn {
+      width: 100%;
+      height: 50px;
+      background: #f2f2f2;
+      color: rgb(125, 125, 125);
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      cursor: ;
+    }
+
+    .btn.active {
+      background: rgb(0, 31, 63);
+      color: white;
+      cursor: pointer;
+    }
+    .account {
+    width: 40%;
+    max-width: 400px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 50px auto;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    font-family: 'Arial', sans-serif;
+    z-index: 5;
+}
+
+.account h1 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.account h3 {
+    margin: 10px 0;
+    font-size: 1.3rem;
+    color: #555;
+}
+
+.account img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto 15px auto;
+    object-fit: cover;
+    border: 3px solid #eee;
+}
+
+.account p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+    color: #666;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.account svg {
+    flex-shrink: 0;
+}
+
+.account button.accept {
+    width: 50%;
+    padding: 10px 0;
+    background-color: rgb(0, 31, 63);
+    color: white;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.account button.accept:hover {
+    background-color: rgb(0, 11, 43);
+}
+
+/* Media query for mobile */
+@media (max-width: 600px) {
+    .account {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .account h1 {
+        font-size: 1.3rem;
+    }
+
+    .account h3 {
+        font-size: 1.1rem;
+    }
+
+    .account p {
+        font-size: 0.9rem;
+        gap: 5px;
+    }
+
+    .account button.accept {
+        width: 70%;
+        font-size: 1rem;
+    }
+
+    .account img {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+      .days {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        flex-direction: column;
+      }
+
+.day-btn {
+  padding: 15px 25px;
+  background: #f2f2f2;
+  border-radius: 10px;
+  font-size: 18px;
+  color: #444;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.2s;
+  user-select: none;
+  width: 250px;
+  height: auto;
+}
+
+/* Tanlanganda */
+.day-btn input:checked + * ,
+.day-btn input:checked {
+  color: #fff !important;
+  background: #4b7bec;
+  border-color: #3867d6;
+}
+      .labels {
+        flex-direction: column;
+        display: flex;
+        gap: 20px;
+        margin: 0 auto;
+      }
+
+
+
+  </style>
+</head>
+<body>
+  <div style="position: absolute; top: 0; right: 0; z-index: 0; opacity: 0.35; pointer-events: none;">
+    <!-- SVG decorative shape -->
+    <svg width="260" height="240" viewBox="0 0 161 157" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.86159 -84.8483C-18.2501 -168.598 67.3642 -177.122 129.149 -151.834C165.198 -138.829 188.872 -179.275 233.529 -163.133C278.187 -146.992 224.652 -96.1471 292.983 -70.0521C361.314 -43.9571 327.956 72.7978 268.233 74.1429C208.51 75.488 224.921 95.1266 165.198 140.053C105.475 184.979 4.86173 122.567 29.8806 56.6566C54.8995 -9.25349 29.8803 5.81169 4.86159 -84.8483Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M133.396 -19.6709C130.729 -27.6476 143.22 -40.5159 153.263 -35.0241C162.46 -29.9951 171.826 -33.3868 178.013 -31.1448C194.302 -25.2425 188.311 -22.1182 195.592 -15.1083C204.453 -6.57808 208.681 15.7587 188.311 15.7587C171.556 15.7587 176.569 23.896 164.024 27.5016C151.478 31.1071 137.251 24.9698 137.251 8.81149C137.251 2.74359 137.838 -6.38557 133.396 -19.6709Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M16.5421 -79.3285C-4.71095 -156.189 74.2557 -165.109 131.337 -141.621C164.945 -129.341 187.318 -166.417 228.478 -151.54C270.556 -136.329 221.344 -89.8226 284.125 -65.4626C347.05 -40.9644 317.108 67.207 260.963 68.4298C205.146 69.6527 220.521 88.2457 165.087 129.416C109.653 170.586 16.8926 113.289 39.6371 51.9016C62.3815 -8.56828 39.6902 4.29742 16.5421 -79.3285Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M28.2304 -73.8124C8.83604 -143.785 81.155 -153.099 133.533 -131.411C164.699 -119.856 185.771 -153.564 223.434 -139.95C262.934 -125.67 218.043 -83.5018 275.275 -60.8768C332.793 -37.9754 306.268 61.6125 253.701 62.7131C201.79 63.8136 216.128 81.361 164.983 118.775C113.839 156.188 28.9314 104.007 49.4014 47.1429C69.8714 -7.88675 49.5079 2.77946 28.2304 -73.8124Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M39.9111 -68.2921C22.3753 -131.376 88.0466 -141.085 135.72 -121.196C164.446 -110.367 184.217 -140.706 218.383 -128.356C255.304 -115.007 214.735 -77.1769 266.416 -56.2869C318.529 -34.9822 295.421 56.0223 246.431 57.0005C198.427 57.9788 211.729 74.4806 164.872 108.138C118.016 141.795 40.9624 94.7299 59.158 42.3885C77.3535 -7.20101 59.3178 1.26572 39.9111 -68.2921Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M51.5996 -62.7714C35.9225 -118.967 94.9462 -129.071 137.916 -110.982C164.201 -100.877 182.671 -127.848 213.34 -116.761C247.681 -104.343 211.435 -70.8514 257.566 -51.6964C304.272 -31.9886 284.581 50.4324 239.168 51.2884C195.071 52.1443 207.337 67.6006 164.769 97.5013C122.202 127.402 53.0014 85.4529 68.9225 37.6344C84.8436 -6.51485 69.1357 -0.247604 51.5996 -62.7714Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M63.2804 -56.975C49.4619 -106.282 101.838 -116.781 140.104 -100.492C163.948 -91.1119 181.118 -114.715 208.289 -104.891C240.051 -93.4041 208.127 -64.2503 248.709 -46.8304C290.008 -28.7194 273.734 45.1182 231.899 45.8519C191.707 46.5856 202.937 60.9963 164.658 87.1405C126.38 113.285 65.0326 76.4517 78.6793 33.1561C92.326 -5.55301 78.9458 -1.48524 63.2804 -56.975Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M74.9615 -50.844C63.0016 -93.2628 108.73 -104.157 142.292 -89.6667C163.695 -81.0121 179.564 -101.246 203.238 -92.6866C232.422 -82.1302 204.819 -57.3147 239.851 -41.6297C275.744 -25.1155 262.887 40.1386 224.629 40.75C188.344 41.3614 198.537 54.7266 164.548 77.1143C130.558 99.5021 77.0641 67.785 88.4363 29.0123C99.8085 -4.25661 88.7562 -2.38834 74.9615 -50.844Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M86.6506 -44.6984C76.5494 -80.2287 115.63 -91.5176 144.489 -78.8272C163.45 -70.8977 178.018 -87.7635 198.195 -80.4672C224.8 -70.8417 201.52 -50.3644 231.001 -36.4144C261.488 -21.497 252.048 35.1736 217.368 35.6628C184.989 36.1519 194.146 48.4715 164.445 67.1028C134.744 85.7341 89.1036 59.133 98.2014 24.8831C107.299 -2.94557 98.5747 -3.27678 86.6506 -44.6984Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M98.3324 -38.5224C90.0898 -67.1643 122.523 -78.848 146.678 -67.9573C163.198 -60.753 176.466 -74.2502 193.145 -68.2175C217.171 -59.5228 198.213 -43.3838 222.144 -31.1688C247.225 -17.8482 241.202 30.239 210.099 30.6059C181.626 30.9727 189.747 42.2467 164.335 57.1216C138.923 71.9965 101.136 50.5113 107.959 20.7843C114.782 -1.60417 108.386 -4.13487 98.3324 -38.5224Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M110.023 -32.3074C103.639 -54.0609 129.424 -66.1395 148.875 -57.0484C162.955 -50.5692 174.921 -60.6979 188.103 -55.9288C209.551 -48.1649 194.915 -36.3641 213.296 -25.8841C232.97 -14.1603 230.364 25.3434 202.838 25.588C178.272 25.8325 185.357 36.061 164.234 47.1794C143.111 58.2978 113.177 41.9286 117.726 16.7245C122.274 -0.22377 118.206 -4.95396 110.023 -32.3074Z" stroke="#EFF0F2" stroke-width="1.5"/>
+        <path d="M121.707 -26.0371C117.182 -40.9022 136.32 -53.3757 151.067 -46.0842C162.705 -40.3301 173.371 -47.0903 183.056 -43.5848C201.924 -36.7516 191.61 -29.2891 204.442 -20.5441C218.709 -10.4171 219.52 20.5031 195.572 20.6254C174.912 20.7477 180.961 29.9305 164.127 37.2925C147.292 44.6545 125.211 33.4012 127.486 12.7201C129.76 1.21197 128.019 -5.7177 121.707 -26.0371Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+
+  <div class="container">
+    <h1>Login Page</h1>
+    <p class="subtitle">Do your murphys on your Phone</p>
+
+    <input type="tel" class="input-box" placeholder="+998 (__) ___-__-__" />
+
+    <input type="password" class="input-box" placeholder="password" />
+
+    <button class="btn">
+        Login
+        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512">
+            <path d="M192 176v-40a40 40 0 0140-40h160a40 40 0 0140 40v240a40 40 0 01-40 40H240c-22.09 0-48-17.91-48-40v-40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M288 336l80-80-80-80M80 256h272"/>
+        </svg>
+    </button>
+
+  </div>
+
+  <script>
+    const phoneInput = document.querySelectorAll('.input-box')[0];
+    const passwordInput = document.querySelectorAll('.input-box')[1];
+    let nextBtn = document.querySelector('.btn');
+
+    function formatPhone(value) {
+      let nums = value.replace(/[^0-9]/g, '').slice(0, 12);
+      if (!nums.startsWith('998')) nums = '998' + nums;
+
+      let c = nums.substring(0, 3);
+      let a = nums.substring(3, 5);
+      let b = nums.substring(5, 8);
+      let d = nums.substring(8, 10);
+      let e = nums.substring(10, 12);
+
+      // mask placeholders
+      let aMask = a || '__';
+      let bMask = b || '___';
+      let dMask = d || '__';
+      let eMask = e || '__';
+
+      return `+${c} (${aMask}) ${bMask}-${dMask}-${eMask}`;
+    } function salom (value) {
+      var nums = value.replace(/[^0-9]/g, '').slice(0, 12);
+      if (nums.indexOf('998') !== 0) nums = '998' + nums;
+      var c = nums.substring(0, 3);
+      var a = nums.substring(3, 5);
+      var b = nums.substring(5, 8);
+      var d = nums.substring(8, 10);
+      var e = nums.substring(10, 12);
+
+      var result = '+' + c;
+      if (a) result += ' (' + a + ')';
+      if (b) result += ' ' + b;
+      if (d) result += '-' + d;
+      if (e) result += '-' + e;
+      return result;
+    }
+
+    phoneInput.addEventListener('input', function () {
+      phoneInput.value = formatPhone(phoneInput.value);
+      validate();
+    });
+
+    passwordInput.addEventListener('input', validate);
+
+    function validate() {
+      var nums = phoneInput.value.replace(/[^0-9]/g, '');
+      var okPhone = nums.length === 12;
+      var okPassword = passwordInput.value.length > 0;
+
+      if (okPhone && okPassword) {
+        nextBtn.disabled = false
+        nextBtn.classList.add('active')
+      } else {
+        nextBtn.disabled = true
+        nextBtn.classList.remove('active')
+      }
+    }
+    nextBtn.addEventListener('click', async () => {
+        nextBtn.disabled = true;
+        nextBtn.classList.remove('active')
+        nextBtn.textContent = 'Loading ...'
+
+        const data = {
+            login: phoneInput.value,
+            password: passwordInput.value
+        };
+
+        try {
+            const response = await fetch(nextBtn.getAttribute('data-url') || '/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (response.status == 200) {
+                cookieStore.set('token', result.token)
+                localStorage.setItem('role', result.type)
+                if (result?.user) {
+                    localStorage.setItem('group', result.user.group)
+                    const container = document.querySelector('.container');
+                    container.classList = 'account'
+                    container.innerHTML = `
+                        <h1>Is this your account?</h1>
+                        <img src="${result.user.avatar_url}" alt="Avatar">
+                        <h1>${result.user.first_name} ${result.user.last_name}</h1>
+                        <p>
+                            <svg width="25" height="25" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.67227 16.9089C4.90723 16.9089 2.66602 19.1573 2.66602 21.9305V23.4044C2.66602 23.8017 2.98714 24.1238 3.38343 24.1238H11.9611C12.3573 24.1238 12.6785 23.8017 12.6785 23.4044V21.9305C12.6782 19.1573 10.4371 16.9089 7.67227 16.9089ZM10.4243 12.6956C10.4243 11.1712 9.19215 9.93523 7.67227 9.93523C6.15222 9.93523 4.9203 11.1712 4.9203 12.6956C4.9203 14.2204 6.15222 15.4563 7.67227 15.4563C9.19215 15.4563 10.4243 14.2203 10.4243 12.6956ZM27.0782 12.2506C27.0782 10.7261 25.8463 9.49023 24.3262 9.49023C22.8063 9.49023 21.5742 10.7261 21.5742 12.2506C21.5742 13.7751 22.8063 15.011 24.3262 15.011C25.8463 15.011 27.0782 13.7751 27.0782 12.2506ZM24.3262 16.568C21.5614 16.568 19.3202 18.8162 19.3202 21.5894V23.0633C19.3202 23.4606 19.641 23.7828 20.0375 23.7828H28.6153C29.0113 23.7828 29.3327 23.4607 29.3327 23.0633V21.5894C29.3325 18.8162 27.0912 16.568 24.3262 16.568Z" fill="black" fill-opacity="0.74"/>
+                                <path d="M15.9981 15.4434C12.1095 15.4434 8.95703 18.6055 8.95703 22.5059V24.5789C8.95703 25.1377 9.4088 25.591 9.96595 25.591H22.0303C22.5874 25.591 23.0392 25.1377 23.0392 24.5789V22.5058C23.0392 18.6055 19.8867 15.4434 15.9981 15.4434Z" fill="black"/>
+                                <path d="M19.5085 10.3406C19.5085 8.31106 17.8683 6.66602 15.8451 6.66602C13.8218 6.66602 12.1816 8.31106 12.1816 10.3406C12.1816 12.3699 13.8218 14.0152 15.8451 14.0152C17.8683 14.0152 19.5085 12.3699 19.5085 10.3406Z" fill="black"/>
+                            </svg>
+                            ${result.user.level}:${result.user.sub} | ${result.user.group}
+                        </p>
+                        <button class="accept">Yes, It's me.</button>
+                    `;
+                } else {
+                    const container = document.querySelector('.container');
+                    container.classList = 'account'
+                    container.innerHTML = `
+                        <h1>Is this your account?</h1>
+                        <img src="${result.teacher.avatar_url}" alt="Avatar">
+                        <h1>${result.teacher.first_name} ${result.teacher.last_name}</h1>
+                        <p>${result.role} Teacher</p>
+                        <button class="accept">Yes, It's me.</button>
+                    `;
+                }
+            }
+            else {
+                nextBtn.disabled = false
+                nextBtn.classList.add('active')
+                nextBtn.innerHTML = 'Login <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"> <path d="M192 176v-40a40 40 0 0140-40h160a40 40 0 0140 40v240a40 40 0 01-40 40H240c-22.09 0-48-17.91-48-40v-40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M288 336l80-80-80-80M80 256h272"/></svg>'
+                if (response.status == 404) {
+                    alert('Login or password is incorrect!')
+                }
+                else if (response.status == 403 && result.detail.level == false) {
+                    alert("Your English Level is not suggested to do Mr.Sardor's and Ms.Sevara's murphy exercises")
+                }
+                else if (response.status == 403 && result.detail.success == false) {
+                    alert("You are not Mr.Sardor's student")
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    const acceptBtn = document.querySelector('.accept');
+    acceptBtn.addEventListener('click', async () => {
+        const role = localStorage.getItem('role')
+        if (role == 'student') {
+            const response = await fetch('/student/ok', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            result = await response.json()
+            console.log(result)
+            console.log(result.detail)
+            if (response.status == 201) {
+                cookieStore.set('token', result.new_token)
+                window.location.replace('/student/dashboard')
+            }
+            else if (response.status == 404) {
+                const account = document.querySelector('.account');
+                account.classList.remove('account')
+                account.classList.add('days')
+                account.innerHTML = `
+                <h2>Could you tell us which days you have lessons?</h2>
+                  <div class="labels">
+                      <label class="day-btn">
+                          <input type="radio" name="day_type" value="0" checked>
+                          *Odd Days
+                      </label>
+
+                      <label class="day-btn">
+                          <input type="radio" name="day_type" value="1">
+                          *Even Days
+                      </label>
+                      <button class="btn active" style="width: 300px; background: rgb(0, 31, 63); color: white; cursor: pointer;">Yes, only these days.</button>
+                  </div>`
+                cookieStore.set('token', result.detail.new_token)
+                localStorage.setItem('group', result.detail.group)
+                const yesBtn = document.querySelector('.btn.active'); // paydo bo'lganidan keyin
+                yesBtn.addEventListener('click', async () => {
+                    const selected = document.querySelector('input[name="day_type"]:checked');
+                    const data = {
+                        days: selected.value,
+                        group: localStorage.getItem('group')
+                    }
+                    const response = await fetch('/student/create-group', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    })
+                    const result = await response.json()
+                    if (response.status_code == 201) {
+                        localStorage.removeItem('group')
+                        localStorage.removeItem('role')
+                        window.location.href = '/student/dashboard'
+                    }
+                });
+            }
+        }
+        else {
+           window.location.href = '/teacher/dashboard'
+        }
+    })
+});
+  </script>
+  <svg class="bg-bottom-left" width="260" height="240" viewBox="0 0 161 157" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; bottom:0; left:0; transform: rotate(180deg) scale(1.1); opacity:0.45; pointer-events:none;">
+    <path d="M4.86159 -84.8483C-18.2501 -168.598 67.3642 -177.122 129.149 -151.834C165.198 -138.829 188.872 -179.275 233.529 -163.133C278.187 -146.992 224.652 -96.1471 292.983 -70.0521C361.314 -43.9571 327.956 72.7978 268.233 74.1429C208.51 75.488 224.921 95.1266 165.198 140.053C105.475 184.979 4.86173 122.567 29.8806 56.6566C54.8995 -9.25349 29.8803 5.81169 4.86159 -84.8483Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M133.396 -19.6709C130.729 -27.6476 143.22 -40.5159 153.263 -35.0241C162.46 -29.9951 171.826 -33.3868 178.013 -31.1448C194.302 -25.2425 188.311 -22.1182 195.592 -15.1083C204.453 -6.57808 208.681 15.7587 188.311 15.7587C171.556 15.7587 176.569 23.896 164.024 27.5016C151.478 31.1071 137.251 24.9698 137.251 8.81149C137.251 2.74359 137.838 -6.38557 133.396 -19.6709Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M16.5421 -79.3285C-4.71095 -156.189 74.2557 -165.109 131.337 -141.621C164.945 -129.341 187.318 -166.417 228.478 -151.54C270.556 -136.329 221.344 -89.8226 284.125 -65.4626C347.05 -40.9644 317.108 67.207 260.963 68.4298C205.146 69.6527 220.521 88.2457 165.087 129.416C109.653 170.586 16.8926 113.289 39.6371 51.9016C62.3815 -8.56828 39.6902 4.29742 16.5421 -79.3285Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M28.2304 -73.8124C8.83604 -143.785 81.155 -153.099 133.533 -131.411C164.699 -119.856 185.771 -153.564 223.434 -139.95C262.934 -125.67 218.043 -83.5018 275.275 -60.8768C332.793 -37.9754 306.268 61.6125 253.701 62.7131C201.79 63.8136 216.128 81.361 164.983 118.775C113.839 156.188 28.9314 104.007 49.4014 47.1429C69.8714 -7.88675 49.5079 2.77946 28.2304 -73.8124Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M39.9111 -68.2921C22.3753 -131.376 88.0466 -141.085 135.72 -121.196C164.446 -110.367 184.217 -140.706 218.383 -128.356C255.304 -115.007 214.735 -77.1769 266.416 -56.2869C318.529 -34.9822 295.421 56.0223 246.431 57.0005C198.427 57.9788 211.729 74.4806 164.872 108.138C118.016 141.795 40.9624 94.7299 59.158 42.3885C77.3535 -7.20101 59.3178 1.26572 39.9111 -68.2921Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M51.5996 -62.7714C35.9225 -118.967 94.9462 -129.071 137.916 -110.982C164.201 -100.877 182.671 -127.848 213.34 -116.761C247.681 -104.343 211.435 -70.8514 257.566 -51.6964C304.272 -31.9886 284.581 50.4324 239.168 51.2884C195.071 52.1443 207.337 67.6006 164.769 97.5013C122.202 127.402 53.0014 85.4529 68.9225 37.6344C84.8436 -6.51485 69.1357 -0.247604 51.5996 -62.7714Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M63.2804 -56.975C49.4619 -106.282 101.838 -116.781 140.104 -100.492C163.948 -91.1119 181.118 -114.715 208.289 -104.891C240.051 -93.4041 208.127 -64.2503 248.709 -46.8304C290.008 -28.7194 273.734 45.1182 231.899 45.8519C191.707 46.5856 202.937 60.9963 164.658 87.1405C126.38 113.285 65.0326 76.4517 78.6793 33.1561C92.326 -5.55301 78.9458 -1.48524 63.2804 -56.975Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M74.9615 -50.844C63.0016 -93.2628 108.73 -104.157 142.292 -89.6667C163.695 -81.0121 179.564 -101.246 203.238 -92.6866C232.422 -82.1302 204.819 -57.3147 239.851 -41.6297C275.744 -25.1155 262.887 40.1386 224.629 40.75C188.344 41.3614 198.537 54.7266 164.548 77.1143C130.558 99.5021 77.0641 67.785 88.4363 29.0123C99.8085 -4.25661 88.7562 -2.38834 74.9615 -50.844Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M86.6506 -44.6984C76.5494 -80.2287 115.63 -91.5176 144.489 -78.8272C163.45 -70.8977 178.018 -87.7635 198.195 -80.4672C224.8 -70.8417 201.52 -50.3644 231.001 -36.4144C261.488 -21.497 252.048 35.1736 217.368 35.6628C184.989 36.1519 194.146 48.4715 164.445 67.1028C134.744 85.7341 89.1036 59.133 98.2014 24.8831C107.299 -2.94557 98.5747 -3.27678 86.6506 -44.6984Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M98.3324 -38.5224C90.0898 -67.1643 122.523 -78.848 146.678 -67.9573C163.198 -60.753 176.466 -74.2502 193.145 -68.2175C217.171 -59.5228 198.213 -43.3838 222.144 -31.1688C247.225 -17.8482 241.202 30.239 210.099 30.6059C181.626 30.9727 189.747 42.2467 164.335 57.1216C138.923 71.9965 101.136 50.5113 107.959 20.7843C114.782 -1.60417 108.386 -4.13487 98.3324 -38.5224Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M110.023 -32.3074C103.639 -54.0609 129.424 -66.1395 148.875 -57.0484C162.955 -50.5692 174.921 -60.6979 188.103 -55.9288C209.551 -48.1649 194.915 -36.3641 213.296 -25.8841C232.97 -14.1603 230.364 25.3434 202.838 25.588C178.272 25.8325 185.357 36.061 164.234 47.1794C143.111 58.2978 113.177 41.9286 117.726 16.7245C122.274 -0.22377 118.206 -4.95396 110.023 -32.3074Z" stroke="#EFF0F2" stroke-width="1.5"/>
+    <path d="M121.707 -26.0371C117.182 -40.9022 136.32 -53.3757 151.067 -46.0842C162.705 -40.3301 173.371 -47.0903 183.056 -43.5848C201.924 -36.7516 191.61 -29.2891 204.442 -20.5441C218.709 -10.4171 219.52 20.5031 195.572 20.6254C174.912 20.7477 180.961 29.9305 164.127 37.2925C147.292 44.6545 125.211 33.4012 127.486 12.7201C129.76 1.21197 128.019 -5.7177 121.707 -26.0371Z" stroke="#EFF0F2" stroke-width="1.5"/>
+  </svg>
+</body>
+</html>

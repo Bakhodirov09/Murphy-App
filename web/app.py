@@ -1,46 +1,92 @@
 import json
 from fastapi import FastAPI, status, Request, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, RedirectResponse
 from httpx import AsyncClient
+from starlette.templating import Jinja2Templates
+
 from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY
-from web.general import create_token
+from web.general import create_token, templates, decode_jwt
 from web.schemas import LoginRequest
 from web.header import make_header, encrypt_aes_base64, decrypt_aes_base64
-from web.routes.student_routes import router
+from web.routers.student_routers import router as student_router
+from web.routers.teacher_routers import router as teacher_router
 
 app = FastAPI()
 
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get('/')
+async def root(request: Request):
+    token = request.cookies.get('token')
+    if not token:
+        return RedirectResponse(url='/login')
+    decoded_token = await decode_jwt(token)
+    if decoded_token['type'] == 'student':
+        return RedirectResponse(url='/student/dashboard')
+    return RedirectResponse(url='/teacher/dashboard')
+
 @app.get('/login', status_code=status.HTTP_200_OK, response_class=HTMLResponse)
-async def get_login():
-    return HTMLResponse(content='index.html')
+async def get_login(request: Request):
+    return templates.TemplateResponse(request, 'login.html')
 
 @app.post('/login', status_code=status.HTTP_200_OK)
 async def login(request: Request, data: LoginRequest):
-    body = {'project': 'lms-v2', 'action': 'client_auth_universal_login', 'body': {'login': data.login, 'password': data.password}}
-    encrypted = {'a': await encrypt_aes_base64(body, LOGIN_REQUEST_HEX_KEY)}
-    encrypted_body = json.dumps(encrypted, separators=(',', ':'))
-    header = await make_header(encrypted_body, request.headers.get('User-Agent'))
-    async with AsyncClient(http2=True, headers=header) as client:
-        response = await client.post(url=LOGIN_INTER_URL, content=encrypted_body)
-        if response.status_code == 200:
-            r_json = await decrypt_aes_base64(response.json()['a'], LOGIN_RESPONSE_HEX_KEY)
-            if r_json['user']['group']['level_label'] in ['Intermediate', 'Upper-Intermediate', 'IELTS']:
-                response = {
-                    'success': False,
-                    'user': {
-                        'first_name': r_json['user']['first_name'],
-                        'last_name': r_json['user']['last_name'],
-                        'avatar_url': r_json['user']['avatar_url'],
-                        'group': r_json['user']['group']['name'],
-                        'level': r_json['user']['group']['level_label']
+    if not data.password.isdigit():
+        body = {'project': 'lms-v2', 'action': 'client_auth_universal_login', 'body': {'login': data.login, 'password': data.password}}
+        encrypted = {'a': await encrypt_aes_base64(body, LOGIN_REQUEST_HEX_KEY)}
+        encrypted_body = json.dumps(encrypted, separators=(',', ':'))
+        header = await make_header(encrypted_body, request.headers.get('User-Agent'))
+        async with AsyncClient(http2=True, headers=header) as client:
+            response = await client.post(url=LOGIN_INTER_URL, content=encrypted_body)
+            if response.status_code == 200:
+                r_json = await decrypt_aes_base64(response.json()['a'], LOGIN_RESPONSE_HEX_KEY)
+                if r_json['user']['group']['level_label'] in ['Upper-Intermediate', 'IELTS']:
+                    response = {
+                        'success': False,
+                        'user': {
+                            'first_name': r_json['user']['first_name'],
+                            'last_name': r_json['user']['last_name'],
+                            'avatar_url': r_json['user']['avatar_url'],
+                            'group': r_json['user']['group']['name'],
+                            'level': r_json['user']['group']['level_label'],
+                            'sub': r_json['user']['group']['sub_label']
+                        }
                     }
+                    if r_json['user']['teacher']['id'] == 73617:
+                        response['success'] = True
+                        response['token'] = await create_token({'user': response['user'], 'type': 'student'})
+                        response['type'] = 'student'
+                        return response
+                    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
+    else:
+        teacher_numbers = ['+998 (94) 930-62-22', '+998 (90) 859-79-39']
+        if data.login in teacher_numbers:
+            if data.login == teacher_numbers[0] and data.password == "967402800":
+                return {
+                    'success': True,
+                    'token': await create_token({'teacher': 'Main', 'type': 'teacher'}),
+                    'teacher': {
+                        'first_name': 'Sardorbek',
+                        'last_name': 'Abdulazizov',
+                        'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/7/2HE_pDQBzQyg3cVBIvyxu2ia4Q5YMu1a.jpg'
+                    },
+                    'role': 'Main'
                 }
-                if r_json['user']['teacher']['id'] == 73617:
-                    response['success'] = True
-                    response['token'] = await create_token({'user': response['user'], })
-                    return response
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})
+            elif data.login == teacher_numbers[1] and data.password == '1149620400':
+                return {
+                    'success': True,
+                    'token': await create_token({'teacher': 'Support', 'type': 'teacher'}),
+                    'teacher': {
+                        'first_name': 'Sevara',
+                        'last_name': 'Tolipjonova',
+                        'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/10/vP9Ql_GWZ5wmcg7SjAMtivpYWtdTc--w.jpg'
+                    },
+                    'role': 'Support'
+                }
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
 
-app.include_router(router, prefix='/students', tags=['Students'])
+app.include_router(student_router, prefix='/student', tags=['Student Routers'])
+app.include_router(teacher_router, prefix='/teacher')
