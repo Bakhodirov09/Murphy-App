@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Teacher Dashboard — Static HTML/CSS</title>
+  <title>Vocabularies</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -18,87 +18,6 @@
       --glass: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75));
       --radius:12px;
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
-    /* Days Toggle */
-    .days-toggle {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        margin: 20px 0 10px;
-    }
-
-    .day-btn {
-        background: transparent;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: 500;
-        color: #555;
-    }
-
-    .day-btn.active {
-        background: #FFD400;
-        color: #000;
-        font-weight: 600;
-    }
-
-    /* Groups Tabs */
-    .groups-tabs {
-        width: 100%;
-        background: #f7f7f7;
-        padding: 12px;
-        border-radius: 14px;
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .group-tab {
-        background: #ffffff;
-        padding: 15px 20px;
-        border-radius: 14px;
-        min-width: 180px;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        border: 1px solid #ececec;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-
-    .group-tab.active {
-        border-color: #ffd400;
-        background: #fffdf3;
-    }
-
-    .group-tab .icon {
-        font-size: 18px;
-        opacity: 0.8;
-    }
-
-    .g-title {
-        font-size: 14px;
-        font-weight: 600;
-        margin-top: 3px;
-    }
-
-    .g-level {
-        font-size: 12px;
-        color: #777;
-        margin-top: -2px;
-    }
-
-    .alert {
-        color: red;
-        font-size: 14px;
-        margin-top: 5px;
-    }
-
-    /* Scrollbar hidden (iOS style) */
-    .groups-tabs::-webkit-scrollbar {
-        display: none;
     }
 
 
@@ -135,6 +54,32 @@
       flex-direction:column;
       gap:18px;
     }
+
+    /* Days Toggle */
+    .days-toggle {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 20px 0 10px;
+    }
+
+    .day-btn {
+        background: transparent;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .day-btn.active {
+        background: #FFD400;
+        color: #000;
+        font-weight: 600;
+    }
+
     .logo{display:flex;align-items:center;gap:12px}
     .logo .dot{width:38px;height:38px;border-radius:50%;background:linear-gradient(45deg,#6c5ce7,#00b894);display:flex;align-items:center;justify-content:center;font-weight:700}
     .logo h1{font-size:16px;margin:0}
@@ -188,6 +133,25 @@
 
     /* Table / schedule */
     .panel{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);}
+    .panel h3{margin:0 0 10px 0}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:920px}
+    th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eef2f6}
+    thead th{background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+
+    td .student{display:flex;align-items:center;gap:10px}
+    .student .sname{font-weight:600}
+    .student .smeta{color:var(--muted);font-size:12px}
+
+    .circle{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+    .circle.green{background:#008f5f;color:#e6fbf3}
+    .circle.yellow{background:#d68e00;color:#fff7e6}
+    .circle.red{background:#e04b4b;color:#fff0f0}
+
+    /* progress */
+    .progress{height:10px;background:#eef6f5;border-radius:8px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#00b894)}
 
     .weeks {
         padding: 20px;
@@ -208,11 +172,6 @@
         flex-direction: column;
     }
 
-    .days {
-        background-color: #f0d7d7;
-        border-radius: 20px;
-    }
-    /* Modal Background */
     .modal {
       display: none;
       position: fixed;
@@ -229,64 +188,258 @@
 
     /* Modal Box */
     .modal-content {
-    background: var(--panel);
-    padding: 25px;
-    border-radius: 16px;
-    width: 80%;
-    box-shadow: var(--card-shadow);
-    animation: popup .25s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+      background: var(--panel);
+      padding: 25px;
+      border-radius: 16px;
+      width: 380px;
+      box-shadow: var(--card-shadow);
+      animation: popup .25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    @keyframes popup {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      margin: 0 0 10px;
+    }
+
+    .modal-content input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      outline: none;
+    }
+
+    .close {
+      float: right;
+      font-size: 22px;
+      cursor: pointer;
+      color: #444;
+    }
+
+    /* ===== MODAL OVERLAY ===== */
+.book-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
 }
 
-@keyframes popup {
-    from { transform: scale(0.9); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
+/* ===== MODAL CONTENT ===== */
+.book-modal-content {
+  background: #fff;
+  width: 90%;
+  height: 85vh;                 /* MODAL HECH QACHON O‘SMAYDI */
+  border-radius: 16px;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 
-.modal-content h2 {
-    margin: 0 0 15px;
-    text-align: center;
-}
-
-/* Row layout: 3 ustun */
-.modal-row {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap; /* mobilga moslashuv uchun */
-}
-
-/* Har bir input-label blok */
-.form-item {
-    display: flex;
-    flex-direction: column; /* label pastda emas, ustida */
-    flex: 1; /* teng ustunlar */
-    min-width: 150px; /* juda tor bo‘lmashi uchun */
-}
-
-.modal-content input,
-.modal-content select {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    outline: none;
+/* ===== HEADER ===== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .close {
-    align-self: flex-end;
-    font-size: 22px;
-    cursor: pointer;
-    color: #444;
+  font-size: 22px;
+  cursor: pointer;
 }
 
-.modal-content button {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
+/* ===== BOOK TOP ===== */
+.book-top {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.book-top img {
+  width: 150px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* ===== SCROLL ZONA (ENG MUHIM QISM) ===== */
+.units-faq {
+  flex: 1;                     /* SCROLL ISHLASHI SHART */
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* ===== FAQ ITEM ===== */
+.faq-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+/* ===== QUESTION ===== */
+.faq-question {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.faq-question .icon {
+  transition: transform 0.25s ease;
+}
+
+/* ===== ANSWER ===== */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0 18px;
+}
+
+/* ===== OPEN STATE ===== */
+.faq-item.active .faq-answer {
+  max-height: 50vh;            /* UNIT ICHI SCROLL BO‘LADI */
+  overflow-y: auto;
+  padding-bottom: 14px;
+}
+
+.faq-item.active .icon {
+  transform: rotate(180deg);
+}
+
+/* ===== WORDS ===== */
+.words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  height: 180px;
+}
+
+.word-card {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.word-card img {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+}
+
+/* ===== SAVE BUTTON ===== */
+.btn.primary {
+  margin-top: auto;            /* DOIM PASTDA TURADI */
+  padding: 12px;
+  border-radius: 12px;
+  background: #6c5ce7;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===== SCROLL STYLE ===== */
+.units-faq::-webkit-scrollbar,
+.faq-answer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.units-faq::-webkit-scrollbar-thumb,
+.faq-answer::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 10px;
+}
+
+
+/* BUTTONS */
+.btn {
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary {
+  background: #6c5ce7;
+  color: #fff;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px dashed #aaa;
+}
+
+.small-btn {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+.units-faq {
+  flex: 1;
+  flex-direction: column;
+  padding-right: 6px;
+  overflow-y: auto;
+}
+
+/* QUESTION */
+.faq-question {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.faq-question:hover {
+  background: #f9fafb;
+}
+
+/* ICON */
+.faq-question .icon {
+  transition: transform 0.25s ease;
+}
+
+/* ANSWER */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0 18px;
+}
+
+/* OPEN STATE */
+.faq-item.active .faq-answer {
+  max-height: 500px; /* yetarlicha katta */
+  padding-top: 12px;
+}
+
+.faq-item.active .icon {
+  transform: rotate(180deg);
 }
 
 
@@ -298,6 +451,7 @@
     }
     @media (max-width:700px){
       .topbar{flex-direction:column;align-items:flex-start}
+      .stats-row{flex-wrap:wrap}
     }
   </style>
 </head>
@@ -320,8 +474,8 @@
           </svg>
           Home
         </a>
-        <a href="/teacher/weeks" class="active">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffcf00" xmlns="http://www.w3.org/2000/svg">
+        <a href="/teacher/weeks">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#979C9E" xmlns="http://www.w3.org/2000/svg">
               <path d="M7.42733 1.5C7.22842 1.5 7.03765 1.57902 6.897 1.71967C6.75635 1.86032 6.67733 2.05109 6.67733 2.25V3.2775H5.78258C4.88281 3.27949 4.02056 3.63831 3.38503 4.27525C2.7495 4.91219 2.39258 5.77522 2.39258 6.675V7.4325H19.3051V6.675C19.3051 4.8 17.7826 3.2775 15.9151 3.2775H15.0188V2.25C15.0188 2.05109 14.9398 1.86032 14.7992 1.71967C14.6585 1.57902 14.4677 1.5 14.2688 1.5C14.0699 1.5 13.8792 1.57902 13.7385 1.71967C13.5978 1.86032 13.5188 2.05109 13.5188 2.25V3.2775H8.17733V2.25C8.17733 2.05109 8.09831 1.86032 7.95766 1.71967C7.81701 1.57902 7.62624 1.5 7.42733 1.5ZM2.39258 16.8C2.39258 18.675 3.91508 20.1975 5.78258 20.1975H10.6426C10.2416 19.3407 10.0342 18.406 10.0351 17.46C10.0351 13.86 12.9676 10.9275 16.5751 10.9275C17.5501 10.9275 18.4726 11.145 19.3051 11.5275V8.9325H2.39258V16.8ZM10.8526 11.4825H10.8601C11.2801 11.4825 11.6101 11.82 11.6101 12.2325C11.6101 12.645 11.2801 12.9825 10.8601 12.9825C10.4476 12.9825 10.1101 12.645 10.1101 12.2325C10.1101 11.82 10.4401 11.4825 10.8526 11.4825ZM6.97508 11.4825H6.98258C7.39508 11.4825 7.73258 11.82 7.73258 12.2325C7.73258 12.645 7.39508 12.9825 6.98258 12.9825C6.57008 12.9825 6.23258 12.645 6.23258 12.2325C6.23258 11.82 6.56258 11.4825 6.97508 11.4825ZM6.97508 14.64H6.98258C7.39508 14.64 7.73258 14.9775 7.73258 15.39C7.73258 15.81 7.39508 16.14 6.98258 16.14C6.57008 16.14 6.23258 15.81 6.23258 15.39C6.23258 14.9775 6.56258 14.64 6.97508 14.64Z"/>
               <path d="M16.5752 12.4275C13.7927 12.4275 11.5352 14.685 11.5352 17.46C11.5352 20.2425 13.7927 22.5 16.5752 22.5C19.3502 22.5 21.6077 20.2425 21.6077 17.46C21.6077 14.685 19.3502 12.4275 16.5752 12.4275ZM18.9227 18.285C18.8177 18.5925 18.5252 18.7875 18.2177 18.7875C18.1332 18.7871 18.0494 18.7719 17.9702 18.7425L16.3277 18.1725C16.0277 18.0675 15.8252 17.7825 15.8252 17.46V15.8175C15.8252 15.405 16.1552 15.0675 16.5752 15.0675C16.9877 15.0675 17.3252 15.405 17.3252 15.8175V16.9275L18.4652 17.325C18.8552 17.46 19.0577 17.8875 18.9227 18.285Z"/>
           </svg>
@@ -334,8 +488,8 @@
           </svg>
           Exercises
         </a>
-        <a href="/teacher/vocabularies">
-          <svg width="24" height="24" color="#ffcf00" viewBox="0 0 73 60" fill="#979C9E" xmlns="http://www.w3.org/2000/svg">
+        <a href="/teacher/vocabularies" class="active">
+          <svg width="24" height="24" viewBox="0 0 73 60" fill="#ffcf00" xmlns="http://www.w3.org/2000/svg">
               <path d="M11.1677 0.000266147H11.1615C10.8215 -0.00051141 10.4847 0.0702849 10.1706 0.208567C9.85645 0.346848 9.57122 0.549875 9.33135 0.805926C9.08679 1.06381 8.89289 1.37074 8.76091 1.70891C8.62893 2.04707 8.56149 2.40972 8.56251 2.77581V44.3946C8.56251 45.9208 9.73568 47.1655 11.178 47.1694C17.2584 47.1848 27.4455 48.5313 34.4732 56.3453V12.79C34.4732 12.2727 34.3488 11.7867 34.1141 11.3845C28.3461 1.51496 17.2618 0.0154131 11.1677 0.000266147ZM64.4394 44.3946V2.77555C64.4394 2.03074 64.1663 1.33111 63.6706 0.805665C63.4307 0.54968 63.1455 0.346694 62.8314 0.208416C62.5174 0.0701379 62.1806 -0.000694789 61.8406 5.1369e-06H61.8343C55.7403 0.0154132 44.6561 1.51496 38.8878 11.3845C38.6531 11.7867 38.529 12.2727 38.529 12.79V56.345C45.5567 48.531 55.7438 47.1845 61.8242 47.1691C63.2662 47.1652 64.4394 45.9205 64.4394 44.3946Z"/>
               <path d="M70.3882 9.59814H68.4941V44.3946C68.4941 48.2913 65.506 51.4687 61.8329 51.4784C56.6755 51.4914 48.1716 52.563 42.1489 58.6194C52.5651 55.9096 63.5456 57.6711 69.8035 59.1864C70.1868 59.2803 70.5852 59.2808 70.9688 59.188C71.3523 59.0951 71.7112 58.9111 72.0183 58.6499C72.3253 58.3908 72.5732 58.0611 72.7432 57.6857C72.9132 57.3102 73.001 56.8987 73 56.4821V12.3732C73.0002 10.8431 71.8283 9.59814 70.3882 9.59814ZM4.50586 44.3946V9.59814H2.61179C1.17194 9.59814 0 10.8431 0 12.3732V56.4813C0 57.3301 0.357873 58.1203 0.981694 58.6492C1.28878 58.9105 1.64758 59.0945 2.03118 59.1874C2.41477 59.2803 2.81319 59.2797 3.19653 59.1856C9.45439 57.6701 20.4352 55.9089 30.8508 58.6186C24.8284 52.5624 16.3245 51.4912 11.1671 51.4781C7.4942 51.4687 4.50586 48.2913 4.50586 44.3946Z"/>
           </svg>
@@ -360,211 +514,173 @@
       </div>
 
       <div class="days-toggle">
-        <div class="days">
-          <button class="day-btn active" data-type="Upper-Intermediate">Upper-Intermediate</button>
-          <button class="day-btn" data-type="IELTS">IELTS</button>
-        </div>
+          <button class="day-btn active" data-type="book">Books</button>
       </div>
-      <button class="btn" style="background-color: #b03434;">+ Add Week</button>
+      <button class="btn" style="">+ Add Book</button>
+
       <div class="weeks">
 
       </div>
+
+      <div class="book-modal">
+          <div class="book-modal-content">
+
+            <div class="modal-header">
+              <h2>Essential Book 2</h2>
+              <span class="close">&times;</span>
+            </div>
+
+            <div class="units-faq">
+
+            </div>
+      </div>
+      </div>
+
       <div id="addWeekModal" class="modal">
         <div class="modal-content">
-        <span class="close">×</span>
-        <div>
-            <h2>Add New Week For Upper-Intermediate</h2>
-        </div>
+          <span class="close">&times;</span>
 
-        <div class="modal-row">
-            <div class="form-item">
-                <label>Enter week number</label>
-                <input type="number" id="weekNumber" placeholder="Enter week number">
-            </div>
-            <div class="form-item">
-              <label>Choose a murphy book</label>
-              <select name="books" id="booksSelect"></select>
-            </div>
-            <div class="form-item">
-              <label>Choose an essential book</label>
-              <select name="books" id="essentialBooksSelect"></select>
-            </div>
-        </div>
-        <div class="modal-row">
-            <div class="form-item">
-                <label>Enter week topic</label>
-                <input type="text" id="weekTopic" placeholder="Enter week topic">
-            </div>
-            <div class="form-item">
-              <label>Murphy From Unit</label>
-              <input type="number" id="murphyFromUnit" placeholder="Enter murphy from unit">
-            </div>
-            <div class="form-item">
-                <label>Essential From Unit</label>
-                <input type="number" id="essentialFromUnit" placeholder="Enter essential from unit">
-            </div>
-        </div>
+          <h2>Add Essential Book</h2>
 
-        <div class="modal-row">
-            <div class="form-item">
-                <label>Available keys</label>
-                <input type="number" id="keys" placeholder="Enter amount of available keys">
-            </div>
-            <div class="form-item">
-                <label>Murphy To Unit</label>
-                <input type="number" id="murphyToUnit" placeholder="Enter murphy to unit">
-            </div>
-            <div class="form-item">
-                <label>Essential To Unit</label>
-                <input type="number" id="essentialToUnit" placeholder="Enter essential to unit">
-            </div>
-        </div>
+          <label>Book Number</label>
+          <input type="number" id="weekNumber" placeholder="Enter book number">
 
-        <div>
-            <button class="btn" id="saveWeekBtn">Save</button>
+          <button class="btn" id="saveBookBtn" style="margin-top: 10px;">Save</button>
         </div>
-    </div>
-
       </div>
 
     </main>
   </div>
 
-  <script>
-    async function fetchWeeks(level) {
-        const weeks = document.querySelector('.weeks')
-        weeks.innerHTML = ''
-        const response = await fetch(`/teacher/level-weeks?level=${level}`)
-        const result = await response.json()
-        for (week of result.weeks) {
-            const weekDiv = document.createElement('div');
-            weekDiv.classList.add('week')
-
-            const textDiv = document.createElement('div')
-            textDiv.classList.add('text')
-            const h1 = document.createElement('h1');
-            h1.innerHTML = `Week ${week.week_number}`
-            const p = document.createElement('p')
-            p.innerHTML = week.week_topic
-
-            const weekBtn = document.createElement('button');
-            weekBtn.classList.add('btn')
-            weekBtn.innerHTML = `Week ${week.week_number}`
-
-            textDiv.appendChild(h1)
-            textDiv.appendChild(p)
-            weekDiv.appendChild(textDiv)
-            weekDiv.appendChild(weekBtn)
-            weeks.appendChild(weekDiv)
-        }
-
-    }
-    fetchWeeks('Upper-Intermediate')
-    const buttons = document.querySelectorAll('.day-btn');
-
-    buttons.forEach(btn => {
-        btn.addEventListener('click', async () => {
-            buttons.forEach(g => g.classList.remove('active'));
-            btn.classList.add('active')
-            fetchWeeks(btn.textContent)
-        });
-    });
-    const modal = document.getElementById("addWeekModal");
-    const openBtn = document.querySelector(".btn[style*='#b03434']");
-    const closeBtn = document.querySelector(".close");
-    const saveBtn = document.getElementById("saveWeekBtn");
-
-    openBtn.onclick = async () => {
-        const btnActive = document.querySelector(".day-btn.active")
-        const h3 = document.querySelector(".modal h2")
-        h3.innerHTML = `Add New Week For ${btnActive.textContent}`
-        modal.style.display = "flex";
-
-        const response = await fetch('/teacher/get-murphy-books', {
-            method: 'GET',
-        })
-        const books = await response.json()
-
-        const booksSelect = document.getElementById('booksSelect')
-        const essentialBooksSelect = document.getElementById('essentialBooksSelect')
-
-        const essentialBooks = await fetch('/teacher/essential-books', {
-            method: 'GET'
-        })
-        const esBooks = await essentialBooks.json()
-
-        for (book of books.books) {
-            const option = document.createElement('option')
-            option.value = book['id']
-            option.innerHTML = book['book_name']
-            option.name = 'book'
-
-            booksSelect.appendChild(option)
-        }
-        for (essential of esBooks.books) {
-            const option = document.createElement('option')
-            option.value = essential['id']
-            option.innerHTML = `Essential ${essential['book_number']}`
-            option.name = 'essential'
-
-            essentialBooksSelect.appendChild(option)
-        }
-    }
-
-    closeBtn.onclick = () => {
-        modal.style.display = "none";
-        const books = querySelector('option[name="book"]');
-        const essentials = querySelector('option[name="essential"]');
-        books.remove()
-        essentials.remove()
-    }
-
-    window.onclick = (e) => {
-        if (e.target === modal) modal.style.display = "none";
-    }
-
-    saveBtn.onclick = async () => {
-        const level = document.querySelector(".day-btn.active").textContent;
-        const number = document.getElementById("weekNumber").value;
-        const topic = document.getElementById("weekTopic").value;
-        const essentialFromUnit = document.getElementById("essentialFromUnit").value;
-        const essentialToUnit = document.getElementById("essentialToUnit").value;
-        const murphyFromUnit = document.getElementById("murphyFromUnit").value;
-        const murphyToUnit = document.getElementById("murphyToUnit").value;
-        const keys = document.getElementById("keys").value;
-        const bookId = document.getElementById("booksSelect")
-        const essentialBookId = document.getElementById("essentialBooksSelect")
-
-        if (!number || !topic || !essentialFromUnit || !essentialToUnit || !murphyFromUnit || !murphyToUnit || !keys) {
-            alert("Please fill all fields!");
-            return;
-        }
-
-        const response = await fetch("/teacher/add-week", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                week_number: Number(number),
-                level: level,
-                keys: Number(keys),
-                week_topic: topic,
-                essential_book: essentialBookId.value,
-                essential_from_unit: Number(essentialFromUnit),
-                essential_to_unit: Number(essentialToUnit),
-                murphy_book: bookId.value,
-                murphy_from_unit: Number(murphyFromUnit),
-                murphy_to_unit: Number(murphyToUnit)
-            })
-        });
-
-        const res = await response.json();
-        if (res.success) {
-            modal.style.display = "none";
-            fetchWeeks(level);
-        }
-    };
-
-  </script>
 </body>
+<script>
+  const modal = document.querySelector('.modal')
+  const openBtn = document.querySelector(".btn");
+  const closeBtn = document.querySelector(".close");
+  const saveBtn = document.getElementById("saveBookBtn");
+
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+
+      // faqat bittasi ochiq bo‘lsin desang
+      document.querySelectorAll('.faq-item').forEach(i => {
+        if (i !== item) i.classList.remove('active');
+      });
+
+      item.classList.toggle('active');
+    });
+  });
+
+  openBtn.onclick = () => {
+      modal.style.display = "flex";
+  }
+
+  closeBtn.onclick = () => {
+      modal.style.display = "none";
+  }
+
+  async function fetchVocab() {
+      const response = await fetch('/teacher/essential-books', {
+          method: 'GET'
+      })
+      const result = await response.json()
+
+      const weeks = document.querySelector('.weeks');
+
+      for (book of result.books) {
+          const week = document.createElement('div');
+          week.classList.add('week')
+
+          const text = document.createElement('text');
+          text.classList.add('text')
+          const h1 = document.createElement('h1');
+          const button = document.createElement('button');
+          button.classList.add('btn')
+          button.dataset.value = book.id
+          h1.innerHTML = `Essential ${book.book_number}`
+          button.innerHTML = `Essential ${book.book_number}`
+          text.appendChild(h1)
+          week.appendChild(text)
+          week.appendChild(button)
+          weeks.appendChild(week)
+      }
+      const bookBtn = document.querySelectorAll('button[data-value]');
+      console.log(bookBtn)
+      bookBtn.forEach(button => {
+          button.addEventListener('click', async () => {
+              await fetchBook(button.dataset.value)
+          })
+      })
+  }
+
+  async function fetchBook (bookId) {
+      const response = await fetch(`/teacher/get-essential-book?book_id=${bookId}`, {
+          method: 'GET',
+      })
+      const result = await response.json()
+      const unitsFaq = document.querySelector('.units-faq');
+      for (unit of result.book.units) {
+          const bookModalContent = document.createElement('div');
+          bookModalContent.classList.add('faq-item');
+
+          const faqBtn = document.createElement('button');
+          faqBtn.classList.add('faq-question')
+
+          const unitNumberSpan = document.createElement('span');
+          const iconSpan = document.createElement('span');
+          unitNumberSpan.innerHTML = `Unit ${unit.unit_number}`
+          iconSpan.innerHTML = '⌄'
+
+          const faqAnswer = document.createElement('div');
+          faqAnswer.classList.add('faq-answer')
+
+          const wordsGrid = document.createElement('div');
+          wordsGrid.classList.add('words-grid')
+
+          for (word of unit.words) {
+              const wordCard = document.createElement('div');
+              wordCard.classList.add('word-card')
+
+              const wordImg = document.createElement('img');
+              wordImg.src = word.photo
+
+              const wordH4 = document.createElement('h4')
+              wordH4.innerHTML = word.word
+
+              const wordP = document.createElement('p')
+              wordP.innerHTML = word.translation_uz
+              wordCard.appendChild(wordImg)
+              wordCard.appendChild(wordH4)
+              wordCard.appendChild(wordP)
+              wordsGrid.appendChild(wordCard)
+          }
+
+          faqAnswer.appendChild()
+          faqBtn.innerHTML += unitNumberSpan
+          faqBtn.innerHTML += iconSpan
+          bookModalContent.appendChild(faqBtn)
+          unitsFaq.appendChild(bookModalContent)
+      }
+
+  }
+
+  saveBtn.onclick = async () => {
+      const number = document.getElementById('weekNumber');
+      const response = await fetch('/teacher/add-essential-book', {
+          method: 'POST',
+          body: JSON.stringify({
+              number: number.value
+          })
+      })
+      const result = await response.json()
+      if (response.status == 201) {
+          closeBtn.click()
+          await fetchVocab()
+      }
+  }
+
+  fetchVocab()
+</script>
 </html>
 

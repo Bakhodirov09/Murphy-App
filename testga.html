@@ -112,11 +112,8 @@ saveBtn.onclick = async () => {
         payload.correct_form = document.getElementById("exCorrectForm").value;
     }
 
-    const response = await fetch(`/teacher/week/${currentWeekId}/add-exercise`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
+    const response = payload
+    console.log()
 
     const res = await response.json();
     if (res.ok) {

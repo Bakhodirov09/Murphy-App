@@ -1,8 +1,7 @@
 import json
 from fastapi import FastAPI, status, Request, HTTPException
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse
-from httpx import AsyncClient
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from httpx import AsyncClient, Client
 from starlette.templating import Jinja2Templates
 
 from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY
@@ -87,6 +86,66 @@ async def login(request: Request, data: LoginRequest):
                     'role': 'Support'
                 }
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
+
+@app.get('/success', status_code=status.HTTP_200_OK)
+async def success_audio():
+    async with AsyncClient() as client:
+        response = await client.get('https://web-student.inter-nation.uz/audio/success.mp3')
+
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "audio/mpeg"
+    }
+
+    return Response(content=response.content, status_code=200, headers=headers)
+
+@app.get('/incorrect', status_code=status.HTTP_200_OK)
+async def success_audio():
+    async with AsyncClient() as client:
+        response = await client.get('https://web-student.inter-nation.uz/audio/wrong.mp3')
+
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "audio/mpeg"
+    }
+
+    return Response(content=response.content, status_code=200, headers=headers)
+
+@app.get('/task', status_code=status.HTTP_200_OK)
+async def task_image():
+    async with AsyncClient() as client:
+        response = await client.get('https://web-student.inter-nation.uz/_next/image?url=%2Fimages%2Flesson%2Fexercise%2Fdefault.png&w=96&q=75')
+
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "image/png"
+    }
+
+    return Response(content=response.content, status_code=200, headers=headers)
+
+@app.get('/bg1', status_code=status.HTTP_200_OK)
+async def task_image():
+    async with AsyncClient() as client:
+        response = await client.get('https://web-student.inter-nation.uz/images/lesson/bg1.png')
+
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "image/png"
+    }
+
+    return Response(content=response.content, status_code=200, headers=headers)
+
+@app.get('/bg3', status_code=status.HTTP_200_OK)
+async def task_image():
+    async with AsyncClient() as client:
+        response = await client.get('https://web-student.inter-nation.uz/images/lesson/bg3.png')
+
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "image/png"
+    }
+
+    return Response(content=response.content, status_code=200, headers=headers)
 
 app.include_router(student_router, prefix='/student', tags=['Student Routers'])
 app.include_router(teacher_router, prefix='/teacher')

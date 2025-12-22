@@ -1,1234 +1,411 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--<meta charset="UTF-8">-->
-<!--<title>Admin – Murphy Exercises</title>-->
-<!--<style>-->
-<!--    body { font-family: Arial; max-width: 800px; margin: 20px auto; }-->
-<!--    textarea, input, select { width: 100%; padding: 8px; margin-top: 8px; }-->
-<!--    .box { border: 1px solid #ccc; padding: 15px; border-radius: 6px; margin-top: 20px; }-->
-<!--    .q { margin-bottom: 10px; }-->
-<!--</style>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<h2>➕ Create Murphy Exercise</h2>-->
-
-<!--<div class="box">-->
-<!--    <label>Exercise Type</label>-->
-<!--    <select id="type">-->
-<!--        <option value="choose">Choose the correct alternative</option>-->
-<!--        <option value="match">Match the beginning with the ending</option>-->
-<!--        <option value="fill_from_box">Complete with verbs from box</option>-->
-<!--        <option value="put_in_form">Put the verbs in correct form</option>-->
-<!--    </select>-->
-
-<!--    <label>Condition / Description</label>-->
-<!--    <textarea id="condition" rows="3"></textarea>-->
-
-<!--    <div id="dynamic-area"></div>-->
-
-<!--    <button onclick="addQuestion()" style="margin-top:10px;">+ Add Question</button>-->
-
-<!--    <h3>JSON Preview</h3>-->
-<!--    <pre id="json" style="background:#f5f5f5; padding:10px;"></pre>-->
-
-<!--    <button onclick="generateJSON()" style="margin-top:10px;">Save</button>-->
-<!--</div>-->
-
-<!--<script>-->
-<!--let questions = [];-->
-
-<!--function renderUI() {-->
-<!--    const type = document.getElementById("type").value;-->
-<!--    const area = document.getElementById("dynamic-area");-->
-
-<!--    area.innerHTML = "";-->
-<!--    questions = [];-->
-
-<!--    addQuestion();-->
-<!--}-->
-
-<!--function addQuestion() {-->
-<!--    const type = document.getElementById("type").value;-->
-<!--    const area = document.getElementById("dynamic-area");-->
-
-<!--    let index = questions.length;-->
-<!--    questions.push({});-->
-
-<!--    let html = "";-->
-
-<!--    if (type === "choose") {-->
-<!--        html = `-->
-<!--        <div class='q'>-->
-<!--            <label>Sentence ${index+1}</label>-->
-<!--            <textarea class='sentence' rows="2"></textarea>-->
-
-<!--            <label>Options (comma separated)</label>-->
-<!--            <input type='text' class='options' placeholder="has been, was">-->
-
-<!--            <label>Correct Answer</label>-->
-<!--            <input type='text' class='answer' placeholder="has been">-->
-<!--        </div>`;-->
-<!--    }-->
-
-<!--    if (type === "match") {-->
-<!--        html = `-->
-<!--        <div class='q'>-->
-<!--            <label>Left side (${index+1})</label>-->
-<!--            <input class='left'>-->
-
-<!--            <label>Right side options (comma separated)</label>-->
-<!--            <input class='right' placeholder="in 2018, since January">-->
-
-<!--            <label>Correct match key</label>-->
-<!--            <input class='answer' placeholder="in 2018">-->
-<!--        </div>`;-->
-<!--    }-->
-
-<!--    if (type === "fill_from_box") {-->
-<!--        html = `-->
-<!--        <div class='q'>-->
-<!--            <label>Sentence ${index+1}</label>-->
-<!--            <textarea class='sentence' rows="2"></textarea>-->
-
-<!--            <label>Correct Answer</label>-->
-<!--            <input type='text' class='answer' placeholder="has been">-->
-<!--        </div>`;-->
-<!--    }-->
-
-<!--    if (type === "put_in_form") {-->
-<!--        html = `-->
-<!--        <div class='q'>-->
-<!--            <label>Sentence ${index+1}</label>-->
-<!--            <textarea class='sentence' rows="2"></textarea>-->
-
-<!--            <label>Correct Answer</label>-->
-<!--            <input type='text' class='answer'>-->
-<!--        </div>`;-->
-<!--    }-->
-
-<!--    area.innerHTML += html;-->
-<!--}-->
-
-<!--function generateJSON() {-->
-<!--    const type = document.getElementById("type").value;-->
-<!--    const condition = document.getElementById("condition").value;-->
-
-<!--    const qDivs = document.querySelectorAll(".q");-->
-
-<!--    let list = [];-->
-
-<!--    qDivs.forEach(q => {-->
-<!--        if (type === "choose") {-->
-<!--            list.push({-->
-<!--                sentence: q.querySelector(".sentence").value,-->
-<!--                options: q.querySelector(".options").value.split(",").map(s=>s.trim()),-->
-<!--                answer: q.querySelector(".answer").value.trim()-->
-<!--            });-->
-<!--        }-->
-
-<!--        if (type === "match") {-->
-<!--            list.push({-->
-<!--                left: q.querySelector(".left").value,-->
-<!--                right_options: q.querySelector(".right").value.split(",").map(s=>s.trim()),-->
-<!--                answer: q.querySelector(".answer").value.trim()-->
-<!--            });-->
-<!--        }-->
-
-<!--        if (type === "fill_from_box") {-->
-<!--            list.push({-->
-<!--                sentence: q.querySelector(".sentence").value,-->
-<!--                answer: q.querySelector(".answer").value-->
-<!--            });-->
-<!--        }-->
-
-<!--        if (type === "put_in_form") {-->
-<!--            list.push({-->
-<!--                sentence: q.querySelector(".sentence").value,-->
-<!--                answer: q.querySelector(".answer").value-->
-<!--            });-->
-<!--        }-->
-<!--    });-->
-
-<!--    let finalJSON = {-->
-<!--        type: type,-->
-<!--        condition: condition,-->
-<!--        items: list-->
-<!--    };-->
-
-<!--    document.getElementById("json").textContent = JSON.stringify(finalJSON, null, 4);-->
-<!--    console.log(finalJSON);-->
-<!--}-->
-<!--renderUI();-->
-<!--document.getElementById("type").onchange = renderUI;-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Admin – Murphy Exercises</title>
-<style>
-    body { font-family: Arial; max-width: 800px; margin: 20px auto; }
-    textarea, input, select { width: 100%; padding: 8px; margin-top: 8px; }
-    .box { border: 1px solid #ccc; padding: 15px; border-radius: 6px; margin-top: 20px; }
-    .q { margin-bottom: 10px; }
-</style>
-</head>
-<body>
-
-<h2>➕ Create Murphy Exercise</h2>
-
-<div class="box">
-    <label>Exercise Type</label>
-    <select id="type">
-        <option value="choose">Choose the correct alternative</option>
-        <option value="match">Match the beginning with the ending</option>
-        <option value="fill_from_box">Complete with verbs from box</option>
-        <option value="put_in_form">Put the verbs in correct form</option>
-    </select>
-
-    <label>Condition / Description</label>
-    <textarea id="condition" rows="3"></textarea>
-
-    <div id="dynamic-area"></div>
-
-    <button onclick="addQuestion()" style="margin-top:10px;">+ Add Question</button>
-
-    <h3>JSON Preview</h3>
-    <pre id="json" style="background:#f5f5f5; padding:10px;"></pre>
-
-    <button onclick="generateJSON()" style="margin-top:10px;">Save</button>
-</div>
-
-<script>
-let questions = [];
-
-function renderUI() {
-    const type = document.getElementById("type").value;
-    const area = document.getElementById("dynamic-area");
-
-    area.innerHTML = "";
-    questions = [];
-
-    addQuestion();
-}
-
-function addQuestion() {
-    const type = document.getElementById("type").value;
-    const area = document.getElementById("dynamic-area");
-
-    let index = questions.length;
-    questions.push({});
-
-    let html = "";
-
-    // ===============================
-    // MULTI-ANSWER CHOOSE MODE
-    // ===============================
-    if (type === "choose") {
-        html = `
-        <div class='q'>
-            <label>Sentence ${index+1}</label>
-            <textarea class='sentence' rows="2" oninput="generateAnswerFields(this, ${index})"></textarea>
-
-            <div class="answers-area" id="answers-area-${index}"></div>
-        </div>`;
-    }
-
-    // ===============================
-    // OTHER TYPES REMAIN SAME
-    // ===============================
-    if (type === "match") {
-        html = `
-        <div class='q'>
-            <label>Left side (${index+1})</label>
-            <input class='left'>
-
-            <label>Right side options (comma separated)</label>
-            <input class='right' placeholder="in 2018, since January">
-
-            <label>Correct match key</label>
-            <input class='answer' placeholder="in 2018">
-        </div>`;
-    }
-
-    if (type === "fill_from_box") {
-        html = `
-        <div class='q'>
-            <label>Sentence ${index+1}</label>
-            <textarea class='sentence' rows="2"></textarea>
-
-            <label>Correct Answer</label>
-            <input type='text' class='answer' placeholder="has been">
-        </div>`;
-    }
-
-    if (type === "put_in_form") {
-        html = `
-        <div class='q'>
-            <label>Sentence ${index+1}</label>
-            <textarea class='sentence' rows="2"></textarea>
-
-            <label>Correct Answer</label>
-            <input type='text' class='answer'>
-        </div>`;
-    }
-
-    area.innerHTML += html;
-}
-
-
-// =======================================================
-// AUTO-GENERATE MULTIPLE ANSWERS FOR EACH {%answer%}
-// =======================================================
-function generateAnswerFields(textarea, index) {
-    const container = document.getElementById(`answers-area-${index}`);
-    const sentence = textarea.value;
-
-    const matches = sentence.match(/{%answer%}/g) || [];
-
-    container.innerHTML = "";
-
-    matches.forEach((m, i) => {
-        container.innerHTML += `
-            <div style="border:1px solid #ddd; padding:10px; margin-top:10px;">
-                <label>Options for answer ${i+1} (comma separated)</label>
-                <input type='text' class='options-${index}' data-ans="${i}" placeholder="Dear, Hola, Privet">
-
-                <label>Correct answer ${i+1}</label>
-                <input type='text' class='answer-${index}' data-ans="${i}" placeholder="Dear">
-            </div>
-        `;
-    });
-}
-
-
-// =======================================================
-// JSON GENERATOR (PRO VERSION – Variant B)
-// =======================================================
-function generateJSON() {
-    const type = document.getElementById("type").value;
-    const condition = document.getElementById("condition").value;
-
-    const qDivs = document.querySelectorAll(".q");
-
-    let list = [];
-
-    qDivs.forEach((q, idx) => {
-
-        if (type === "choose") {
-            let sentence = q.querySelector(".sentence").value;
-
-            let answerObjects = [];
-
-            // Collect options + correct answers
-            const allOptions = q.querySelectorAll(`.options-${idx}`);
-            const allAnswers = q.querySelectorAll(`.answer-${idx}`);
-
-            allOptions.forEach((opt, i) => {
-                answerObjects.push({
-                    options: opt.value.split(",").map(v => v.trim()),
-                    answer: allAnswers[i].value.trim()
-                });
-            });
-
-            list.push({
-                sentence: sentence,
-                answers: answerObjects
-            });
-        }
-
-        if (type === "match") {
-            list.push({
-                left: q.querySelector(".left").value,
-                right_options: q.querySelector(".right").value.split(",").map(s=>s.trim()),
-                answer: q.querySelector(".answer").value.trim()
-            });
-        }
-
-        if (type === "fill_from_box") {
-            list.push({
-                sentence: q.querySelector(".sentence").value,
-                answer: q.querySelector(".answer").value
-            });
-        }
-
-        if (type === "put_in_form") {
-            list.push({
-                sentence: q.querySelector(".sentence").value,
-                answer: q.querySelector(".answer").value
-            });
-        }
-    });
-
-    let finalJSON = {
-        type: type,
-        condition: condition,
-        items: list
-    };
-
-    document.getElementById("json").textContent = JSON.stringify(finalJSON, null, 4);
-}
-
-renderUI();
-document.getElementById("type").onchange = renderUI;
-
-</script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="uz">
-<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Quick Alternative Builder</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f0f2f5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px 30px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .header p {
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: "";
-            width: 6px;
-            height: 20px;
-            background: #667eea;
-            border-radius: 3px;
-        }
-
-        .sentence-area {
-            width: 100%;
-            min-height: 120px;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            line-height: 1.6;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .sentence-area:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .selected-word-tooltip {
-            position: absolute;
-            background: #333;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 1000;
-            white-space: nowrap;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.2s;
-        }
-
-        .selected-word-tooltip.show {
-            opacity: 1;
-            transform: translateY(-20px);
-        }
-
-        .options-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .options-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .options-hint {
-            font-size: 13px;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .answers-section {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .answer-item {
-            background: white;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .answer-word {
-            font-weight: 600;
-            color: #667eea;
-            background: #f0f3ff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-
-        .answer-options {
-            flex-grow: 1;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .delete-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .delete-btn:hover {
-            background: #ff3742;
-        }
-
-        .preview-area {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            line-height: 1.8;
-            font-size: 16px;
-        }
-
-        .answer-blank {
-            display: inline-block;
-            background: #fff3cd;
-            border: 2px dashed #ffc107;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin: 0 2px;
-            font-weight: 600;
-            color: #856404;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e1e5e9;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5a6fd8;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Choose the correct alternative</title>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Quick Alternative Builder</h1>
-            <p>So'zni belgilang → Make it Answer → Options yozing → Save</p>
-        </div>
-
-        <div class="content">
-            <!-- 1. Gap kiritish -->
-            <div class="section">
-                <div class="section-title">1. Gapni kiriting</div>
-                <textarea
-                    id="sentenceInput"
-                    class="sentence-area"
-                    placeholder="Hello. My name is Ibrohim, and I am 16 years old."
-                ></textarea>
-            </div>
-
-            <!-- 2. So'z tanlash uchun ko'rsatma -->
-            <div class="section">
-                <div class="section-title">2. So'zni tanlang</div>
-                <p style="color: #666; margin-bottom: 10px;">Gapdagi istalgan so'zni sichqoncha bilan belgilang va "Make it Answer" tugmasini bosing</p>
-            </div>
-
-            <!-- 3. Options kiritish (faqat tanlangan so'z uchun) -->
-            <div class="section" id="optionsSection" style="display: none;">
-                <div class="section-title">3. Options yozing</div>
-                <div style="margin-bottom: 15px;">
-                    <strong>Tanlangan so'z: </strong>
-                    <span id="selectedWordDisplay" style="color: #667eea; font-weight: 600;"></span>
-                </div>
-                <input
-                    type="text"
-                    id="optionsInput"
-                    class="options-input"
-                    placeholder="is, am, are, was, were"
-                >
-                <div class="options-hint">
-                    Options larni vergul (,) bilan ajratib yozing. Birinchi option avtomatik to'g'ri javob hisoblanadi.
-                </div>
-                <div style="margin-top: 15px; display: flex; gap: 10px;">
-                    <button id="saveOptionsBtn" class="btn btn-success">Save Options</button>
-                    <button id="cancelOptionsBtn" class="btn btn-secondary">Cancel</button>
-                </div>
-            </div>
-
-            <!-- 4. Qo'shilgan answers -->
-            <div class="answers-section" id="answersSection" style="display: none;">
-                <div class="section-title">Qo'shilgan Answers</div>
-                <div id="answersList"></div>
-            </div>
-
-            <!-- 5. Preview -->
-            <div class="preview-area" id="previewArea">
-                <strong>Preview: </strong>
-                <span id="previewText">Gapni kiriting va so'z belgilang</span>
-            </div>
-
-            <!-- 6. Actions -->
-            <div class="actions">
-                <button id="previewJsonBtn" class="btn btn-secondary">JSON ni ko'rish</button>
-                <button id="saveAllBtn" class="btn btn-primary">Savolni Saqlash</button>
-            </div>
-        </div>
+<div class="questions" style="display: none;">
+    <div class="question">
+        <input type="text">
+        <button class="option-btn">+ Add option</button>
     </div>
-
-    <!-- Tooltip (faqat ko'rsatish uchun) -->
-    <div id="tooltip" class="selected-word-tooltip">Make it Answer</div>
-
-    <script>
-        // Asosiy o'zgaruvchilar
-        let selectedText = '';
-        let selectedWord = '';
-        let selectedRange = null;
-        let answers = [];
-
-        // DOM elementlari
-        const sentenceInput = document.getElementById('sentenceInput');
-        const optionsSection = document.getElementById('optionsSection');
-        const optionsInput = document.getElementById('optionsInput');
-        const selectedWordDisplay = document.getElementById('selectedWordDisplay');
-        const answersSection = document.getElementById('answersSection');
-        const answersList = document.getElementById('answersList');
-        const previewText = document.getElementById('previewText');
-        const tooltip = document.getElementById('tooltip');
-
-        // Gap tanlash hodisasi
-        sentenceInput.addEventListener('mouseup', function(e) {
-            setTimeout(() => {
-                const selection = window.getSelection();
-                selectedText = selection.toString().trim();
-
-                // Agar so'z tanlangan bo'lsa
-                if (selectedText && selectedText.length < 50 && !selectedText.includes('\n')) {
-                    selectedWord = selectedText;
-                    const range = selection.getRangeAt(0);
-                    selectedRange = range;
-
-                    // Tooltip ko'rsatish
-                    const rect = range.getBoundingClientRect();
-                    tooltip.style.left = rect.left + rect.width/2 + 'px';
-                    tooltip.style.top = rect.top + 'px';
-                    tooltip.textContent = `Make it Answer: "${selectedText}"`;
-                    tooltip.classList.add('show');
-
-                    // 3 soniyadan keyin tooltip yashirish
-                    setTimeout(() => {
-                        tooltip.classList.remove('show');
-                    }, 3000);
-
-                    // Options panelini ko'rsatish
-                    showOptionsPanel();
-                } else {
-                    // Hech narsa tanlanmagan bo'lsa
-                    tooltip.classList.remove('show');
-                }
-            }, 10);
-        });
-
-        // Document bosilganda tooltip yashirish
-        document.addEventListener('mousedown', function(e) {
-            if (!tooltip.contains(e.target)) {
-                tooltip.classList.remove('show');
-            }
-        });
-
-        // Options panelini ko'rsatish
-        function showOptionsPanel() {
-            selectedWordDisplay.textContent = selectedWord;
-            optionsInput.value = selectedWord + ', '; // Avtomatik to'g'ri javobni qo'yish
-            optionsInput.focus();
-            optionsSection.style.display = 'block';
-
-            // Scroll qilish
-            optionsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Options ni saqlash
-        document.getElementById('saveOptionsBtn').addEventListener('click', saveOptions);
-
-        // Options ni bekor qilish
-        document.getElementById('cancelOptionsBtn').addEventListener('click', function() {
-            optionsSection.style.display = 'none';
-            selectedText = '';
-            selectedWord = '';
-        });
-
-        // Options ni saqlash funksiyasi
-        function saveOptions() {
-            const optionsText = optionsInput.value.trim();
-            if (!optionsText) {
-                alert('Options lar kiriting!');
-                return;
-            }
-
-            // Options larni ajratish
-            const options = optionsText.split(',')
-                .map(opt => opt.trim())
-                .filter(opt => opt.length > 0);
-
-            if (options.length < 2) {
-                alert('Kamida 2 ta option kiriting!');
-                return;
-            }
-
-            // Answer obyektini yaratish
-            const answerObj = {
-                word: selectedWord,
-                answer: options[0], // Birinchi option to'g'ri javob
-                options: [...options].sort(() => Math.random() - 0.5), // Aralashtirish
-                position: getWordPosition(selectedWord)
-            };
-
-            // Avvalgi answer ni yangilash yoki yangi qo'shish
-            const existingIndex = answers.findIndex(a => a.word === selectedWord);
-            if (existingIndex !== -1) {
-                answers[existingIndex] = answerObj;
-            } else {
-                answers.push(answerObj);
-            }
-
-            // UI ni yangilash
-            updateAnswersList();
-            updatePreview();
-            hideOptionsPanel();
-
-            alert(`"${selectedWord}" uchun options saqlandi!`);
-        }
-
-        // So'zning gapdagi pozitsiyasini olish
-        function getWordPosition(word) {
-            const text = sentenceInput.value;
-            const regex = new RegExp(`\\b${word}\\b`, 'g');
-            const positions = [];
-            let match;
-
-            while ((match = regex.exec(text)) !== null) {
-                positions.push(match.index);
-            }
-
-            return positions;
-        }
-
-        // Options panelini yashirish
-        function hideOptionsPanel() {
-            optionsSection.style.display = 'none';
-            selectedText = '';
-            selectedWord = '';
-            optionsInput.value = '';
-        }
-
-        // Answers ro'yxatini yangilash
-        function updateAnswersList() {
-            if (answers.length === 0) {
-                answersSection.style.display = 'none';
-                return;
-            }
-
-            answersSection.style.display = 'block';
-            answersList.innerHTML = '';
-
-            answers.forEach((answer, index) => {
-                const answerEl = document.createElement('div');
-                answerEl.className = 'answer-item';
-                answerEl.innerHTML = `
-                    <div style="display: flex; align-items: center;">
-                        <span class="answer-word">${answer.word}</span>
-                        <span class="answer-options">Options: ${answer.options.join(', ')}</span>
-                    </div>
-                    <button class="delete-btn" data-index="${index}">Delete</button>
-                `;
-                answersList.appendChild(answerEl);
-            });
-
-            // Delete tugmalariga event qo'shish
-            answersList.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    answers.splice(index, 1);
-                    updateAnswersList();
-                    updatePreview();
-                });
-            });
-        }
-
-        // Preview ni yangilash
-        function updatePreview() {
-            let preview = sentenceInput.value || 'Gapni kiriting va so\'z belgilang';
-
-            // Har bir answer ni blank bilan almashtirish
-            answers.forEach(answer => {
-                const regex = new RegExp(`\\b${answer.word}\\b`, 'g');
-                preview = preview.replace(regex, '<span class="answer-blank">______</span>');
-            });
-
-            previewText.innerHTML = preview;
-        }
-
-        // Gap o'zgarganda preview ni yangilash
-        sentenceInput.addEventListener('input', updatePreview);
-
-        // JSON preview
-        document.getElementById('previewJsonBtn').addEventListener('click', function() {
-            if (!sentenceInput.value.trim()) {
-                alert('Avval gap kiriting!');
-                return;
-            }
-
-            const questionData = {
-                sentence: sentenceInput.value,
-                displaySentence: getDisplaySentence(),
-                answers: answers,
-                createdAt: new Date().toISOString()
-            };
-
-            alert('JSON console ga yozildi! F12 bosing va Console ni oching.');
-            console.log('Question JSON:', JSON.stringify(questionData, null, 2));
-        });
-
-        // Display sentence ni olish
-        function getDisplaySentence() {
-            let display = sentenceInput.value;
-
-            answers.forEach(answer => {
-                const regex = new RegExp(`\\b${answer.word}\\b`, 'g');
-                display = display.replace(regex, '{%answer%}');
-            });
-
-            return display;
-        }
-
-        // Yakuniy saqlash
-        document.getElementById('saveAllBtn').addEventListener('click', function() {
-            if (!sentenceInput.value.trim()) {
-                alert('Gapni kiriting!');
-                return;
-            }
-
-            if (answers.length === 0) {
-                alert('Kamida bitta so\'zni answer qiling!');
-                return;
-            }
-
-            const questionData = {
-                id: Date.now(),
-                sentence: sentenceInput.value,
-                displaySentence: getDisplaySentence(),
-                answers: answers,
-                type: 'choose_correct_alternative',
-                createdAt: new Date().toISOString()
-            };
-
-            // LocalStorage ga saqlash
-            let allQuestions = JSON.parse(localStorage.getItem('questions') || '[]');
-            allQuestions.push(questionData);
-            localStorage.setItem('questions', JSON.stringify(allQuestions));
-
-            // Xabar berish
-            alert(`Savol saqlandi!\n\nJami ${allQuestions.length} ta savol bor.`);
-
-            // Tozalash
-            sentenceInput.value = '';
-            answers = [];
-            updateAnswersList();
-            updatePreview();
-            hideOptionsPanel();
-        });
-
-        // Dastlabki preview
-        updatePreview();
-    </script>
+</div>
+<button class="btn">+ Add question</button>
 </body>
+<script>
+    const btn = document.querySelector('.btn');
+    const addOptionBtn = document.querySelector('.option-btn');
+    const questionsDiv = document.querySelector('.questions');
+    btn.addEventListener('click', () => {
+    console.log('C')
+        questionsDiv.style.display = 'block'
+    })
+</script>
 </html>
-
 <!--<!DOCTYPE html>-->
 <!--<html lang="en">-->
 <!--<head>-->
-<!--<meta charset="UTF-8">-->
-<!--<title>Murphy Exercise Admin (Test Version)</title>-->
-<!--<style>-->
-<!--    body { font-family: Arial; padding: 20px; max-width: 900px; margin: auto; }-->
-<!--    textarea, input, select { width: 100%; margin: 5px 0; padding: 6px; }-->
-<!--    .q { border: 1px solid #ccc; padding: 10px; margin: 10px 0; border-radius: 5px; }-->
-<!--</style>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--<h2>Murphy Exercises – Test Admin Panel</h2>-->
-
-<!--<label>Exercise Type</label>-->
-<!--<select id="type">-->
-<!--    <option value="choose">Choose the correct alternative</option>-->
-<!--    <option value="match">Match A to B</option>-->
-<!--    <option value="fill_from_box">Fill from Box</option>-->
-<!--    <option value="put_in_form">Put in correct form</option>-->
-<!--    <option value="rewrite">Rewrite sentence</option>-->
-<!--    <option value="error_correction">Error correction</option>-->
-<!--    <option value="word_order">Word order</option>-->
-<!--    <option value="prepositions">Fill prepositions</option>-->
-<!--    <option value="true_false">True/False</option>-->
-<!--    <option value="multiple_answers">Choose all correct options</option>-->
-<!--    <option value="fill_blank_multi">Multiple blanks</option>-->
-<!--    <option value="matching_table">Matching table</option>-->
-<!--    <option value="question_answer">Short question answer</option>-->
-<!--    <option value="complete_sentence">Complete sentence</option>-->
-<!--    <option value="choose_correct_sentence">Choose correct sentence</option>-->
-<!--    <option value="transform">Transform sentence</option>-->
-<!--</select>-->
-
-<!--<label>Description / Condition</label>-->
-<!--<textarea id="condition" rows="3"></textarea>-->
-
-<!--<div id="dynamic"></div>-->
-
-<!--<button onclick="addQuestion()">+ Add Question</button>-->
-
-<!--<h3>JSON Preview</h3>-->
-<!--<pre id="json" style="background:#eee; padding:10px;"></pre>-->
-
-<!--<button onclick="generateJSON()">Generate JSON</button>-->
-
-<!--<script>-->
-<!--let questions = [];-->
-
-<!--document.getElementById("type").onchange = () => {-->
-<!--    questions = [];-->
-<!--    document.getElementById("dynamic").innerHTML = "";-->
-<!--};-->
-
-<!--function addQuestion() {-->
-<!--    const type = document.getElementById("type").value;-->
-<!--    const index = questions.length;-->
-<!--    const box = document.getElementById("dynamic");-->
-
-<!--    let html = `<div class='q'>`;-->
-
-<!--    // 1) choose-->
-<!--    if (type === "choose") {-->
-<!--        html += `-->
-<!--            <label>Sentence</label>-->
-<!--            <textarea class="sentence"></textarea>-->
-
-<!--            <label>Options (comma separated)</label>-->
-<!--            <input class="options">-->
-
-<!--            <label>Answer</label>-->
-<!--            <input class="answer">-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 2) match-->
-<!--    if (type === "match") {-->
-<!--        html += `-->
-<!--            <label>Left</label>-->
-<!--            <input class="left">-->
-
-<!--            <label>Right Options (comma separated)</label>-->
-<!--            <input class="right">-->
-
-<!--            <label>Correct Match</label>-->
-<!--            <input class="answer">-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 3) fill_from_box-->
-<!--    if (type === "fill_from_box") {-->
-<!--        html += `-->
-<!--            <label>Sentence</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Answer</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 4) put_in_form-->
-<!--    if (type === "put_in_form") {-->
-<!--        html += `-->
-<!--            <label>Sentence</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Correct form</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 5) rewrite-->
-<!--    if (type === "rewrite") {-->
-<!--        html += `-->
-<!--            <label>Original sentence</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Rewritten answer</label>-->
-<!--            <textarea class='answer'></textarea>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 6) error_correction-->
-<!--    if (type === "error_correction") {-->
-<!--        html += `-->
-<!--            <label>Incorrect sentence</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Corrected version</label>-->
-<!--            <textarea class='answer'></textarea>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 7) word_order-->
-<!--    if (type === "word_order") {-->
-<!--        html += `-->
-<!--            <label>Words (scrambled)</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Correct order</label>-->
-<!--            <textarea class='answer'></textarea>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 8) prepositions-->
-<!--    if (type === "prepositions") {-->
-<!--        html += `-->
-<!--            <label>Sentence</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Correct preposition</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 9) true_false-->
-<!--    if (type === "true_false") {-->
-<!--        html += `-->
-<!--            <label>Statement</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Answer (true/false)</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 10) multiple_answers-->
-<!--    if (type === "multiple_answers") {-->
-<!--        html += `-->
-<!--            <label>Sentence</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Options (comma separated)</label>-->
-<!--            <input class='options'>-->
-<!--            <label>Correct answers (comma separated)</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 11) fill_blank_multi-->
-<!--    if (type === "fill_blank_multi") {-->
-<!--        html += `-->
-<!--            <label>Sentence with ___ blanks</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Answers (comma separated)</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 12) matching_table-->
-<!--    if (type === "matching_table") {-->
-<!--        html += `-->
-<!--            <label>Left item</label>-->
-<!--            <input class='left'>-->
-<!--            <label>Right item</label>-->
-<!--            <input class='right'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 13) question_answer-->
-<!--    if (type === "question_answer") {-->
-<!--        html += `-->
-<!--            <label>Question</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Answer</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 14) complete_sentence-->
-<!--    if (type === "complete_sentence") {-->
-<!--        html += `-->
-<!--            <label>Sentence start</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Completion</label>-->
-<!--            <textarea class='answer'></textarea>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 15) choose_correct_sentence-->
-<!--    if (type === "choose_correct_sentence") {-->
-<!--        html += `-->
-<!--            <label>Option A</label>-->
-<!--            <textarea class='optionA'></textarea>-->
-<!--            <label>Option B</label>-->
-<!--            <textarea class='optionB'></textarea>-->
-<!--            <label>Correct (A/B)</label>-->
-<!--            <input class='answer'>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    // 16) transform-->
-<!--    if (type === "transform") {-->
-<!--        html += `-->
-<!--            <label>Original</label>-->
-<!--            <textarea class='sentence'></textarea>-->
-<!--            <label>Transformed</label>-->
-<!--            <textarea class='answer'></textarea>-->
-<!--        `;-->
-<!--    }-->
-
-<!--    html += `</div>`;-->
-<!--    box.innerHTML += html;-->
-<!--    questions.push({});-->
-<!--}-->
-
-<!--function generateJSON() {-->
-<!--    const type = document.getElementById("type").value;-->
-<!--    const condition = document.getElementById("condition").value;-->
-<!--    const boxes = document.querySelectorAll(".q");-->
-
-<!--    let items = [];-->
-
-<!--    boxes.forEach(q => {-->
-<!--        let obj = {};-->
-
-<!--        if (q.querySelector(".sentence")) obj.sentence = q.querySelector(".sentence").value;-->
-<!--        if (q.querySelector(".options")) obj.options = q.querySelector(".options").value.split(",").map(s=>s.trim());-->
-<!--        if (q.querySelector(".left")) obj.left = q.querySelector(".left").value;-->
-<!--        if (q.querySelector(".right")) obj.right = q.querySelector(".right").value.split(",").map(s=>s.trim());-->
-<!--        if (q.querySelector(".optionA")) obj.optionA = q.querySelector(".optionA").value;-->
-<!--        if (q.querySelector(".optionB")) obj.optionB = q.querySelector(".optionB").value;-->
-<!--        if (q.querySelector(".answer")) {-->
-<!--            let ans = q.querySelector(".answer").value;-->
-<!--            if (ans.includes(",")) ans = ans.split(",").map(s=>s.trim());-->
-<!--            obj.answer = ans;-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Exercise Creator</title>-->
+<!--    <style>-->
+<!--        .container {-->
+<!--            max-width: 1200px;-->
+<!--            margin: 0 auto;-->
+<!--            background: white;-->
+<!--            border-radius: 15px;-->
+<!--            box-shadow: 0 20px 60px rgba(0,0,0,0.3);-->
+<!--            overflow: hidden;-->
 <!--        }-->
 
-<!--        items.push(obj);-->
-<!--    });-->
+<!--        .header {-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--            padding: 25px;-->
+<!--            text-align: center;-->
+<!--        }-->
 
-<!--    const finalJSON = {-->
-<!--        type: type,-->
-<!--        condition: condition,-->
-<!--        items: items-->
-<!--    };-->
+<!--        .header h1 {-->
+<!--            font-size: 2.5rem;-->
+<!--            margin-bottom: 10px;-->
+<!--        }-->
 
-<!--    document.getElementById("json").textContent = JSON.stringify(finalJSON, null, 4);-->
-<!--}-->
-<!--</script>-->
+<!--        .main-content {-->
+<!--            display: flex;-->
+<!--            min-height: 70vh;-->
+<!--        }-->
 
+<!--        .editor-panel {-->
+<!--            flex: 1;-->
+<!--            padding: 30px;-->
+<!--            border-right: 2px solid #f0f0f0;-->
+<!--        }-->
+
+<!--        .preview-panel {-->
+<!--            flex: 1;-->
+<!--            padding: 30px;-->
+<!--            background: #f8f9fa;-->
+<!--        }-->
+
+<!--        .form-group {-->
+<!--            margin-bottom: 25px;-->
+<!--        }-->
+
+<!--        label {-->
+<!--            display: block;-->
+<!--            margin-bottom: 8px;-->
+<!--            font-weight: 600;-->
+<!--            color: #333;-->
+<!--        }-->
+
+<!--        input, textarea, select {-->
+<!--            width: 100%;-->
+<!--            padding: 12px;-->
+<!--            border: 2px solid #ddd;-->
+<!--            border-radius: 8px;-->
+<!--            font-size: 16px;-->
+<!--            transition: border-color 0.3s;-->
+<!--        }-->
+
+<!--        input:focus, textarea:focus, select:focus {-->
+<!--            border-color: #667eea;-->
+<!--            outline: none;-->
+<!--        }-->
+
+<!--        textarea {-->
+<!--            min-height: 100px;-->
+<!--            resize: vertical;-->
+<!--        }-->
+
+<!--        .options-container {-->
+<!--            background: #f8f9fa;-->
+<!--            padding: 15px;-->
+<!--            border-radius: 8px;-->
+<!--            margin-top: 10px;-->
+<!--        }-->
+
+<!--        .option-input {-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 10px;-->
+<!--        }-->
+
+<!--        .option-input input {-->
+<!--            flex: 1;-->
+<!--            margin-right: 10px;-->
+<!--        }-->
+
+<!--        .btn {-->
+<!--            padding: 12px 24px;-->
+<!--            border: none;-->
+<!--            border-radius: 8px;-->
+<!--            font-size: 16px;-->
+<!--            font-weight: 600;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.3s;-->
+<!--            display: inline-flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--        }-->
+
+<!--        .btn-primary {-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .btn-primary:hover {-->
+<!--            transform: translateY(-2px);-->
+<!--            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);-->
+<!--        }-->
+
+<!--        .btn-danger {-->
+<!--            background: #ff4757;-->
+<!--            color: white;-->
+<!--            margin-left: 10px;-->
+<!--        }-->
+
+<!--        .btn-success {-->
+<!--            background: #2ed573;-->
+<!--            color: white;-->
+<!--            margin-left: 10px;-->
+<!--        }-->
+
+<!--        .exercise-item {-->
+<!--            background: white;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 10px;-->
+<!--            margin-bottom: 15px;-->
+<!--            box-shadow: 0 5px 15px rgba(0,0,0,0.05);-->
+<!--            border-left: 4px solid #667eea;-->
+<!--        }-->
+
+<!--        .exercise-title {-->
+<!--            font-weight: 600;-->
+<!--            color: #333;-->
+<!--            margin-bottom: 10px;-->
+<!--        }-->
+
+<!--        .exercise-options {-->
+<!--            color: #666;-->
+<!--            font-size: 14px;-->
+<!--        }-->
+
+<!--        .action-buttons {-->
+<!--            display: flex;-->
+<!--            gap: 10px;-->
+<!--            margin-top: 20px;-->
+<!--        }-->
+
+<!--        .preview {-->
+<!--            background: white;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 10px;-->
+<!--            box-shadow: 0 5px 15px rgba(0,0,0,0.05);-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+
+<!--        .correct-answer {-->
+<!--            color: #2ed573;-->
+<!--            font-weight: 600;-->
+<!--        }-->
+
+<!--        .json-output {-->
+<!--            background: #1e1e1e;-->
+<!--            color: #d4d4d4;-->
+<!--            padding: 15px;-->
+<!--            border-radius: 8px;-->
+<!--            font-family: monospace;-->
+<!--            font-size: 14px;-->
+<!--            overflow-x: auto;-->
+<!--            white-space: pre-wrap;-->
+<!--            word-wrap: break-word;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div class="container">-->
+<!--        <div class="header">-->
+<!--            <h1>📝 Exercise Creator</h1>-->
+<!--            <p>Create interactive grammar exercises with ease</p>-->
+<!--        </div>-->
+
+<!--        <div class="main-content">-->
+<!--            <div class="editor-panel">-->
+<!--                <h2>Create New Exercise</h2>-->
+
+<!--                <div class="form-group">-->
+<!--                    <label for="question">Question Text (use {%answer%} for blanks):</label>-->
+<!--                    <textarea id="question" placeholder="Example: Hello. My name {%answer%} Ibrohim."></textarea>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                    <label>Options for each blank:</label>-->
+<!--                    <div id="optionsContainer">-->
+<!--                        <div class="options-container">-->
+<!--                            <div class="option-input">-->
+<!--                                <input type="text" placeholder="Option 1" class="option">-->
+<!--                                <button type="button" class="btn btn-danger remove-option">×</button>-->
+<!--                            </div>-->
+<!--                            <div class="option-input">-->
+<!--                                <input type="text" placeholder="Option 2" class="option">-->
+<!--                                <button type="button" class="btn btn-danger remove-option">×</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <button type="button" class="btn btn-primary" id="addOptionSet">Add Another Blank's Options</button>-->
+<!--                </div>-->
+
+<!--                <div class="form-group">-->
+<!--                    <label for="correctAnswers">Correct Answers (comma separated):</label>-->
+<!--                    <input type="text" id="correctAnswers" placeholder="Example: is, am">-->
+<!--                </div>-->
+
+<!--                <div class="action-buttons">-->
+<!--                    <button class="btn btn-primary" id="addExercise">Add Exercise</button>-->
+<!--                    <button class="btn btn-success" id="generateJson">Generate JSON</button>-->
+<!--                    <button class="btn btn-danger" id="clearAll">Clear All</button>-->
+<!--                </div>-->
+
+<!--                <div id="exercisesList" class="form-group">-->
+<!--                    <h3>Added Exercises</h3>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="preview-panel">-->
+<!--                <h2>Preview & JSON Output</h2>-->
+
+<!--                <div class="preview">-->
+<!--                    <h3>Exercise Preview:</h3>-->
+<!--                    <div id="exercisePreview">-->
+<!--                        <p>Exercises will appear here...</p>-->
+<!--                    </div>-->
+<!--                    <pre id="jsonOutput"></pre>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <script>-->
+<!--        let exercises = [];-->
+<!--        let currentOptions = [[]];-->
+
+<!--        document.getElementById('addOptionSet').addEventListener('click', function() {-->
+<!--            const container = document.getElementById('optionsContainer');-->
+<!--            const newOptionSet = document.createElement('div');-->
+<!--            newOptionSet.className = 'options-container';-->
+<!--            newOptionSet.innerHTML = `-->
+<!--                <div class="option-input">-->
+<!--                    <input type="text" placeholder="Option 1" class="option">-->
+<!--                    <button type="button" class="btn btn-danger remove-option">×</button>-->
+<!--                </div>-->
+<!--                <div class="option-input">-->
+<!--                    <input type="text" placeholder="Option 2" class="option">-->
+<!--                    <button type="button" class="btn btn-danger remove-option">×</button>-->
+<!--                </div>-->
+<!--            `;-->
+<!--            container.appendChild(newOptionSet);-->
+<!--            currentOptions.push([]);-->
+<!--        });-->
+
+<!--        document.addEventListener('click', function(e) {-->
+<!--            if (e.target.classList.contains('remove-option')) {-->
+<!--                const optionInput = e.target.closest('.option-input');-->
+<!--                if (optionInput.closest('.options-container').querySelectorAll('.option-input').length > 1) {-->
+<!--                    optionInput.remove();-->
+<!--                }-->
+<!--            }-->
+<!--        });-->
+
+<!--        document.getElementById('addExercise').addEventListener('click', function() {-->
+<!--            const question = document.getElementById('question').value;-->
+<!--            const correctAnswers = document.getElementById('correctAnswers').value.split(',').map(a => a.trim());-->
+
+<!--            const optionSets = Array.from(document.querySelectorAll('.options-container')).map(set =>-->
+<!--                Array.from(set.querySelectorAll('.option')).map(input => input.value).filter(v => v)-->
+<!--            );-->
+
+<!--            if (!question || optionSets.some(set => set.length === 0) || correctAnswers.length === 0) {-->
+<!--                alert('Please fill all fields!');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            const exercise = {-->
+<!--                id: exercises.length + 1,-->
+<!--                question: question,-->
+<!--                options: optionSets.length > 1 ? optionSets : optionSets[0],-->
+<!--                correct_answers: correctAnswers-->
+<!--            };-->
+
+<!--            exercises.push(exercise);-->
+<!--            updateExercisesList();-->
+<!--            updatePreview();-->
+<!--            clearForm();-->
+<!--        });-->
+
+<!--        document.getElementById('generateJson').addEventListener('click', function() {-->
+<!--            const jsonOutput = {-->
+<!--                exercises: exercises-->
+<!--            };-->
+<!--            console.log(jsonOutput)-->
+<!--            document.getElementById('jsonOutput').textContent = JSON.stringify(jsonOutput, null, 2);-->
+<!--        });-->
+
+<!--        document.getElementById('clearAll').addEventListener('click', function() {-->
+<!--            if (confirm('Are you sure you want to clear all exercises?')) {-->
+<!--                exercises = [];-->
+<!--                updateExercisesList();-->
+<!--                updatePreview();-->
+<!--                document.getElementById('jsonOutput').textContent = JSON.stringify({exercises: []}, null, 2);-->
+<!--            }-->
+<!--        });-->
+
+<!--        function updateExercisesList() {-->
+<!--            const container = document.getElementById('exercisesList');-->
+<!--            if (exercises.length === 0) {-->
+<!--                container.innerHTML = '<h3>Added Exercises</h3><p>No exercises added yet.</p>';-->
+<!--                return;-->
+<!--            }-->
+
+<!--            container.innerHTML = '<h3>Added Exercises (' + exercises.length + ')</h3>';-->
+<!--            exercises.forEach(exercise => {-->
+<!--                const div = document.createElement('div');-->
+<!--                div.className = 'exercise-item';-->
+<!--                div.innerHTML = `-->
+<!--                    <div class="exercise-title">${exercise.id}. ${exercise.question}</div>-->
+<!--                    <div class="exercise-options">-->
+<!--                        <strong>Options:</strong> ${Array.isArray(exercise.options[0]) ?-->
+<!--                            exercise.options.map(set => '[' + set.join(', ') + ']').join(', ') :-->
+<!--                            '[' + exercise.options.join(', ') + ']'}-->
+<!--                    </div>-->
+<!--                    <div class="correct-answer">-->
+<!--                        <strong>Correct:</strong> ${exercise.correct_answers.join(', ')}-->
+<!--                    </div>-->
+<!--                `;-->
+<!--                container.appendChild(div);-->
+<!--            });-->
+<!--        }-->
+
+<!--        function updatePreview() {-->
+<!--            const container = document.getElementById('exercisePreview');-->
+<!--            if (exercises.length === 0) {-->
+<!--                container.innerHTML = '<p>Exercises will appear here...</p>';-->
+<!--                return;-->
+<!--            }-->
+
+<!--            let html = '';-->
+<!--            exercises.forEach(exercise => {-->
+<!--                let questionHtml = exercise.question;-->
+<!--                const answers = exercise.correct_answers;-->
+<!--                answers.forEach((answer, index) => {-->
+<!--                    questionHtml = questionHtml.replace('{%answer%}', `<span class="correct-answer">${answer}</span>`);-->
+<!--                });-->
+<!--                html += `<div class="exercise-item"><strong>Exercise ${exercise.id}:</strong> ${questionHtml}</div>`;-->
+<!--            });-->
+<!--            container.innerHTML = html;-->
+<!--        }-->
+
+<!--        function clearForm() {-->
+<!--            document.getElementById('question').value = '';-->
+<!--            document.getElementById('correctAnswers').value = '';-->
+<!--            document.getElementById('optionsContainer').innerHTML = `-->
+<!--                <div class="options-container">-->
+<!--                    <div class="option-input">-->
+<!--                        <input type="text" placeholder="Option 1" class="option">-->
+<!--                        <button type="button" class="btn btn-danger remove-option">×</button>-->
+<!--                    </div>-->
+<!--                    <div class="option-input">-->
+<!--                        <input type="text" placeholder="Option 2" class="option">-->
+<!--                        <button type="button" class="btn btn-danger remove-option">×</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            `;-->
+<!--            currentOptions = [[]];-->
+<!--        }-->
+
+<!--        // Initialize-->
+<!--        updateExercisesList();-->
+<!--    </script>-->
 <!--</body>-->
 <!--</html>-->

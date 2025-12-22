@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week tasks</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .header .icons {
+            display: flex;
+            gap: 10px;
+        }
+        .card {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .vocabulary {
+            background: linear-gradient(to right, #4a90e2, #50e3c2);
+        }
+        .exercises {
+            background: linear-gradient(to right, #9013fe, #bd10e0);
+        }
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .circle {
+            background-color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #f5a623;
+            font-size: 0.8em;
+            margin-right: 20px;
+        }
+        .circle .star {
+            font-size: 1.5em;
+        }
+        .info {
+            flex: 1;
+        }
+        .info h2 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .progress-bar {
+            background-color: rgba(255, 255, 255, 0.3);
+            height: 5px;
+            border-radius: 5px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .progress {
+            background-color: white;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .percentage {
+            font-size: 0.9em;
+        }
+        .dropdown {
+            font-size: 1.2em;
+            margin-left: 10px;
+        }
+        .exercises:not(.card).active {
+            width: 100%;
+            max-width: 360px;
+            height: 100px;
+            padding: 20px;
+            border-radius: 20px;
+            overflow-x: auto;
+            display: flex;
+            background: #353945;
+        }
+        .exercises:not(.card) {
+            transform: translateY(0px);
+            display: none;
+            visibility: visible;
+            whitespace: nowrap;
+        }
+
+        .vocabulary:not(.card).active {
+            width: 100%;
+            max-width: 360px;
+            height: 100px;
+            padding: 20px;
+            border-radius: 20px;
+            overflow-x: auto;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .vocabulary:not(.card) {
+            display: none;
+            background: #353945;
+        }
+
+        .exercise {
+            display: flex;
+            background-color: #23262f;
+            padding: 5px 8px 10px 17px;
+            font-size: 14px;
+            margin-right: 10px;
+            width: 146px;
+            height: 85px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            border-bottom: 0px solid transparent;
+            border-top-right-radius: 20px;
+            background-image: linear-gradient(to right, green 100%, transparent 80%);
+            background-position: bottom;
+            background-size: 100% 2px;
+            background-repeat: no-repeat;
+            transition: 1s ease;
+            user-select: none;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 id="week"></h1>
+        <div class="icons">
+            <span><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg" class="icon" color="var(--content-button-grey)"><path d="M10.869 10.8448C10.9002 10.94 10.9854 11.0045 11.0822 11.0045L20.775 11.0045C20.8992 11.0045 21 11.1092 21 11.2383L21 12.9889C21 13.118 20.8992 13.2227 20.775 13.2227L20.1366 13.2227C20.0124 13.2227 19.9116 13.3274 19.9116 13.4565L19.9116 15.1771C19.9116 15.3063 19.8109 15.4109 19.6866 15.4109L18.5878 15.4109C18.4635 15.4109 18.3628 15.3062 18.3628 15.1771L18.3628 14.6008C18.3628 14.4717 18.2621 14.367 18.1378 14.367L17.332 14.367C17.2077 14.367 17.107 14.4717 17.107 14.6008L17.107 15.1771C17.107 15.3062 17.0062 15.4109 16.882 15.4109L15.7413 15.4109C15.617 15.4109 15.5163 15.3062 15.5163 15.1771L15.5163 13.4565C15.5163 13.3274 15.4156 13.2227 15.2913 13.2227L11.1355 13.2227C11.0355 13.2227 10.9481 13.2916 10.9198 13.3914C10.4195 15.1532 8.83652 16.433 6.97097 16.3998C4.76158 16.3603 2.97804 14.4534 3.00021 12.1576C3.02241 9.85789 4.82342 8.00039 7.04204 8.00039C8.81804 8.00039 10.3267 9.19068 10.869 10.8448ZM5.89127 12.2006C5.89127 12.8608 6.40656 13.3967 7.04204 13.3967C7.67789 13.3967 8.19321 12.8609 8.19321 12.2006C8.19321 11.5399 7.67792 11.0045 7.04204 11.0045C6.4066 11.0045 5.89127 11.5399 5.89127 12.2006Z"></path></svg></span>
+            <span id="home">×</span>
+        </div>
+    </div>
+    <div class="card vocabulary">
+        <div class="background-image" style="background-image: url('/bg1');"></div>
+        <div class="content">
+            <div class="info">
+                <h2 id="vocabH2">Vocabulary: words</h2>
+                <div class="progress-bar">
+                    <div id="progressVocab" class="progress"></div>
+                </div>
+                <span id="percentVocab" class="percentage">%</span>
+                <span class="dropdown">▼</span>
+            </div>
+        </div>
+    </div>
+    <div class="vocabulary">
+    </div>
+    <div class="card exercises">
+        <div class="background-image" style="background-image: url('/bg3');"></div>
+        <div class="content">
+            <div class="info">
+                <h2 id="exerciseH2">Exercises: </h2>
+                <div class="progress-bar">
+                    <div id="progressExercise" class="progress"></div>
+                </div>
+                <span id="percentExercise" class="percentage">%</span>
+                <span class="dropdown">▼</span>
+            </div>
+        </div>
+    </div>
+    <div id="exercises" class="exercises">
+    </div>
+</body>
+<script>
+    async function fetchWeek() {
+        const queryString = window.location.search;
+        const params = new URLSearchParams(queryString);
+        const response = await fetch(`/student/get-week?id=${params.get('id')}`)
+
+        const result = await response.json()
+
+        const weekH1 = document.getElementById('week')
+        weekH1.innerHTML = `Week: ${result.week}`
+        const vocabH2 = document.getElementById('vocabH2');
+        const exerciseH2 = document.getElementById('exerciseH2');
+        const vocabProgressStyle = document.getElementById('progressVocab');
+        const vocabProgress = document.getElementById('percentVocab');
+        const exerciseProgress = document.getElementById('progressExercise');
+        const percentExercise = document.getElementById('percentExercise');
+        const vocabularyDiv = document.querySelector('.vocabulary');
+        const exercisesDiv = document.getElementById('exercises');
+        let vocabs = 0
+        let didPercent = 0
+        let exercises = 0
+        let i = 0
+
+        for (vocab of result.vocabularies) {
+            i++
+
+            const exercise = document.createElement('div')
+            exercise.dataset.value = vocab.id
+            exercise.classList.add('exercise')
+            const texts = document.createElement('div')
+            texts.classList.add('texts')
+            const h4 = document.createElement('h4')
+            h4.innerHTML = `Round: ${i}`
+            const p = document.createElement('p')
+            p.innerHTML = `${vocab.words.length} Words`
+
+            texts.appendChild(h4)
+            texts.appendChild(p)
+
+            const imgDiv = document.createElement('div');
+            imgDiv.classList.add('img')
+            const img = document.createElement('img')
+            img.src = '/task'
+            img.style.width = '44px'
+            img.style.height = '44px'
+
+            imgDiv.appendChild(img)
+
+            exercise.appendChild(texts)
+            exercise.appendChild(imgDiv)
+
+            exercise.addEventListener('click', () => {
+                window.location.href = `/student/vocabulary?id=${exercise.dataset.value}`
+            })
+
+            vocabs += vocab.words.length
+            didPercent += vocab.percent
+        }
+        i = 0
+        let didMurphyPercent = 0
+        for (exercise of result.murphy_exercises) {
+            i++
+
+            const exerciseDiv = document.createElement('div')
+            exerciseDiv.dataset.value = exercise.id
+            exerciseDiv.classList.add('exercise')
+            const texts = document.createElement('div')
+            texts.classList.add('texts')
+            const h4 = document.createElement('h4')
+            h4.innerHTML = `Task: ${i} (${exercise.percent}%)`
+            const p = document.createElement('p')
+            p.innerHTML = `Undefined questions`
+
+            texts.appendChild(h4)
+            texts.appendChild(p)
+
+            const imgDiv = document.createElement('div');
+            imgDiv.classList.add('img')
+            const img = document.createElement('img')
+            img.src = '/task'
+            img.style.width = '44px'
+            img.style.height = '44px'
+
+            imgDiv.appendChild(img)
+
+            exerciseDiv.appendChild(texts)
+            exerciseDiv.appendChild(imgDiv)
+
+            exerciseDiv.addEventListener('click', async () => {
+                window.location.href = `/student/exercise?id=${exerciseDiv.dataset.value}&week_id=${params.get('id')}`
+            })
+
+            exerciseDiv.style.backgroundImage = `linear-gradient(to right, green ${exercise.percent}%, transparent ${exercise.percent}%)`
+            exercisesDiv.appendChild(exerciseDiv)
+
+            exercises += 1
+            didMurphyPercent += exercise.percent
+        }
+
+        const vocabPercent = (didPercent / vocabs) * 100 || 0
+        const murphyPercent = Math.round(didMurphyPercent / exercises) || 0
+        percentExercise.innerHTML = `${murphyPercent}%`
+        exerciseProgress.style.width = `${murphyPercent}%`
+        vocabProgress.innerHTML = `${vocabPercent}%`
+        vocabProgressStyle.style.width = `${vocabPercent}px`
+        vocabH2.innerHTML = `Vocabulary: ${vocabs} words`
+        exerciseH2.innerHTML = `Exercises: ${exercises}`
+    }
+    fetchWeek()
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+          const section = document.querySelector(`.${card.classList[1]}:not(.card)`)
+          section.classList.toggle('active')
+      })
+    })
+    const container = document.getElementById('exercises');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    // ====== KOMPYUTER (MOUSE) EVENTS ======
+    container.addEventListener('mousedown', (e) => {
+        isDown = true;
+        container.style.cursor = 'grabbing';
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        container.scrollLeft = scrollLeft - walk;
+    });
+
+    container.addEventListener('mouseup', () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+    });
+
+    container.addEventListener('mouseleave', () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+    });
+
+    // ====== TELEFON (TOUCH) EVENTS ======
+    container.addEventListener('touchstart', (e) => {
+        isDown = true;
+        startX = e.touches[0].pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+    });
+
+    container.addEventListener('touchmove', (e) => {
+        if (!isDown) return;
+        const x = e.touches[0].pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        container.scrollLeft = scrollLeft - walk;
+    });
+
+    container.addEventListener('touchend', () => {
+        isDown = false;
+    });
+
+    container.addEventListener('touchcancel', () => {
+        isDown = false;
+    });
+</script>
+</html>

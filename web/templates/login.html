@@ -328,6 +328,7 @@
                 localStorage.setItem('role', result.type)
                 if (result?.user) {
                     localStorage.setItem('group', result.user.group)
+                    localStorage.setItem('level', result.user.level)
                     const container = document.querySelector('.container');
                     container.classList = 'account'
                     container.innerHTML = `
@@ -414,7 +415,8 @@
                     const selected = document.querySelector('input[name="day_type"]:checked');
                     const data = {
                         days: selected.value,
-                        group: localStorage.getItem('group')
+                        group: localStorage.getItem('group'),
+                        level: localStorage.getItem('level')
                     }
                     const response = await fetch('/student/create-group', {
                         method: 'POST',
@@ -422,9 +424,10 @@
                         body: JSON.stringify(data)
                     })
                     const result = await response.json()
-                    if (response.status_code == 201) {
+                    if (response.status == 201) {
                         localStorage.removeItem('group')
                         localStorage.removeItem('role')
+                        localStorage.removeItem('level')
                         window.location.href = '/student/dashboard'
                     }
                 });

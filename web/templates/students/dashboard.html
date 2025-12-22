@@ -4,7 +4,230 @@
     <meta charset="UTF-8">
     <title>Main Menu</title>
 </head>
-<body>
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
 
+body {
+  background: #141416;
+  padding: 15px;
+}
+
+.profile {
+    display: flex;
+    flex-direction: row-reverse;
+    color: white;
+    gap: 20px;
+}
+
+.profile h3 {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;v
+}
+
+.profile p {
+    color: #b1b5c3;
+}
+
+.profile img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.weeks {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.week {
+  background: #23262f;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  color: white;
+  min-height: 100px;
+}
+
+/* Text section */
+.text h1 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.text p {
+  font-size: 14px;
+  margin-top: 3px;
+  color: #d9afaf;
+}
+
+/* Start button top-right */
+.week .btn {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: black;
+  font-size: 14px;
+
+  /* Button uchun progress fill */
+  background: linear-gradient(
+      to right,
+      #55cf5e var(--percent),
+      white var(--percent)
+  );
+  min-width: 140px;
+  min-height: 40px;
+  z-index: 5;
+}
+
+.week .btn.locked {
+    background: #c91d57;
+    color: white;
+    align-items: center;
+    flex-direction: inherit;
+    display: flex;
+    gap: 15px;
+}
+
+/* Progress bar */
+.percent {
+  background: #d9e1ff;
+  width: 100%;
+  height: 7px;
+  border-radius: 20px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.percent span {
+  display: block;
+  height: 100%;
+  border-radius: 20px;
+  background: #55cf5e;
+}
+
+.shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    border-radius: 14px;
+
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.4);
+    pointer-events: all;
+}
+
+/* Mobile fix */
+@media(max-width: 600px) {
+  .week button {
+    position: static;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+</style>
+<body>
+<header>
+    <div class="profile">
+        <div class="texts">
+            <h3>Nurulloh</h3>
+            <p>Level undefined</p>
+        </div>
+        <img src="https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/9/0K3bXqWTEPyrsZLoZ0vJZK9BdSCaqcsm.png" alt="">
+    </div>
+</header>
+<main>
+    <div class="weeks">
+    </div>
+</main>
+<script>
+    const weeks = document.querySelector('.weeks');
+    async function fetchWeeks() {
+        const response = await fetch('/student/get-weeks', {
+            method: 'GET'
+        })
+        const result = await response.json()
+        for (week of result.weeks) {
+            const weekDiv = document.createElement('div');
+            const textsDiv = document.createElement('div');
+            textsDiv.classList.add('text')
+
+            const h1 = document.createElement('h1');
+            h1.innerHTML = `Week ${week.week_number}`
+
+            const p = document.createElement('p');
+            p.innerHTML = week.topic || 'Topic undefined'
+            textsDiv.appendChild(h1)
+            textsDiv.appendChild(p)
+
+            const button = document.createElement('button')
+            weekDiv.style.setProperty('--percent', '0')
+            button.innerHTML = 'Start'
+            if (week.progress != 0) {
+                weekDiv.style.setProperty('--percent', '${week.percent}')
+                button.innerHTML = week.percent
+            }
+            button.dataset.value = week.id
+            button.classList.add('btn')
+
+            button.addEventListener('click', async () => {
+                window.location.href = `/student/week?id=${button.dataset.value}`
+            })
+
+            const percentDiv = document.createElement('div')
+            percentDiv.classList.add('percent')
+            const percent = document.createElement('span')
+            percent.style.width = week.progress
+            percentDiv.appendChild(percent)
+
+            const lessonDate = new Date(week.lesson_date)
+            const now = new Date()
+            weekDiv.classList.add('week')
+
+            weekDiv.appendChild(textsDiv)
+            weekDiv.appendChild(button)
+            weekDiv.appendChild(percentDiv)
+
+            if (lessonDate > now) {
+                weekDiv.classList.add('locked')
+                button.disabled = true
+                button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg"><path d="M18.5705 11.0654C18.3451 10.84 18.0715 10.7273 17.7494 10.7273H17.3633V8.40903C17.3633 6.92799 16.8322 5.65633 15.7696 4.59382C14.7072 3.53127 13.4356 3 11.9544 3C10.4732 3 9.20139 3.53127 8.13901 4.59378C7.07646 5.65633 6.54536 6.92795 6.54536 8.40903V10.7273H6.15905C5.83719 10.7273 5.56346 10.84 5.33806 11.0654C5.11266 11.2906 5 11.5643 5 11.8865V18.841C5 19.1628 5.1127 19.4366 5.33806 19.6621C5.56346 19.8873 5.83719 20 6.15905 20H17.7497C18.0718 20 18.3454 19.8874 18.5708 19.6621C18.796 19.4366 18.9089 19.1628 18.9089 18.841V11.8864C18.9091 11.5644 18.796 11.2908 18.5705 11.0654ZM15.0452 10.7273H8.86354V8.40903C8.86354 7.55585 9.16544 6.82735 9.76912 6.22376C10.3729 5.62009 11.1013 5.31831 11.9545 5.31831C12.8079 5.31831 13.5361 5.62004 14.1399 6.22376C14.7434 6.8273 15.0452 7.55585 15.0452 8.40903V10.7273Z"></path></svg> Locked'
+                button.dataset.value = ''
+                button.classList.add('locked')
+                const shadow = document.createElement('div')
+                shadow.classList.add('shadow')
+                weekDiv.appendChild(shadow)
+                percentDiv.remove()
+            }
+            weeks.appendChild(weekDiv)
+        }
+    }
+
+    fetchWeeks()
+</script>
 </body>
 </html>

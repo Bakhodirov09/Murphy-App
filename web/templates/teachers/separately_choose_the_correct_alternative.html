@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Teacher Dashboard — Static HTML/CSS</title>
+  <title>Exercise Adding Dashboard</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -27,6 +27,12 @@
         margin: 20px 0 10px;
     }
 
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px
+    }
+
+    .profile{display:flex;align-items:center;margin-left:auto;}
+
     .day-btn {
         background: transparent;
         border: none;
@@ -44,62 +50,146 @@
         font-weight: 600;
     }
 
-    /* Groups Tabs */
-    .groups-tabs {
-        width: 100%;
-        background: #f7f7f7;
-        padding: 12px;
-        border-radius: 14px;
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        white-space: nowrap;
+    .books {
+        padding: 20px;
     }
 
-    .group-tab {
-        background: #ffffff;
-        padding: 15px 20px;
-        border-radius: 14px;
-        min-width: 180px;
-        cursor: pointer;
+    .book {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        background-color: #d5c7c7;
+        margin-bottom: 10px;
+        border-radius: 20px;
+        padding: 20px;
+    }
+
+    .text {
         display: flex;
         flex-direction: column;
-        border: 1px solid #ececec;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
-    .group-tab.active {
-        border-color: #ffd400;
-        background: #fffdf3;
+<!--    .book-units {-->
+<!--        padding: 20px;-->
+<!--        background: var(&#45;&#45;panel);-->
+<!--        border-radius: 20px;-->
+<!--    }-->
+
+<!--    .unit {-->
+<!--        display: flex;-->
+<!--        justify-content: space-between;-->
+<!--        background-color: #f0f0f0;-->
+<!--        padding: 6px 0 5px 20px;-->
+<!--    }-->
+
+    .unit .unit-header .icon {
+        width: 50px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
     }
 
-    .group-tab .icon {
-        font-size: 18px;
-        opacity: 0.8;
+    .book-units {
+      padding: 20px;
+      background: var(--panel);
+      border-radius: 20px;
     }
 
-    .g-title {
-        font-size: 14px;
-        font-weight: 600;
-        margin-top: 3px;
+    .unit {
+      background: #f0f0f0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      padding: 6px 0 5px 20px;
     }
 
-    .g-level {
-        font-size: 12px;
-        color: #777;
-        margin-top: -2px;
+    .unit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
     }
 
-    .alert {
-        color: red;
-        font-size: 14px;
-        margin-top: 5px;
+    .unit-header h1 {
+      margin: 0;
+      font-size: 20px;
     }
 
-    /* Scrollbar hidden (iOS style) */
-    .groups-tabs::-webkit-scrollbar {
-        display: none;
+    .toggle-btn {
+      width: 40px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
     }
+
+    .unit.open .toggle-btn {
+      transform: rotate(180deg);
+    }
+
+    .exercises {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      background: #fff;
+    }
+
+    .unit.open .exercises {
+      max-height: 500px;
+    }
+
+    .exercise {
+      padding: 16px 20px;
+      border-top: 1px solid #e0e0e0;
+      cursor: pointer;
+    }
+
+    .exercise h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .exercise p {
+      margin: 4px 0 0;
+      color: #666;
+    }
+
+    .exercises > button {
+      width: 100%;
+      margin: 12px 0;
+      padding: 12px 16px;
+      border: 2px dashed #b0b0b0;
+      background: #fafafa;
+      border-radius: 10px;
+
+      font-size: 16px;
+      font-weight: 600;
+      color: #444;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      transition: all 0.25s ease;
+    }
+
+    /* Hover */
+    .exercises > button:hover {
+      background: #f0f8ff;
+      border-color: #4a90e2;
+      color: #4a90e2;
+    }
+
+    /* Active (click) */
+    .exercises > button:active {
+      transform: scale(0.98);
+    }
+
 
 
     *{box-sizing:border-box}
@@ -154,64 +244,10 @@
       gap:18px;
     }
 
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:16px
-    }
-    .search{display:flex;align-items:center;gap:10px;background:var(--panel);padding:10px;border-radius:12px;box-shadow:var(--card-shadow);min-width:320px}
-    .search input{border:0;outline:0;background:transparent}
-
-    .profile{display:flex;align-items:center;margin-left:auto;}
-
-    /* Stats cards */
-    .stats-row{display:flex;gap:14px}
-    .stat-card{
-      background:var(--panel);
-      padding:14px 16px;
-      border-radius:12px;
-      box-shadow:var(--card-shadow);
-      min-width:110px;
-      display:flex;flex-direction:column;gap:6px;align-items:flex-start
-    }
-    .stat-card .num{font-size:20px;font-weight:700}
-    .stat-card .label{color:var(--muted);font-size:12px}
-    .avatar{margin-left: 20px;width:44px;height:44px;border-radius:50%;background:linear-gradient(45deg,#ffd166,#ef476f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-
-    /* Controls */
-    .controls{display:flex;gap:12px;align-items:center}
-    .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(108,92,231,0.12)}
-
-    /* Summary cards */
-    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .summary .card{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);display:flex;flex-direction:column;gap:8px}
-    .summary small{color:var(--muted)}
-
-    /* Table / schedule */
-    .panel{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);}
-
-    .weeks {
-        padding: 20px;
+    .close {
+        cursor: pointer;
     }
 
-    .week {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        background-color: #d5c7c7;
-        margin-bottom: 10px;
-        border-radius: 20px;
-        padding: 20px;
-    }
-
-    .text {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .days {
-        background-color: #f0d7d7;
-        border-radius: 20px;
-    }
     /* Modal Background */
     .modal {
       display: none;
@@ -229,67 +265,110 @@
 
     /* Modal Box */
     .modal-content {
-    background: var(--panel);
-    padding: 25px;
-    border-radius: 16px;
-    width: 80%;
-    box-shadow: var(--card-shadow);
-    animation: popup .25s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+      background: var(--panel);
+      padding: 25px;
+      border-radius: 16px;
+      width: 380px;
+      box-shadow: var(--card-shadow);
+      animation: popup .25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-@keyframes popup {
-    from { transform: scale(0.9); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
+    .modal-content .types {
+        display: contents;
+    }
 
-.modal-content h2 {
-    margin: 0 0 15px;
-    text-align: center;
-}
+    .modal-content .types a {
+        text-decoration: none;
+    }
 
-/* Row layout: 3 ustun */
-.modal-row {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap; /* mobilga moslashuv uchun */
-}
+    .modal-content .types a:hover {
+        text-decoration: underline;
+    }
 
-/* Har bir input-label blok */
-.form-item {
-    display: flex;
-    flex-direction: column; /* label pastda emas, ustida */
-    flex: 1; /* teng ustunlar */
-    min-width: 150px; /* juda tor bo‘lmashi uchun */
-}
+    @keyframes popup {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
 
-.modal-content input,
-.modal-content select {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    outline: none;
-}
+    .modal-content h2 {
+      margin: 0 0 10px;
+    }
 
-.close {
-    align-self: flex-end;
-    font-size: 22px;
-    cursor: pointer;
-    color: #444;
-}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px
+    }
+    .search{display:flex;align-items:center;gap:10px;background:var(--panel);padding:10px;border-radius:12px;box-shadow:var(--card-shadow);min-width:320px}
+    .search input{border:0;outline:0;background:transparent}
 
-.modal-content button {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-}
+    .profile{display:flex;align-items:center;margin-left:auto;}
 
+    .exercise {
+        display: flex;
+        flex-direction: column;
+        gap; 10px;
+    }
 
+    .exercise input{
+        border: 2px dashed aqua;
+        padding: 10px;
+        width: 250px;
+        min-width: 150px;
+    }
+
+    .exercise input:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .question {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .questions {
+        margin: 20px 0 20px 0;
+    }
+
+    /* Stats cards */
+    .stats-row{display:flex;gap:14px}
+    .avatar{margin-left: 20px;width:44px;height:44px;border-radius:50%;background:linear-gradient(45deg,#ffd166,#ef476f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+
+    /* Controls */
+    .controls{display:flex;gap:12px;align-items:center}
+    .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
+    .btn-add{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(108,92,231,0.12)}
+
+    /* Summary cards */
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .summary .card{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);display:flex;flex-direction:column;gap:8px}
+    .summary small{color:var(--muted)}
+
+    /* Table / schedule */
+    .panel{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);}
+    .panel h3{margin:0 0 10px 0}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:920px}
+    th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eef2f6}
+    thead th{background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+
+    td .student{display:flex;align-items:center;gap:10px}
+    .student .sname{font-weight:600}
+    .student .smeta{color:var(--muted);font-size:12px}
+
+    .circle{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+    .circle.green{background:#008f5f;color:#e6fbf3}
+    .circle.yellow{background:#d68e00;color:#fff7e6}
+    .circle.red{background:#e04b4b;color:#fff0f0}
+
+    /* progress */
+    .progress{height:10px;background:#eef6f5;border-radius:8px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#00b894)}
 
     /* small responsive */
     @media (max-width:1100px){
@@ -298,6 +377,7 @@
     }
     @media (max-width:700px){
       .topbar{flex-direction:column;align-items:flex-start}
+      .stats-row{flex-wrap:wrap}
     }
   </style>
 </head>
@@ -320,15 +400,15 @@
           </svg>
           Home
         </a>
-        <a href="/teacher/weeks" class="active">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffcf00" xmlns="http://www.w3.org/2000/svg">
+        <a href="/teacher/weeks">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#979C9E" xmlns="http://www.w3.org/2000/svg">
               <path d="M7.42733 1.5C7.22842 1.5 7.03765 1.57902 6.897 1.71967C6.75635 1.86032 6.67733 2.05109 6.67733 2.25V3.2775H5.78258C4.88281 3.27949 4.02056 3.63831 3.38503 4.27525C2.7495 4.91219 2.39258 5.77522 2.39258 6.675V7.4325H19.3051V6.675C19.3051 4.8 17.7826 3.2775 15.9151 3.2775H15.0188V2.25C15.0188 2.05109 14.9398 1.86032 14.7992 1.71967C14.6585 1.57902 14.4677 1.5 14.2688 1.5C14.0699 1.5 13.8792 1.57902 13.7385 1.71967C13.5978 1.86032 13.5188 2.05109 13.5188 2.25V3.2775H8.17733V2.25C8.17733 2.05109 8.09831 1.86032 7.95766 1.71967C7.81701 1.57902 7.62624 1.5 7.42733 1.5ZM2.39258 16.8C2.39258 18.675 3.91508 20.1975 5.78258 20.1975H10.6426C10.2416 19.3407 10.0342 18.406 10.0351 17.46C10.0351 13.86 12.9676 10.9275 16.5751 10.9275C17.5501 10.9275 18.4726 11.145 19.3051 11.5275V8.9325H2.39258V16.8ZM10.8526 11.4825H10.8601C11.2801 11.4825 11.6101 11.82 11.6101 12.2325C11.6101 12.645 11.2801 12.9825 10.8601 12.9825C10.4476 12.9825 10.1101 12.645 10.1101 12.2325C10.1101 11.82 10.4401 11.4825 10.8526 11.4825ZM6.97508 11.4825H6.98258C7.39508 11.4825 7.73258 11.82 7.73258 12.2325C7.73258 12.645 7.39508 12.9825 6.98258 12.9825C6.57008 12.9825 6.23258 12.645 6.23258 12.2325C6.23258 11.82 6.56258 11.4825 6.97508 11.4825ZM6.97508 14.64H6.98258C7.39508 14.64 7.73258 14.9775 7.73258 15.39C7.73258 15.81 7.39508 16.14 6.98258 16.14C6.57008 16.14 6.23258 15.81 6.23258 15.39C6.23258 14.9775 6.56258 14.64 6.97508 14.64Z"/>
               <path d="M16.5752 12.4275C13.7927 12.4275 11.5352 14.685 11.5352 17.46C11.5352 20.2425 13.7927 22.5 16.5752 22.5C19.3502 22.5 21.6077 20.2425 21.6077 17.46C21.6077 14.685 19.3502 12.4275 16.5752 12.4275ZM18.9227 18.285C18.8177 18.5925 18.5252 18.7875 18.2177 18.7875C18.1332 18.7871 18.0494 18.7719 17.9702 18.7425L16.3277 18.1725C16.0277 18.0675 15.8252 17.7825 15.8252 17.46V15.8175C15.8252 15.405 16.1552 15.0675 16.5752 15.0675C16.9877 15.0675 17.3252 15.405 17.3252 15.8175V16.9275L18.4652 17.325C18.8552 17.46 19.0577 17.8875 18.9227 18.285Z"/>
           </svg>
           Weeks
         </a>
-        <a href="/teacher/exercises">
-          <svg width="24" height="24" viewBox="0 0 25 24" fill="#979C9E" xmlns="http://www.w3.org/2000/svg">
+        <a href="/teacher/exercises" class="active">
+          <svg width="24" height="24" viewBox="0 0 25 24" fill="#ffcf00" xmlns="http://www.w3.org/2000/svg">
               <path d="M14.3695 22.4001L12.6978 22.4188C12.6087 22.4199 12.5204 22.4032 12.4379 22.3697C12.3554 22.3361 12.2804 22.2864 12.2175 22.2234C12.1545 22.1604 12.1048 22.0855 12.0712 22.003C12.0376 21.9205 12.0209 21.8321 12.022 21.7431L12.0408 20.0713C12.0428 19.8967 12.113 19.7298 12.2365 19.6063L20.5668 11.2761C20.6288 11.214 20.7024 11.1647 20.7835 11.131C20.8646 11.0974 20.9515 11.0801 21.0393 11.0801C21.1271 11.0801 21.214 11.0974 21.295 11.131C21.3761 11.1647 21.4498 11.214 21.5118 11.2761L23.164 12.9283C23.2262 12.9903 23.2755 13.064 23.3091 13.1451C23.3427 13.2261 23.36 13.3131 23.36 13.4008C23.36 13.4886 23.3427 13.5755 23.3091 13.6566C23.2755 13.7377 23.2262 13.8113 23.164 13.8733L14.8345 22.2043C14.7112 22.3281 14.5442 22.3984 14.3695 22.4001Z"/>
               <path d="M16.051 1.5H6.43604C5.44147 1.5 4.48765 1.89509 3.78438 2.59835C3.08112 3.30161 2.68604 4.25544 2.68604 5.25V18.75C2.68604 19.7446 3.08112 20.6984 3.78438 21.4016C4.48765 22.1049 5.44147 22.5 6.43604 22.5H11.0658C10.9526 22.2596 10.8947 21.9969 10.8963 21.7313L10.915 20.0602C10.9194 19.5911 11.1082 19.1425 11.4408 18.8115L19.7703 10.4827C19.7793 10.4738 19.7905 10.4677 19.7995 10.4587V5.25C19.7997 4.75761 19.7029 4.27001 19.5146 3.81505C19.3263 3.36009 19.0503 2.94668 18.7022 2.59844C18.3541 2.2502 17.9408 1.97395 17.4859 1.78548C17.031 1.59701 16.5434 1.5 16.051 1.5ZM9.91603 17.925H6.27854C6.09951 17.925 5.92783 17.8539 5.80124 17.7273C5.67465 17.6007 5.60354 17.429 5.60354 17.25C5.60354 17.071 5.67465 16.8993 5.80124 16.7727C5.92783 16.6461 6.09951 16.575 6.27854 16.575H9.91603C10.0951 16.575 10.2667 16.6461 10.3933 16.7727C10.5199 16.8993 10.591 17.071 10.591 17.25C10.591 17.429 10.5199 17.6007 10.3933 17.7273C10.2667 17.8539 10.0951 17.925 9.91603 17.925ZM13.9608 12.675H6.27779C6.09876 12.675 5.92708 12.6039 5.80049 12.4773C5.6739 12.3507 5.60279 12.179 5.60279 12C5.60279 11.821 5.6739 11.6493 5.80049 11.5227C5.92708 11.3961 6.09876 11.325 6.27779 11.325H13.9608C14.1398 11.325 14.3115 11.3961 14.4381 11.5227C14.5647 11.6493 14.6358 11.821 14.6358 12C14.6358 12.179 14.5647 12.3507 14.4381 12.4773C14.3115 12.6039 14.1398 12.675 13.9608 12.675ZM16.2108 7.425H6.27779C6.09876 7.425 5.92708 7.35388 5.80049 7.2273C5.6739 7.10071 5.60279 6.92902 5.60279 6.75C5.60279 6.57098 5.6739 6.39929 5.80049 6.2727C5.92708 6.14612 6.09876 6.075 6.27779 6.075H16.2108C16.3898 6.075 16.5615 6.14612 16.6881 6.2727C16.8147 6.39929 16.8858 6.57098 16.8858 6.75C16.8858 6.92902 16.8147 7.10071 16.6881 7.2273C16.5615 7.35388 16.3898 7.425 16.2108 7.425Z"/>
           </svg>
@@ -349,222 +429,126 @@
 
     <main class="main">
 
-      <div class="topbar">
-        <div class="profile">
+        <div class="topbar">
+            <div class="profile">
           <div style="text-align:right">
             <div style="font-weight:700">{{ first_name }} {{ last_name }}</div>
             <div style="font-size:12px;color:var(--muted)">{{ type }} Teacher</div>
           </div>
           <div class="avatar">{{ letters }}</div>
         </div>
-      </div>
-
-      <div class="days-toggle">
-        <div class="days">
-          <button class="day-btn active" data-type="Upper-Intermediate">Upper-Intermediate</button>
-          <button class="day-btn" data-type="IELTS">IELTS</button>
         </div>
-      </div>
-      <button class="btn" style="background-color: #b03434;">+ Add Week</button>
-      <div class="weeks">
-
-      </div>
-      <div id="addWeekModal" class="modal">
-        <div class="modal-content">
-        <span class="close">×</span>
-        <div>
-            <h2>Add New Week For Upper-Intermediate</h2>
+        <h1>Add exercise: Separately Choose the correct alternative</h1>
+        <div class="exercise">
+            <label>Exercise Condition</label>
+            <input type="text" placeholder="Write here..." value="Choose the correct alternative" required>
+            <label>Exercise Number From Book</label>
+            <input type="number" id="number" placeholder="Write number from book here..." required>
+            <div class="questions">
+                <label>Questions</label>
+                <div class="question">
+                    <input type="text" data-value="question" placeholder="Write question here..." required>
+                    <input type="text" data-value="options" placeholder="Write question options here..." required>
+                    <input type="text" data-value="answers" placeholder="Write question answers here..." required>
+                </div>
+            </div>
+            <button class="btn">+ Add More Question</button>
+            <button class="btn" id="save" style="margin-top: 10px; background-color: red;">Save Questions</button>
         </div>
-
-        <div class="modal-row">
-            <div class="form-item">
-                <label>Enter week number</label>
-                <input type="number" id="weekNumber" placeholder="Enter week number">
-            </div>
-            <div class="form-item">
-              <label>Choose a murphy book</label>
-              <select name="books" id="booksSelect"></select>
-            </div>
-            <div class="form-item">
-              <label>Choose an essential book</label>
-              <select name="books" id="essentialBooksSelect"></select>
-            </div>
-        </div>
-        <div class="modal-row">
-            <div class="form-item">
-                <label>Enter week topic</label>
-                <input type="text" id="weekTopic" placeholder="Enter week topic">
-            </div>
-            <div class="form-item">
-              <label>Murphy From Unit</label>
-              <input type="number" id="murphyFromUnit" placeholder="Enter murphy from unit">
-            </div>
-            <div class="form-item">
-                <label>Essential From Unit</label>
-                <input type="number" id="essentialFromUnit" placeholder="Enter essential from unit">
-            </div>
-        </div>
-
-        <div class="modal-row">
-            <div class="form-item">
-                <label>Available keys</label>
-                <input type="number" id="keys" placeholder="Enter amount of available keys">
-            </div>
-            <div class="form-item">
-                <label>Murphy To Unit</label>
-                <input type="number" id="murphyToUnit" placeholder="Enter murphy to unit">
-            </div>
-            <div class="form-item">
-                <label>Essential To Unit</label>
-                <input type="number" id="essentialToUnit" placeholder="Enter essential to unit">
-            </div>
-        </div>
-
-        <div>
-            <button class="btn" id="saveWeekBtn">Save</button>
-        </div>
-    </div>
-
-      </div>
-
     </main>
   </div>
-
-  <script>
-    async function fetchWeeks(level) {
-        const weeks = document.querySelector('.weeks')
-        weeks.innerHTML = ''
-        const response = await fetch(`/teacher/level-weeks?level=${level}`)
-        const result = await response.json()
-        for (week of result.weeks) {
-            const weekDiv = document.createElement('div');
-            weekDiv.classList.add('week')
-
-            const textDiv = document.createElement('div')
-            textDiv.classList.add('text')
-            const h1 = document.createElement('h1');
-            h1.innerHTML = `Week ${week.week_number}`
-            const p = document.createElement('p')
-            p.innerHTML = week.week_topic
-
-            const weekBtn = document.createElement('button');
-            weekBtn.classList.add('btn')
-            weekBtn.innerHTML = `Week ${week.week_number}`
-
-            textDiv.appendChild(h1)
-            textDiv.appendChild(p)
-            weekDiv.appendChild(textDiv)
-            weekDiv.appendChild(weekBtn)
-            weeks.appendChild(weekDiv)
-        }
-
-    }
-    fetchWeeks('Upper-Intermediate')
-    const buttons = document.querySelectorAll('.day-btn');
-
-    buttons.forEach(btn => {
-        btn.addEventListener('click', async () => {
-            buttons.forEach(g => g.classList.remove('active'));
-            btn.classList.add('active')
-            fetchWeeks(btn.textContent)
-        });
-    });
-    const modal = document.getElementById("addWeekModal");
-    const openBtn = document.querySelector(".btn[style*='#b03434']");
-    const closeBtn = document.querySelector(".close");
-    const saveBtn = document.getElementById("saveWeekBtn");
-
-    openBtn.onclick = async () => {
-        const btnActive = document.querySelector(".day-btn.active")
-        const h3 = document.querySelector(".modal h2")
-        h3.innerHTML = `Add New Week For ${btnActive.textContent}`
-        modal.style.display = "flex";
-
-        const response = await fetch('/teacher/get-murphy-books', {
-            method: 'GET',
-        })
-        const books = await response.json()
-
-        const booksSelect = document.getElementById('booksSelect')
-        const essentialBooksSelect = document.getElementById('essentialBooksSelect')
-
-        const essentialBooks = await fetch('/teacher/essential-books', {
-            method: 'GET'
-        })
-        const esBooks = await essentialBooks.json()
-
-        for (book of books.books) {
-            const option = document.createElement('option')
-            option.value = book['id']
-            option.innerHTML = book['book_name']
-            option.name = 'book'
-
-            booksSelect.appendChild(option)
-        }
-        for (essential of esBooks.books) {
-            const option = document.createElement('option')
-            option.value = essential['id']
-            option.innerHTML = `Essential ${essential['book_number']}`
-            option.name = 'essential'
-
-            essentialBooksSelect.appendChild(option)
-        }
-    }
-
-    closeBtn.onclick = () => {
-        modal.style.display = "none";
-        const books = querySelector('option[name="book"]');
-        const essentials = querySelector('option[name="essential"]');
-        books.remove()
-        essentials.remove()
-    }
-
-    window.onclick = (e) => {
-        if (e.target === modal) modal.style.display = "none";
-    }
-
-    saveBtn.onclick = async () => {
-        const level = document.querySelector(".day-btn.active").textContent;
-        const number = document.getElementById("weekNumber").value;
-        const topic = document.getElementById("weekTopic").value;
-        const essentialFromUnit = document.getElementById("essentialFromUnit").value;
-        const essentialToUnit = document.getElementById("essentialToUnit").value;
-        const murphyFromUnit = document.getElementById("murphyFromUnit").value;
-        const murphyToUnit = document.getElementById("murphyToUnit").value;
-        const keys = document.getElementById("keys").value;
-        const bookId = document.getElementById("booksSelect")
-        const essentialBookId = document.getElementById("essentialBooksSelect")
-
-        if (!number || !topic || !essentialFromUnit || !essentialToUnit || !murphyFromUnit || !murphyToUnit || !keys) {
-            alert("Please fill all fields!");
-            return;
-        }
-
-        const response = await fetch("/teacher/add-week", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                week_number: Number(number),
-                level: level,
-                keys: Number(keys),
-                week_topic: topic,
-                essential_book: essentialBookId.value,
-                essential_from_unit: Number(essentialFromUnit),
-                essential_to_unit: Number(essentialToUnit),
-                murphy_book: bookId.value,
-                murphy_from_unit: Number(murphyFromUnit),
-                murphy_to_unit: Number(murphyToUnit)
-            })
-        });
-
-        const res = await response.json();
-        if (res.success) {
-            modal.style.display = "none";
-            fetchWeeks(level);
-        }
-    };
-
-  </script>
 </body>
-</html>
+<script>
+    const btn = document.querySelector('.btn');
+    const questions = document.querySelector('.questions');
+    btn.addEventListener('click', () => {
+        const question = document.createElement('div');
+        question.classList.add('question')
 
+        const questionInput = document.createElement('input')
+        questionInput.type = "text"
+        questionInput.dataset.value = "question"
+        questionInput.placeholder = "Write question here"
+        const optionsInput = document.createElement('input')
+        optionsInput.type = "text"
+        optionsInput.dataset.value = "options"
+        optionsInput.placeholder = "Write question options here"
+        const answersInput = document.createElement('input')
+        answersInput.type = "text"
+        answersInput.dataset.value = "answers"
+        answersInput.placeholder = "Write question answers here"
+
+        const btn = document.createElement('button')
+        btn.classList.add('btn')
+        btn.innerHTML = 'x'
+
+        question.appendChild(questionInput)
+        question.appendChild(optionsInput)
+        question.appendChild(answersInput)
+        question.appendChild(btn)
+        questions.appendChild(question)
+
+        btn.addEventListener('click', () => {
+            question.remove()
+        })
+    })
+    const saveBtn = document.getElementById('save');
+    saveBtn.addEventListener('click', async () => {
+        saveBtn.innerHTML = 'Adding ...'
+        saveBtn.disabled = true
+        saveBtn.style.opacity = '50%'
+        const questions = document.querySelectorAll('.question');
+        const condition = document.querySelector('input[placeholder="Write here..."]');
+        const exercise_number = document.getElementById('number');
+        const params = new URLSearchParams(window.location.search);
+        const unitId = params.get('unit_id')
+
+        const data = {
+            unit_id: unitId,
+            condition: condition.value,
+            type: 11700,
+            exercise_number: Number(exercise_number.value)
+        }
+
+        const response = await fetch('/teacher/add-exercise', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+
+        const result = await response.json()
+
+        for (const question of questions) {
+            const inputs = question.querySelectorAll('input');
+            const questionText = inputs[0]?.value || '';
+            const options = inputs[1]?.value || '';
+            const answers = inputs[2]?.value || '';
+
+            const data = {
+                exercise_id: result.exercise_id,
+                field: {
+                    question: questionText, // .split() ni to'g'rilash kerak
+                    options: options.split(','),       // masalan .split(',')
+                    correct_answers: answers.split(',') // masalan .split(',')
+                }
+            };
+
+            try {
+                const questionResponse = await fetch('/teacher/add-question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const questionResult = await questionResponse.json();
+                console.log(questionResult);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        saveBtn.innerHTML = 'Added successfully... :)'
+    });
+</script>
+</html>
