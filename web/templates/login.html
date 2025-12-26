@@ -317,7 +317,9 @@
         };
 
         try {
-            const response = await fetch(nextBtn.getAttribute('data-url') || '/login', {
+            const params = new URLSearchParams(window.location.search)
+            const chat_id = params.get("chat_id")
+            const response = await fetch(nextBtn.getAttribute('data-url') || `/login?chat_id=${chat_id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -376,6 +378,8 @@
         }
     const acceptBtn = document.querySelector('.accept');
     acceptBtn.addEventListener('click', async () => {
+        acceptBtn.disabled = true
+        acceptBtn.style.opacity = '50%'
         const role = localStorage.getItem('role')
         if (role == 'student') {
             const response = await fetch('/student/ok', {
@@ -384,8 +388,6 @@
                 body: JSON.stringify(data)
             });
             result = await response.json()
-            console.log(result)
-            console.log(result.detail)
             if (response.status == 201) {
                 cookieStore.set('token', result.new_token)
                 window.location.replace('/student/dashboard')

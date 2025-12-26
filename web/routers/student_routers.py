@@ -32,31 +32,52 @@ async def dashboard(db: db_dependency, request: Request):
     return templates.TemplateResponse('/students/dashboard.html', {
         'request': request,
         'level': decoded_token['level'],
-        'photo': student.avatar_url
+        'photo': student.avatar_url,
+        'first_name': student.first_name
     })
 
 @router.post('/ok', status_code=status.HTTP_201_CREATED)
 async def ok(request: Request, db: db_dependency):
     token = request.cookies.get('token')
     decoded_token = await decode_jwt(token)
-    student = StudentsModel(
-        first_name=decoded_token['user']['first_name'],
-        last_name=decoded_token['user']['last_name'],
-        avatar_url=decoded_token['user']['avatar_url']
-    )
-    db.add(student)
-    group = db.query(GroupsModel).filter(GroupsModel.group_name == decoded_token['user']['group']).first()
-    db.flush()
-    new_token = await create_token({'student_id': str(student.id), 'type': 'student', 'level': decoded_token['user']['level'], 'sub': decoded_token['user']['sub']})
-    if group:
-        student.group_id = group.id
-        db.commit()
-    else:
-        db.commit()
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={'message': 'Group not found', 'new_token': new_token, 'group': decoded_token['user']['group']})
-    return {
-        'new_token': new_token
-    }
+
+    chat_id = decoded_token['user']['chat_id']
+
+    student = db.query(StudentsModel).filter(
+        StudentsModel.chat_id == chat_id
+    ).first()
+
+    if not student:
+        student = StudentsModel(
+            first_name=decoded_token['user']['first_name'],
+            last_name=decoded_token['user']['last_name'],
+            avatar_url=decoded_token['user']['avatar_url'],
+            chat_id=chat_id,
+        )
+        db.add(student)
+        db.flush()
+
+    group = db.query(GroupsModel).filter(
+        GroupsModel.group_name == decoded_token['user']['group']
+    ).first()
+
+    if not group:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Group not found'
+        )
+
+    student.group_id = group.id
+    db.commit()
+
+    new_token = await create_token({
+        'student_id': str(student.id),
+        'type': 'student',
+        'level': decoded_token['user']['level'],
+        'sub': decoded_token['user']['sub']
+    })
+
+    return {'new_token': new_token}
 
 @router.post('/create-group', status_code=status.HTTP_201_CREATED)
 async def create_group(request: Request, data: GroupDaysRequest, db: db_dependency):
@@ -83,12 +104,14 @@ async def create_group(request: Request, data: GroupDaysRequest, db: db_dependen
         elif decoded_token['sub'] == 'Final':
             first_lesson = await get_first_lesson_date(2, week_day)
     elif decoded_token['level'] == 'IELTS':
-        if decoded_token['sub'] == 'Middle 1':
+        if decoded_token['sub'] == 'Start':
             first_lesson = await get_first_lesson_date(1, week_day)
-        elif decoded_token['sub'] == 'Middle 2':
+        elif decoded_token['sub'] == 'Middle 1':
             first_lesson = await get_first_lesson_date(2, week_day)
-        elif decoded_token['sub'] == 'Final':
+        elif decoded_token['sub'] == 'Middle 2':
             first_lesson = await get_first_lesson_date(3, week_day)
+        elif decoded_token['sub'] == 'Final':
+            first_lesson = await get_first_lesson_date(4, week_day)
     for i in range(1, len(weeks) + 1):
         schedule = WeekScheduleModel(
             group_id=new_group.id,
@@ -127,6 +150,7 @@ async def get_student_weeks(request: Request, db: db_dependency):
             "lesson_date": week.lesson_date,
             "week_number": week.week_number,
             "is_available": is_available,
+            "topic": week_info.week_topic,
             "progress": 0
         }
         if is_available:
@@ -158,7 +182,7 @@ async def get_student_weeks(request: Request, db: db_dependency):
             ).all()
             for unit in vocab_units:
                 for w in unit.words:
-                    overall_questions_words += len(w.questions)
+                    overall_questions_words += len(unit.words)
                     sr = db.query(StudentResultsModel).filter(
                         StudentResultsModel.student_id == student.id,
                         StudentResultsModel.vocabulary_id == w.id,

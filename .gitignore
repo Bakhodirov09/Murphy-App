@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+essential_3.json
+essential_3_1.json
+essential_words_3.json
+
+
 # Distribution / packaging
 alembic/versions
 test_admin_panel.html
@@ -60,8 +65,8 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
+#db.sqlite3
+#db.sqlite3-journal
 
 # Flask stuff:
 instance/

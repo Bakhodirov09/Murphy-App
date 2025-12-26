@@ -208,6 +208,7 @@
 <script>
     const body = document.querySelector('body')
     const checkBtn = document.createElement('button')
+    const checkBtn2 = document.createElement('button')
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
     const backBtn = document.querySelector('.back')
@@ -216,7 +217,11 @@
     checkBtn.innerHTML = 'Check'
     checkBtn.classList.add('check')
     checkBtn.disabled = true
+    checkBtn2.innerHTML = 'Check'
+    checkBtn2.classList.add('check')
+    checkBtn2.classList.add('active')
     body.appendChild(checkBtn)
+    body.appendChild(checkBtn2)
 
     let answers = {
         exercise_id: id,
@@ -225,8 +230,8 @@
     }
 
     checkBtn.addEventListener('click', () => {
+        console.log('Check btn 1')
         const answerBlanks = document.querySelectorAll('.answer-blank')
-        console.log(answerBlanks.length)
         answerBlanks.forEach(answer => {
             answer.style.pointerEvents = 'none'
             const cleanAnswers = answer.dataset.answers.replace(/[’‘]/g, "'");
@@ -291,6 +296,200 @@
              inCorrectAudio = new Audio(inCorrectUrl)
         }
     }
+    let currentExercise1 = 1;
+    function addLabel2 (targetSpan, correct=true) {
+        targetSpan.style.pointerEvents = 'none'
+        if (correct == true) {
+            targetSpan.style.backgroundColor = '#329961'
+        } else {
+            targetSpan.style.backgroundColor = '#c91d57'
+        }
+        const successDiv = document.createElement('div');
+        if (correct == true) {
+            successDiv.classList.add('success')
+        } else {
+            successDiv.classList.add('error')
+        }
+        const elements = document.createElement('div')
+        elements.classList.add('elements')
+
+        const leftElements = document.createElement('div')
+        leftElements.style.display = 'flex'
+        leftElements.style.alignItems = 'center'
+        leftElements.style.gap = '24px'
+        leftElements.classList.add('left')
+
+        const iconDiv = document.createElement('div')
+        let icon = 0
+        if (correct == true) {
+            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 32 32" fill="none"><path d="M16 .703C7.55.703.7 7.553.7 16.003c0 8.45 6.85 15.3 15.3 15.3 8.45 0 15.3-6.85 15.3-15.3 0-8.45-6.85-15.3-15.3-15.3z" fill="#fff"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M.7 16.003C.7 7.553 7.55.703 16 .703c8.45 0 15.3 6.85 15.3 15.3 0 8.45-6.85 15.3-15.3 15.3-8.45 0-15.3-6.85-15.3-15.3zm21.847-2.772a1.391 1.391 0 00-1.967-1.967l-6.51 6.51-2.632-2.736a1.391 1.391 0 00-2.003 1.93l3.616 3.756a1.393 1.393 0 001.985.018l7.511-7.511z" fill="#329961"></path></svg>'
+        } else {
+            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 32 32" fill="none"><path d="M16 31.303c8.45 0 15.3-6.85 15.3-15.3 0-8.45-6.85-15.3-15.3-15.3C7.55.703.7 7.553.7 16.003c0 8.45 6.85 15.3 15.3 15.3z" fill="#c91d57"></path><path d="M9.873 22.087a1.7 1.7 0 002.42 0l3.666-3.665 3.665 3.665a1.712 1.712 0 102.42-2.42L18.38 16l3.665-3.665a1.711 1.711 0 10-2.421-2.42l-3.665 3.665-3.665-3.666a1.712 1.712 0 00-2.421 2.421l3.665 3.665-3.665 3.666a1.7 1.7 0 000 2.42z" fill="#fff"></path></svg>'
+        }
+        iconDiv.innerHTML = icon
+
+        const answerDiv = document.createElement('div')
+        answerDiv.classList.add('answer')
+
+        const answerH3 = document.createElement('h3')
+        if (correct == true) {
+            answerH3.innerHTML = 'Correct Answer'
+        } else {
+            answerH3.innerHTML = 'Wrong Answer'
+        }
+        answerDiv.appendChild(answerH3)
+        leftElements.appendChild(iconDiv)
+        leftElements.appendChild(answerDiv)
+
+        const rightElements = document.createElement('div')
+        rightElements.classList.add('right')
+
+        const nextBtn = document.createElement('button')
+        nextBtn.classList.add('next')
+        if (correct == true) {
+            nextBtn.style.backgroundColor = '#329961'
+        } else {
+            nextBtn.style.backgroundColor = '#c91d57'
+        }
+        nextBtn.style.color = '#fff'
+        nextBtn.style.cursor = 'pointer'
+        nextBtn.style.width = '228px'
+        nextBtn.style.height = '48px'
+        nextBtn.style.borderRadius = '14px'
+        nextBtn.style.border = 'none'
+        nextBtn.style.fontSize = '17px'
+        nextBtn.style.fontWeigh = '500'
+        nextBtn.type = 'submit'
+
+        nextBtn.addEventListener('click', () => {
+            successDiv.remove()
+            const exercises = document.querySelectorAll('.exercise');
+
+            exercises.forEach(exercise => {
+                exercise.style.display = 'none';
+            });
+            if (currentExercise1 < exercises.length) {
+                exercises[currentExercise1].style.display = 'flex';
+                currentExercise1++;
+                const span = document.querySelector('.exercise[style="display: flex;"] span') ?? document.querySelector('.exercise[style="display: flex;"] input')
+                span.click()
+            } else {
+                console.log(answers)
+                checkBtn2.remove()
+                const submitBtn = document.createElement('button')
+                submitBtn.classList.add('check')
+                submitBtn.classList.add('active')
+                submitBtn.innerHTML = 'Save and Submit...'
+                body.appendChild(submitBtn)
+                submitBtn.addEventListener('click', async () => {
+                    submitBtn.innerHTML = ''
+                    submitBtn.classList.remove('active')
+                    submitBtn.disabled = true
+                    const text = document.createElement('div')
+                    text.innerHTML = 'Saving... '
+                    submitBtn.appendChild(text)
+                    submitBtn.style.display = 'block ruby'
+                    submitBtn.style.fontSize = '22px'
+                    const loader = document.createElement('div')
+                    loader.classList.add('loader')
+                    submitBtn.appendChild(loader)
+                    const response = await fetch('/student/save-exercise-results', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(answers)
+                    })
+                    const result = await response.json()
+                    loader.remove()
+                    text.innerHTML = 'Saved'
+<!--                    backBtn.click()-->
+                })
+                submitBtn.click()
+            }
+        });
+
+        const nextText = document.createElement('span')
+        nextText.innerHTML = 'Next'
+
+        nextBtn.appendChild(nextText)
+        rightElements.appendChild(nextBtn)
+
+        successDiv.appendChild(leftElements)
+        successDiv.appendChild(rightElements)
+
+        const body = document.querySelector('body')
+        body.appendChild(successDiv)
+    }
+    checkBtn2.addEventListener('click', () => {
+        const answerBlanks = document.querySelectorAll('.exercise[style="display: flex;"] .answer-blank')
+        let failed = false
+        let firstIncorrectAnswer = null // Track the first incorrect answer
+
+        // First pass: check answers and find first incorrect
+        for (let i = 0; i < answerBlanks.length; i++) {
+            const answer = answerBlanks[i];
+            const cleanAnswers = answer.dataset.answers.replace(/[’‘]/g, "'");
+            const value = answer.dataset.value ?? answer.value
+            const cleanValue = value.replace(/[’‘]/g, "'");
+
+            const isCorrect = cleanAnswers.split(',').map(a => a.trim().toLowerCase()).includes(cleanValue.trim().toLowerCase());
+
+            if (!isCorrect) {
+                failed = true
+                if (!firstIncorrectAnswer) {
+                    firstIncorrectAnswer = answer // Store first incorrect
+                }
+            }
+        }
+
+        // Second pass: apply styles
+        answerBlanks.forEach(answer => {
+            answer.style.pointerEvents = 'none'
+            const cleanAnswers = answer.dataset.answers.replace(/[’‘]/g, "'");
+            const value = answer.dataset.value ?? answer.value
+            const cleanValue = value.replace(/[’‘]/g, "'");
+            const isCorrect = cleanAnswers.split(',').map(a => a.trim().toLowerCase()).includes(cleanValue.trim().toLowerCase());
+
+            if (failed) {
+                if (!isCorrect) {
+                    answer.style.background = '#c91d57'
+                    answer.style.color = '#fff'
+                } else {
+                    answer.style.background = '#329961'
+                    answer.style.color = '#fff'
+                }
+            } else {
+                answer.style.background = '#329961'
+                answer.style.color = '#fff'
+            }
+        })
+
+        // Add label ONLY ONCE
+        if (failed) {
+            if (firstIncorrectAnswer) {
+                addLabel2(firstIncorrectAnswer, false) // Only add label to first incorrect
+            }
+        } else if (answerBlanks.length > 0) {
+            addLabel2(answerBlanks[0], true) // Or add label to first answer if all correct
+        }
+
+        // Play audio
+        if (failed) {
+            correctAudio.currentTime = 0
+            inCorrectAudio.play()
+        } else {
+            inCorrectAudio.currentTime = 0
+            correctAudio.play()
+        }
+
+        const firstAnswer = answerBlanks[0];
+        const questionResult = {
+            question_id: firstAnswer.dataset.questionId,
+            failed: failed
+        }
+        answers.results.push(questionResult)
+    })
     async function fetchExercise() {
         const response = await fetch(`/student/get-exercise?id=${id}`)
         const result = await response.json()
@@ -443,6 +642,7 @@
         }
 
         if (result.exercise.exercise_type == 11600) {
+            checkBtn2.remove()
             const optionsPanel = document.createElement('div');
             optionsPanel.classList.add('options-panel')
             document.querySelector('body').appendChild(optionsPanel)
@@ -484,6 +684,7 @@
             span.click()
         }
         else if (result.exercise.exercise_type == 11700) {
+            checkBtn2.remove()
             const questions = document.createElement('div');
             questions.classList.add('questions')
             const body = document.querySelector('body');
@@ -542,7 +743,7 @@
         }
         else if (result.exercise.exercise_type == 11500) {
             exerciseDiv.remove()
-
+            checkBtn2.remove()
             const leftSideP = document.createElement('p')
             leftSideP.innerHTML = 'Left Side:&nbsp;'
             leftSideP.style.margin = '15px 0 -10px 10px'
@@ -610,6 +811,7 @@
             })
             validateInputs()
         } else if (result.exercise.exercise_type == 11800) {
+            checkBtn2.remove()
             for (question of result.exercise.questions) {
                 for (q of question.field.question.split(' ')) {
                     if (q == '<br>') {
@@ -659,76 +861,52 @@
             validateInputs()
         }
         } else if (result.exercise.exercise_type == 11900) {
+            const questions = document.createElement('div');
+            questions.classList.add('questions')
+            const body = document.querySelector('body');
+            body.appendChild(questions)
+            exerciseDiv.remove()
+            let i = 0
+            checkBtn.remove()
+            for (question of result.exercise.questions) {
+                i++
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.classList.add('exercise')
+                if (i == 1) {
+                    exerciseDiv.style.display = 'flex'
+                } else {
+                    exerciseDiv.style.display = 'none'
+                }
+                questions.appendChild(exerciseDiv)
+                for (q of question.field.question.split(' ')) {
+                    if (q != '{{ answerKey }}') {
+                        const div = document.createElement('div');
+                        div.classList.add('text')
+                        const p = document.createElement('p')
+                        p.innerHTML = `${q} `
 
-            alert('Sorry dear Student. Something went wrong. Please tell to Mr.Sardor about this error. Error code: 503')
-
-<!--            const questions = document.createElement('div');-->
-<!--            questions.classList.add('questions')-->
-<!--            const body = document.querySelector('body');-->
-<!--            body.appendChild(questions)-->
-<!--            exerciseDiv.remove()-->
-<!--            let i = 0-->
-<!--            checkBtn.remove()-->
-<!--            for (question of result.exercise.questions) {-->
-<!--                i++-->
-<!--                const exerciseDiv = document.createElement('div');-->
-<!--                exerciseDiv.classList.add('exercise')-->
-<!--                if (i == 1) {-->
-<!--                    exerciseDiv.style.display = 'flex'-->
-<!--                } else {-->
-<!--                    exerciseDiv.style.display = 'none'-->
-<!--                }-->
-<!--                questions.appendChild(exerciseDiv)-->
-<!--                for (q of question.field.question.split(' ')) {-->
-<!--                    if (q != '{{ answerKey }}') {-->
-<!--                        const div = document.createElement('div');-->
-<!--                        div.classList.add('text')-->
-<!--                        const p = document.createElement('p')-->
-<!--                        p.innerHTML = `${q} `-->
-
-<!--                        div.appendChild(p)-->
-<!--                        exerciseDiv.appendChild(div)-->
-<!--                    }-->
-<!--                    else if (q == '<br>') {-->
-<!--                        const br = document.createElement('div')-->
-<!--                        br.style.width = '100%'-->
-<!--                        exerciseDiv.appendChild(br)-->
-<!--                    }-->
-<!--                    else {-->
-<!--                        const span = document.createElement('input')-->
-<!--                        span.dataset.answers = question.field.correct_answers-->
-<!--                        span.classList.add('answer-blank')-->
-<!--                        exerciseDiv.appendChild(span);-->
-<!--                        span.addEventListener('click', () => {-->
-<!--                            document.querySelectorAll('.answer-blank').forEach(el => el.classList.remove('active'));-->
-<!--                            span.classList.add('active');-->
-<!--                        });-->
-<!--                    }-->
-<!--                }-->
-<!--            }-->
-<!--            const checkBtn2 = document.createElement('button')-->
-<!--            checkBtn2.innerHTML = 'Check'-->
-<!--            checkBtn2.classList.add('check')-->
-<!--            checkBtn2.classList.add('active')-->
-<!--            checkBtn2.addEventListener('click', () => {-->
-<!--                span.classList.remove('active');-->
-<!--                if (span.dataset.answers.split(',').includes(span.value)) {-->
-<!--                    span.style.backgroundColor = '#329961'-->
-<!--                    correctAudio.currentTime = 0;-->
-<!--                    correctAudio.play();-->
-<!--                    addLabel(span);-->
-<!--                } else {-->
-<!--                    span.style.backgroundColor = '#c91d57'-->
-<!--                    inCorrectAudio.currentTime = 0;-->
-<!--                    inCorrectAudio.play();-->
-<!--                    addLabel(span, false);-->
-<!--                }-->
-<!--            })-->
-<!--            body.appendChild(checkBtn2)-->
-<!--            const span = document.querySelector('.answer-blank');-->
-<!--            span.click()-->
-<!--            await fetchVoice()-->
+                        div.appendChild(p)
+                        exerciseDiv.appendChild(div)
+                    }
+                    else if (q == '<br>') {
+                        const br = document.createElement('div')
+                        br.style.width = '100%'
+                        exerciseDiv.appendChild(br)
+                    }
+                    else {
+                        const span = document.createElement('input')
+                        span.dataset.questionId = question.id
+                        span.dataset.answers = question.field.correct_answers
+                        span.classList.add('answer-blank')
+                        exerciseDiv.appendChild(span);
+                    }
+                }
+            }
+            const span = document.querySelector('.answer-blank');
+            span.click()
+            await fetchVoice()
         } else if (result.exercise.exercise_type == 11000) {
+            checkBtn2.remove()
             for (question of result.exercise.questions) {
                 for (q of question.field.question.split(' ')) {
                     if (q == '<br>') {
@@ -778,11 +956,104 @@
             validateInputs()
         }
         } else if (result.exercise.exercise_type == 11100) {
-            alert('Sorry dear Student. Something went wrong. Please tell to Mr.Sardor about this error. Error code: 503. Exercise type: ${result.exercise.exercise_type}')
+            checkBtn.remove()
+            const questions = document.createElement('div');
+            questions.classList.add('questions')
+            const body = document.querySelector('body');
+            body.appendChild(questions)
+            exerciseDiv.remove()
+            let i = 0
+            checkBtn.remove()
+            for (question of result.exercise.questions) {
+                i++
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.classList.add('exercise')
+                if (i == 1) {
+                    exerciseDiv.style.display = 'flex'
+                } else {
+                    exerciseDiv.style.display = 'none'
+                }
+                questions.appendChild(exerciseDiv)
+                for (q of question.field.question.split(' ')) {
+                    if (q != '{{ answerKey }}') {
+                        const div = document.createElement('div');
+                        div.classList.add('text')
+                        const p = document.createElement('p')
+                        p.innerHTML = `${q} `
+
+                        div.appendChild(p)
+                        exerciseDiv.appendChild(div)
+                    }
+                    else if (q == '<br>') {
+                        const br = document.createElement('div')
+                        br.style.width = '100%'
+                        exerciseDiv.appendChild(br)
+                    }
+                    else {
+                        const span = document.createElement('input')
+                        span.dataset.questionId = question.id
+                        span.dataset.answers = question.field.correct_answers
+                        span.classList.add('answer-blank')
+                        exerciseDiv.appendChild(span);
+                    }
+                }
+            }
+            const span = document.querySelector('.answer-blank');
+            span.click()
+            await fetchVoice()
         } else if (result.exercise.exercise_type == 11200) {
+            checkBtn.remove()
             alert(`Sorry dear Student. Something went wrong. Please tell to Mr.Sardor about this error. Error code: 503. Exercise type: ${result.exercise.exercise_type}`)
         } else if (result.exercise.exercise_type == 11300) {
-            alert('Sorry dear Student. Something went wrong. Please tell to Mr.Sardor about this error. Error code: 503. Exercise type: ${result.exercise.exercise_type}')
+            checkBtn.remove()
+            const questions = document.createElement('div');
+            questions.classList.add('questions')
+            const body = document.querySelector('body');
+            body.appendChild(questions)
+            exerciseDiv.remove()
+            let i = 0
+            checkBtn.remove()
+            for (question of result.exercise.questions) {
+                i++
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.classList.add('exercise')
+                if (i == 1) {
+                    exerciseDiv.style.display = 'flex'
+                } else {
+                    exerciseDiv.style.display = 'none'
+                }
+                questions.appendChild(exerciseDiv)
+                for (q of question.field.sentence.split(' ')) {
+                    if (q == '<br>') {
+                        const br = document.createElement('div')
+                        br.style.width = '100%'
+                        exerciseDiv.appendChild(br)
+                    }
+                    else if (q != '{{ answerKey }}') {
+                        const div = document.createElement('div');
+                        div.classList.add('text')
+                        const p = document.createElement('p')
+                        p.innerHTML = `${q} `
+
+                        div.appendChild(p)
+                        exerciseDiv.appendChild(div)
+                    }
+                    else {
+                        const span = document.createElement('input')
+                        span.dataset.questionId = question.id
+                        span.dataset.answers = question.field.rewritten
+                        span.classList.add('answer-blank')
+                        exerciseDiv.appendChild(span);
+                        span.addEventListener('click', () => {
+                            document.querySelectorAll('.answer-blank').forEach(el => el.classList.remove('active'));
+                            span.classList.add('active');
+                        });
+                    }
+                }
+            }
+            const span = document.querySelector('.answer-blank');
+            span.click()
+            await fetchVoice()
         }
     }
 
@@ -791,6 +1062,7 @@
     })
 
 fetchExercise()
+
 </script>
 </body>
 </html>

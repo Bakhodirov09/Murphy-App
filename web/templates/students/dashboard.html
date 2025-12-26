@@ -6,11 +6,12 @@
 </head>
 <style>
     * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-}
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      user-select: none;
+    }
 
 body {
   background: #141416;
@@ -102,9 +103,9 @@ body {
     flex-direction: inherit;
     display: flex;
     gap: 15px;
+    cursor: not-allowed;
 }
 
-/* Progress bar */
 .percent {
   background: #d9e1ff;
   width: 100%;
@@ -140,24 +141,24 @@ body {
 }
 
 /* Mobile fix */
-@media(max-width: 600px) {
-  .week button {
-    position: static;
-    margin-top: 10px;
-    width: 100%;
-    text-align: center;
-  }
-}
+<!--@media(max-width: 600px) {-->
+<!--  .week button {-->
+<!--    position: static;-->
+<!--    margin-top: 10px;-->
+<!--    width: 100%;-->
+<!--    text-align: center;-->
+<!--  }-->
+<!--}-->
 
 </style>
 <body>
 <header>
     <div class="profile">
         <div class="texts">
-            <h3>Nurulloh</h3>
-            <p>Level undefined</p>
+            <h3>{{ first_name }}</h3>
+            <p>{{ level }}</p>
         </div>
-        <img src="https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/9/0K3bXqWTEPyrsZLoZ0vJZK9BdSCaqcsm.png" alt="">
+        <img src="{{ photo }}" alt="">
     </div>
 </header>
 <main>
@@ -185,11 +186,11 @@ body {
             textsDiv.appendChild(p)
 
             const button = document.createElement('button')
-            weekDiv.style.setProperty('--percent', '0')
+            weekDiv.style.setProperty('--percent', '0%')
             button.innerHTML = 'Start'
             if (week.progress != 0) {
-                weekDiv.style.setProperty('--percent', '${week.percent}')
-                button.innerHTML = week.percent
+                weekDiv.style.setProperty('--percent', `${week.progress}%`)
+                button.innerHTML = `${week.progress}%`
             }
             button.dataset.value = week.id
             button.classList.add('btn')
@@ -201,7 +202,7 @@ body {
             const percentDiv = document.createElement('div')
             percentDiv.classList.add('percent')
             const percent = document.createElement('span')
-            percent.style.width = week.progress
+            percent.style.width = `${week.progress}%`
             percentDiv.appendChild(percent)
 
             const lessonDate = new Date(week.lesson_date)

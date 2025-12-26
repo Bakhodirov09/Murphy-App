@@ -1,5 +1,5 @@
 import json
-from fastapi import FastAPI, status, Request, HTTPException
+from fastapi import FastAPI, status, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from httpx import AsyncClient, Client
 from starlette.templating import Jinja2Templates
@@ -19,7 +19,7 @@ app = FastAPI()
 async def root(request: Request):
     token = request.cookies.get('token')
     if not token:
-        return RedirectResponse(url='/login')
+        return RedirectResponse(url=f'/login?{request.query_params}')
     decoded_token = await decode_jwt(token)
     if decoded_token['type'] == 'student':
         return RedirectResponse(url='/student/dashboard')
@@ -30,7 +30,7 @@ async def get_login(request: Request):
     return templates.TemplateResponse(request, 'login.html')
 
 @app.post('/login', status_code=status.HTTP_200_OK)
-async def login(request: Request, data: LoginRequest):
+async def login(request: Request, data: LoginRequest, chat_id: int = Query(...)):
     if not data.password.isdigit():
         body = {'project': 'lms-v2', 'action': 'client_auth_universal_login', 'body': {'login': data.login, 'password': data.password}}
         encrypted = {'a': await encrypt_aes_base64(body, LOGIN_REQUEST_HEX_KEY)}
@@ -49,13 +49,15 @@ async def login(request: Request, data: LoginRequest):
                             'avatar_url': r_json['user']['avatar_url'],
                             'group': r_json['user']['group']['name'],
                             'level': r_json['user']['group']['level_label'],
-                            'sub': r_json['user']['group']['sub_label']
+                            'sub': r_json['user']['group']['sub_label'],
+                            'chat_id': chat_id
                         }
                     }
                     if r_json['user']['teacher']['id'] == 73617:
                         response['success'] = True
                         response['token'] = await create_token({'user': response['user'], 'type': 'student'})
                         response['type'] = 'student'
+                        response['chat_id'] = request.query_params.get('chat_id')
                         return response
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})

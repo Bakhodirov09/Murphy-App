@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, Enum
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, Enum, BigInteger
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from web.general import tashkent
@@ -32,6 +32,7 @@ class StudentsModel(BaseModel):
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     avatar_url = Column(String(500))
+    chat_id = Column(BigInteger, unique=True)
 
     group_id = Column(
         UUID(as_uuid=True),
@@ -141,7 +142,8 @@ class MurphyBooksModel(BaseModel):
     units = relationship(
         'MurphyUnitsModel',
         back_populates='book',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
+        order_by="MurphyUnitsModel.unit_number"
     )
 
 class MurphyUnitsModel(BaseModel):
