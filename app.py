@@ -11,7 +11,7 @@ async def link_btn(chat_id):
             [
                 InlineKeyboardButton(
                     text='Murphy-Homework Web-Site',
-                    web_app=WebAppInfo(url=f'https://12b3492d0594.ngrok-free.app?chat_id={chat_id}')
+                    web_app=WebAppInfo(url=f'https://babc48280d92.ngrok-free.app?chat_id={chat_id}')
                 )
             ]
         ]
@@ -27,7 +27,7 @@ Welcome to our bot. Please click 'Murphy-Homework Web-Site' button, and start do
 
 ✊ GOOD LUCK...!
 """
-    await message.answer(text=text, reply_markup=await link_btn(message.chat.id), parse_mode='HTML')
+    await message.answer(text=text, reply_markup=await link_btn(message.chat.id), parse_mode='HTML', protect_content=True)
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

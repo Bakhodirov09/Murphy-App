@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run Web
-uvicorn web.app:app --port 7000 &
+uvicorn web.app:app --port 8000 &
 
 # Save ran web's pid
 WEB_PID=$!
