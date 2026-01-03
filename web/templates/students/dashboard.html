@@ -5,44 +5,34 @@
     <title>Main Menu</title>
 </head>
 <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      user-select: none;
-    }
+    /* ===================== GENERAL ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  user-select: none;
+}
 
 body {
   background: #141416;
-  padding: 15px;
+  padding: 15px; /* footerdan mustaqil */
+  padding-bottom: 100px; /* footer uchun joy */
 }
 
+/* ===================== PROFILE ===================== */
 .profile {
-    display: flex;
-    flex-direction: row-reverse;
-    color: white;
-    gap: 20px;
+  display: flex;
+  flex-direction: row-reverse;
+  color: white;
+  gap: 20px;
 }
 
-.profile h3 {
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;v
-}
+.profile h3 { font-size: 14px; font-weight: 500; }
+.profile p { color: #b1b5c3; }
+.profile img { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 20px; }
 
-.profile p {
-    color: #b1b5c3;
-}
-
-.profile img {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    margin-bottom: 20px;
-}
-
+/* ===================== WEEKS ===================== */
 .weeks {
   display: flex;
   flex-direction: column;
@@ -59,33 +49,19 @@ body {
   min-height: 100px;
 }
 
-/* Text section */
-.text h1 {
-  font-size: 20px;
-  font-weight: 700;
-}
+.week .text h1 { font-size: 20px; font-weight: 700; }
+.week .text p { font-size: 14px; margin-top: 3px; color: #d9afaf; }
 
-.text p {
-  font-size: 14px;
-  margin-top: 3px;
-  color: #d9afaf;
-}
-
-/* Start button top-right */
 .week .btn {
   position: absolute;
   top: 18px;
   right: 20px;
-
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  color: black;
   font-size: 14px;
-
-  /* Button uchun progress fill */
   background: linear-gradient(
       to right,
       #55cf5e var(--percent),
@@ -94,16 +70,15 @@ body {
   min-width: 140px;
   min-height: 40px;
   z-index: 5;
+  color: black;
 }
 
 .week .btn.locked {
-    background: #c91d57;
-    color: white;
-    align-items: center;
-    flex-direction: inherit;
-    display: flex;
-    gap: 15px;
-    cursor: not-allowed;
+  background: #c91d57;
+  color: white;
+  display: flex;
+  gap: 15px;
+  cursor: not-allowed;
 }
 
 .percent {
@@ -123,95 +98,122 @@ body {
 }
 
 .shadow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    border-radius: 14px;
-
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background: rgba(0, 0, 0, 0.4);
-    pointer-events: all;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 14px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: all;
 }
 
-    @media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
+/* ===================== FOOTER PANEL ===================== */
+.panel {
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: #23262f;
+  z-index: 10;
+  padding: 0 15px; /* ichki joylashuv */
+}
 
-    .profile {
-        gap: 15px;
-    }
+.panel div {
+  display: flex;
+  align-items: center;
+}
 
-    .profile h3 {
-        font-size: 12px;
-    }
+.panel div button {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  background: none;
+  border: none;
+  align-items: center;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+}
 
-    .profile p {
-        font-size: 12px;
-        color: #b1b5c3;
-    }
+/* ACTIVE BUTTON */
+.panel div button.active {
+  background: #ffffff3d;
+}
 
-    .profile img {
-        width: 35px;
-        height: 35px;
-        margin-bottom: 15px;
-    }
+/* SVG rangini active bilan CSS orqali o‘zgartirish */
+.panel div button svg {
+  width: 24px;
+  height: 24px;
+  color: #878691; /* default rang */
+}
 
-    .weeks {
-        gap: 10px;
-    }
+.panel div button.active svg {
+  color: #ffcf00; /* active rang */
+}
 
-    .week {
-        padding: 15px;
-        min-height: auto;
-        border-radius: 10px;
-        display: flex;
-        flex-direction: column;
-    }
+/* ===================== RESPONSIVE MEDIA ===================== */
+@media screen and (max-width: 768px) {
+  .profile {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
 
-    .text h1 {
-        font-size: 18px;
-    }
+  .week {
+    padding: 15px 15px;
+    min-height: 90px;
+  }
 
-    .text p {
-        font-size: 12px;
-        margin-top: 2px;
-    }
+  .week .btn {
+    min-width: 120px;
+    min-height: 36px;
+    font-size: 12px;
+    top: 12px;
+    right: 12px;
+  }
 
-    .week .btn {
-        position: static;
-        margin-top: 10px;
-        width: 100%;
-        text-align: center;
-        padding: 8px 0;
-        border-radius: 6px;
-        font-size: 13px;
-        min-width: auto;
-        min-height: 35px;
-    }
+  .panel {
+    height: 60px;
+  }
 
-    .week .btn.locked {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-    }
+  .panel div button {
+    font-size: 14px;
+    padding: 6px;
+  }
 
-    .percent {
-        height: 6px;
-        margin-top: 10px;
-    }
+  .panel div button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
 
-    .shadow {
-        border-radius: 10px;
-    }
+@media screen and (max-width: 480px) {
+  body {
+    padding: 10px;
+    padding-bottom: 90px;
+  }
+
+  .week .btn {
+    min-width: 100px;
+    font-size: 11px;
+  }
+
+  .panel {
+    height: 55px;
+  }
+
+  .panel div button svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 </style>
@@ -229,8 +231,40 @@ body {
     <div class="weeks">
     </div>
 </main>
+<footer>
+    <div class="panel">
+        <div class="weeks-panel">
+            <button class="active"><svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M20.5827 15.5392C20.7305 15.4305 20.847 15.2848 20.9204 15.1167C20.9939 14.9487 21.0217 14.7642 21.0011 14.5819C20.9805 14.3997 20.9122 14.2261 20.803 14.0787C20.6939 13.9313 20.5478 13.8152 20.3795 13.7423V12.3091L19.5416 12.6652V13.7423C19.3732 13.8152 19.2271 13.9312 19.1179 14.0787C19.0087 14.2261 18.9403 14.3998 18.9197 14.5821C18.8991 14.7644 18.9269 14.949 19.0005 15.1171C19.074 15.2852 19.1906 15.4309 19.3384 15.5396C19.2069 15.6362 19.0999 15.7624 19.0261 15.9079C18.9522 16.0534 18.9135 16.2143 18.9132 16.3775V17.4244C18.9132 17.5355 18.9573 17.6421 19.0359 17.7207C19.1145 17.7992 19.221 17.8434 19.3322 17.8434H20.589C20.7001 17.8434 20.8067 17.7992 20.8852 17.7207C20.9638 17.6421 21.008 17.5355 21.008 17.4244V16.3771C21.0076 16.2139 20.969 16.053 20.8951 15.9075C20.8212 15.762 20.7142 15.6358 20.5827 15.5392ZM18.2848 13.1973V16.2975C18.287 16.6579 18.1955 17.0127 18.0193 17.327C17.843 17.6414 17.588 17.9045 17.2793 18.0906C15.6774 19.0261 13.8557 19.5191 12.0006 19.5191C10.1455 19.5191 8.32372 19.0261 6.72182 18.0906C6.41314 17.9045 6.15815 17.6414 5.98187 17.327C5.80559 17.0127 5.71409 16.6579 5.71635 16.2975V13.1973L10.8568 15.3716C11.219 15.5237 11.6078 15.602 12.0006 15.602C12.3933 15.602 12.7822 15.5237 13.1443 15.3716L18.2848 13.1973Z" ></path><path d="M21.2328 8.72589L12.8169 5.16483C12.5583 5.05604 12.2806 5 12 5C11.7194 5 11.4417 5.05604 11.1831 5.16483L2.76722 8.72589C2.53975 8.82211 2.34567 8.98321 2.20922 9.18908C2.07277 9.39495 2 9.63646 2 9.88345C2 10.1304 2.07277 10.3719 2.20922 10.5778C2.34567 10.7837 2.53975 10.9448 2.76722 11.041L11.1831 14.6021C11.4416 14.711 11.7194 14.7671 12 14.7671C12.2806 14.7671 12.5584 14.711 12.8169 14.6021L21.2328 11.041C21.4602 10.9448 21.6543 10.7837 21.7908 10.5778C21.9272 10.3719 22 10.1304 22 9.88345C22 9.63646 21.9272 9.39495 21.7908 9.18908C21.6543 8.98321 21.4602 8.82211 21.2328 8.72589Z" ></path></svg> Weeks</button>
+        </div>
+        <div class="test-panel">
+            <button><svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.127 5.29368H7.51995C7.30967 5.29368 7.10801 5.21015 6.95933 5.06146C6.81064 4.91278 6.72711 4.71111 6.72711 4.50084V3.29284C6.72711 2.85517 7.08228 2.5 7.51995 2.5H12.127C12.5646 2.5 12.9198 2.85517 12.9198 3.29284V4.50084C12.9198 4.60496 12.8993 4.70806 12.8595 4.80425C12.8196 4.90044 12.7612 4.98784 12.6876 5.06146C12.614 5.13508 12.5266 5.19348 12.4304 5.23333C12.3342 5.27317 12.2311 5.29368 12.127 5.29368ZM17.4545 11.0659C16.9617 10.573 16.1581 10.573 15.6653 11.0659L15.0803 11.654L16.8706 13.4438L17.4545 12.8599C17.9527 12.3622 17.9527 11.5641 17.4545 11.0659ZM14.5135 12.223L11.3904 15.3407C11.3261 15.4104 11.2832 15.4961 11.2672 15.5872L11.0315 16.9746C10.9779 17.28 11.2457 17.5425 11.5511 17.4943L12.9386 17.2585C13.0296 17.2425 13.1153 17.1996 13.1796 17.1353L16.3028 14.0122L14.5135 12.223Z"/><path d="M14.3902 3.89817H13.7232V4.50083C13.7227 4.92405 13.5543 5.32976 13.255 5.62902C12.9558 5.92828 12.5501 6.09665 12.1268 6.09722H7.51981C7.09655 6.09679 6.69075 5.92847 6.39147 5.62918C6.09218 5.32989 5.92385 4.92409 5.92342 4.50083V3.89817H5.24576C4.19043 3.89817 3.33331 4.75529 3.33331 5.81062V15.5872C3.33331 16.6425 4.19043 17.4996 5.24576 17.4996H10.3119C10.2275 17.2893 10.2025 17.0599 10.2396 16.8364L10.4747 15.4527C10.5165 15.2073 10.629 14.9807 10.7983 14.7959L14.208 11.391L15.0946 10.4996C15.4201 10.1756 15.8453 9.97067 16.3016 9.91784V5.81598C16.303 5.56425 16.2547 5.31473 16.1592 5.0818C16.0638 4.84887 15.9231 4.63714 15.7454 4.45885C15.5677 4.28055 15.3565 4.13921 15.1239 4.04297C14.8913 3.94674 14.6419 3.89753 14.3902 3.89817ZM8.98924 11.8442H6.66483C6.53697 11.8442 6.41433 11.7934 6.32392 11.703C6.2335 11.6126 6.1827 11.49 6.1827 11.3621C6.1827 11.2342 6.2335 11.1116 6.32392 11.0212C6.41433 10.9308 6.53697 10.88 6.66483 10.88H8.98924C9.11711 10.88 9.23974 10.9308 9.33016 11.0212C9.42057 11.1116 9.47137 11.2342 9.47137 11.3621C9.47137 11.49 9.42057 11.6126 9.33016 11.703C9.23974 11.7934 9.11711 11.8442 8.98924 11.8442ZM11.8349 9.10786H6.66537C6.5375 9.10786 6.41487 9.05706 6.32445 8.96664C6.23404 8.87623 6.18324 8.7536 6.18324 8.62573C6.18324 8.49786 6.23404 8.37523 6.32445 8.28481C6.41487 8.19439 6.5375 8.1436 6.66537 8.1436H11.8349C11.9627 8.1436 12.0854 8.19439 12.1758 8.28481C12.2662 8.37523 12.317 8.49786 12.317 8.62573C12.317 8.7536 12.2662 8.87623 12.1758 8.96664C12.0854 9.05706 11.9627 9.10786 11.8349 9.10786Z"/></svg> Tests</button>
+        </div>
+        <div class="settings-panel">
+            <button><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" class="ionicon" fill="currentColor" viewBox="0 0 512 512"><path d="M262.29 192.31a64 64 0 1057.4 57.4 64.13 64.13 0 00-57.4-57.4zM416.39 256a154.34 154.34 0 01-1.53 20.79l45.21 35.46a10.81 10.81 0 012.45 13.75l-42.77 74a10.81 10.81 0 01-13.14 4.59l-44.9-18.08a16.11 16.11 0 00-15.17 1.75A164.48 164.48 0 01325 400.8a15.94 15.94 0 00-8.82 12.14l-6.73 47.89a11.08 11.08 0 01-10.68 9.17h-85.54a11.11 11.11 0 01-10.69-8.87l-6.72-47.82a16.07 16.07 0 00-9-12.22 155.3 155.3 0 01-21.46-12.57 16 16 0 00-15.11-1.71l-44.89 18.07a10.81 10.81 0 01-13.14-4.58l-42.77-74a10.8 10.8 0 012.45-13.75l38.21-30a16.05 16.05 0 006-14.08c-.36-4.17-.58-8.33-.58-12.5s.21-8.27.58-12.35a16 16 0 00-6.07-13.94l-38.19-30A10.81 10.81 0 0149.48 186l42.77-74a10.81 10.81 0 0113.14-4.59l44.9 18.08a16.11 16.11 0 0015.17-1.75A164.48 164.48 0 01187 111.2a15.94 15.94 0 008.82-12.14l6.73-47.89A11.08 11.08 0 01213.23 42h85.54a11.11 11.11 0 0110.69 8.87l6.72 47.82a16.07 16.07 0 009 12.22 155.3 155.3 0 0121.46 12.57 16 16 0 0015.11 1.71l44.89-18.07a10.81 10.81 0 0113.14 4.58l42.77 74a10.8 10.8 0 01-2.45 13.75l-38.21 30a16.05 16.05 0 00-6.05 14.08c.33 4.14.55 8.3.55 12.47z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg> Settings</button>
+        </div>
+    </div>
+</footer>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 <script>
     const weeks = document.querySelector('.weeks');
+
+    const weeksBtn = document.querySelector('.weeks-panel button');
+    const testBtn = document.querySelector('.test-panel button');
+    const settingsBtn = document.querySelector('.settings-panel button');
+
+    weeksBtn.addEventListener('click', () => {
+        window.location.href = '/student/dashboard'
+    })
+
+    testBtn.addEventListener('click', () => {
+        alert('Coming soon...')
+    })
+
+    settingsBtn.addEventListener('click', () => {
+        window.location.href = '/student/settings'
+    })
+
     async function fetchWeeks() {
         const response = await fetch('/student/get-weeks', {
             method: 'GET'

@@ -36,6 +36,23 @@ async def dashboard(db: db_dependency, request: Request):
         'first_name': student.first_name
     })
 
+@router.get('/settings', status_code=status.HTTP_200_OK)
+async def dashboard(db: db_dependency, request: Request):
+    token = request.cookies.get('token')
+    decoded_token = await decode_jwt(token)
+    student = db.query(StudentsModel).filter(
+        StudentsModel.id == decoded_token['student_id']
+    ).first()
+    if not student:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={'success': False, 'message': 'User Not Found'})
+    return templates.TemplateResponse('/students/settings.html', {
+        'request': request,
+        'level': decoded_token['level'],
+        'photo': student.avatar_url,
+        'first_name': student.first_name
+    })
+
+
 @router.post('/ok', status_code=status.HTTP_201_CREATED)
 async def ok(request: Request, db: db_dependency):
     token = request.cookies.get('token')
