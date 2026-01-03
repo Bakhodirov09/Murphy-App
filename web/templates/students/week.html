@@ -134,7 +134,7 @@
             padding: 20px;
             border-radius: 20px;
             overflow-x: auto;
-            display: block;
+            display: flex;
             margin-bottom: 20px;
         }
         .vocabulary:not(.card) {
@@ -163,6 +163,17 @@
             cursor: pointer;
         }
 
+        .exercise .texts p {
+            white-space: nowrap;
+        }
+
+        #home {
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
     </style>
 </head>
 <body>
@@ -186,7 +197,7 @@
             </div>
         </div>
     </div>
-    <div class="vocabulary">
+    <div id="vocabulary" class="vocabulary">
     </div>
     <div class="card exercises">
         <div class="background-image" style="background-image: url('/bg3');"></div>
@@ -220,7 +231,7 @@
         const vocabProgress = document.getElementById('percentVocab');
         const exerciseProgress = document.getElementById('progressExercise');
         const percentExercise = document.getElementById('percentExercise');
-        const vocabularyDiv = document.querySelector('.vocabulary');
+        const vocabularyDiv = document.getElementById('vocabulary');
         const exercisesDiv = document.getElementById('exercises');
         let vocabs = 0
         let didPercent = 0
@@ -256,11 +267,14 @@
             exercise.appendChild(imgDiv)
 
             exercise.addEventListener('click', () => {
-                window.location.href = `/student/vocabulary?id=${exercise.dataset.value}`
+                window.location.href = `/student/vocabulary?id=${exercise.dataset.value}&week_id=${params.get('id')}`
             })
+
+            exercise.style.backgroundImage = `linear-gradient(to right, green ${vocab.percent}%, transparent ${vocab.percent}%)`
 
             vocabs += vocab.words.length
             didPercent += vocab.percent
+            vocabularyDiv.appendChild(exercise)
         }
         i = 0
         let didMurphyPercent = 0
@@ -275,7 +289,7 @@
             const h4 = document.createElement('h4')
             h4.innerHTML = `Task: ${i} (${exercise.percent}%)`
             const p = document.createElement('p')
-            p.innerHTML = `Undefined questions`
+            p.innerHTML = `10 questions`
 
             texts.appendChild(h4)
             texts.appendChild(p)
@@ -303,7 +317,7 @@
             didMurphyPercent += exercise.percent
         }
 
-        const vocabPercent = (didPercent / vocabs) * 100 || 0
+        const vocabPercent = Math.round(didPercent / vocabs) || 0
         const murphyPercent = Math.round(didMurphyPercent / exercises) || 0
         percentExercise.innerHTML = `${murphyPercent}%`
         exerciseProgress.style.width = `${murphyPercent}%`
@@ -321,11 +335,12 @@
       })
     })
     const container = document.getElementById('exercises');
+    const containerVocab = document.getElementById('vocabulary');
     let isDown = false;
     let startX;
     let scrollLeft;
 
-    // ====== KOMPYUTER (MOUSE) EVENTS ======
+    // ====== COMPUTER (MOUSE) EVENTS ======
     container.addEventListener('mousedown', (e) => {
         isDown = true;
         container.style.cursor = 'grabbing';
@@ -350,7 +365,7 @@
         container.style.cursor = 'grab';
     });
 
-    // ====== TELEFON (TOUCH) EVENTS ======
+    // ====== PHONE (TOUCH) EVENTS ======
     container.addEventListener('touchstart', (e) => {
         isDown = true;
         startX = e.touches[0].pageX - container.offsetLeft;
@@ -371,5 +386,58 @@
     container.addEventListener('touchcancel', () => {
         isDown = false;
     });
+
+    // ====== COMPUTER (MOUSE) EVENTS ======
+    containerVocab.addEventListener('mousedown', (e) => {
+        isDown = true;
+        containerVocab.style.cursor = 'grabbing';
+        startX = e.pageX - containerVocab.offsetLeft;
+        scrollLeft = containerVocab.scrollLeft;
+    });
+
+    containerVocab.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - containerVocab.offsetLeft;
+        const walk = (x - startX) * 2;
+        containerVocab.scrollLeft = scrollLeft - walk;
+    });
+
+    containerVocab.addEventListener('mouseup', () => {
+        isDown = false;
+        containerVocab.style.cursor = 'grab';
+    });
+
+    containerVocab.addEventListener('mouseleave', () => {
+        isDown = false;
+        containerVocab.style.cursor = 'grab';
+    });
+
+    // ====== PHONE (TOUCH) EVENTS ======
+    containerVocab.addEventListener('touchstart', (e) => {
+        isDown = true;
+        startX = e.touches[0].pageX - containerVocab.offsetLeft;
+        scrollLeft = containerVocab.scrollLeft;
+    });
+
+    containerVocab.addEventListener('touchmove', (e) => {
+        if (!isDown) return;
+        const x = e.touches[0].pageX - containerVocab.offsetLeft;
+        const walk = (x - startX) * 2;
+        containerVocab.scrollLeft = scrollLeft - walk;
+    });
+
+    containerVocab.addEventListener('touchend', () => {
+        isDown = false;
+    });
+
+    containerVocab.addEventListener('touchcancel', () => {
+        isDown = false;
+    });
+
+    const homeBtnn = document.getElementById('home')
+    homeBtnn.addEventListener('click', () => {
+        window.location.href = '/student/dashboard'
+    })
+
 </script>
 </html>

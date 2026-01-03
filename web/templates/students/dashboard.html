@@ -140,15 +140,79 @@ body {
     pointer-events: all;
 }
 
-/* Mobile fix */
-<!--@media(max-width: 600px) {-->
-<!--  .week button {-->
-<!--    position: static;-->
-<!--    margin-top: 10px;-->
-<!--    width: 100%;-->
-<!--    text-align: center;-->
-<!--  }-->
-<!--}-->
+    @media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .profile {
+        gap: 15px;
+    }
+
+    .profile h3 {
+        font-size: 12px;
+    }
+
+    .profile p {
+        font-size: 12px;
+        color: #b1b5c3;
+    }
+
+    .profile img {
+        width: 35px;
+        height: 35px;
+        margin-bottom: 15px;
+    }
+
+    .weeks {
+        gap: 10px;
+    }
+
+    .week {
+        padding: 15px;
+        min-height: auto;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .text h1 {
+        font-size: 18px;
+    }
+
+    .text p {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    .week .btn {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
+        text-align: center;
+        padding: 8px 0;
+        border-radius: 6px;
+        font-size: 13px;
+        min-width: auto;
+        min-height: 35px;
+    }
+
+    .week .btn.locked {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .percent {
+        height: 6px;
+        margin-top: 10px;
+    }
+
+    .shadow {
+        border-radius: 10px;
+    }
+}
 
 </style>
 <body>
@@ -230,5 +294,6 @@ body {
 
     fetchWeeks()
 </script>
+
 </body>
 </html>

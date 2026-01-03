@@ -56,7 +56,16 @@ class ResultItem(BaseModel):
     question_id: str
     failed: bool
 
+class VocabularyResultItem(BaseModel):
+    vocabulary_id: str
+    failed: bool
+
 class SaveResultsSchema(BaseModel):
     exercise_id: str
     week_id: str
     results: List[ResultItem]
+
+class SaveVocabResultsSchema(BaseModel):
+    unit_id: str
+    week_id: str
+    results: List[VocabularyResultItem]

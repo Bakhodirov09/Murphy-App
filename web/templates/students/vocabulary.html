@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Add viewport meta tag for mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vocabulary</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        box-sizing: border-box;
+    }
+    body {
+        background: #1e1e1e;
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        color: white;
+        max-width: 100vw;
+        overflow-x: hidden;
+        padding-bottom: 70px;
+    }
+
+    header {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        background-color: #665555ba;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .back {
+        background: gray;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: inline-block;
+        font-size: 25px;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    main .word-div {
+        display: none;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    main .word-div.active {
+        display: flex;
+    }
+
+    main .word-div div {
+        background-color: #23262f;
+        border-radius: 20px;
+    }
+
+    main .word-div .image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    main .word-div .image img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    main .word-div .word {
+        height: auto;
+        padding: 20px;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    main .word-div .word p {
+        margin: 10px;
+        word-break: break-word;
+    }
+
+    main .word-div .translations {
+        height: auto;
+        min-height: 50px;
+        padding: 20px;
+    }
+
+    main .word-div .translations strong {
+        font-size: 25px;
+        display: block;
+        margin: 10px;
+    }
+
+    main .word-div .translations hr {
+        margin: 20px 0 20px 0;
+    }
+
+    main .word-div .translations .meaning p {
+        opacity: 50%;
+    }
+
+    footer .carousel {
+        position: fixed;
+        z-index: 2;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 70px;
+        padding: 20px;
+        background-color: #23262f;
+    }
+
+    footer .carousel button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 20px;
+        border: none;
+        background: #ffcf00;
+        opacity: 50%;
+        cursor: not-allowed;
+    }
+
+    footer .carousel button.active {
+        opacity: 100%;
+        cursor: pointer;
+    }
+
+    .words {
+        display: none;
+    }
+
+    .words.active {
+        display: block;
+    }
+
+    .success {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background-color: #23262f;
+        display: flex;
+        justify-content: space-between;
+        padding: 24px;
+    }
+
+    .error {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background-color: #23262f;
+        display: flex;
+        justify-content: space-between;
+        padding: 24px;
+    }
+
+    .result-card {
+        display: none;
+        flex-direction: column;
+        -moz-box-align: center;
+        align-items: center;
+        -moz-box-pack: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100%;
+        position: relative;
+    }
+
+    .result-card h2 {
+        text-align: center;
+        margin: 10px 0;
+    }
+
+    .result-card.active {
+        display: flex;
+    }
+
+    .actions {
+        position: absolute;
+        bottom: 24px;
+        right: 24px;
+    }
+
+    .checking-page {
+        display: none;
+        max-width: 420px;
+        margin: auto;
+        padding-bottom: 40px;
+    }
+
+    .checking-page.active {
+        display: inline;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #1b1e26;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+    }
+
+    .round {
+        font-weight: 600;
+    }
+
+    .progress {
+        opacity: 0.7;
+    }
+
+    .instruction {
+        padding: 16px;
+        font-size: 15px;
+        opacity: 0.85;
+    }
+
+    .image-card {
+        background: #23262f;
+        border-radius: 16px;
+        display: flex;
+        justify-content: center;
+        padding: 30px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .image-card img {
+        max-width: 180px;
+    }
+
+    .translation {
+        text-align: center;
+        margin: 24px 0;
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    .letters {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .letter-input {
+        width: 40px;
+        height: 50px;
+        border-radius: 8px;
+        background: #2a2e3a;
+        border: 2px solid transparent;
+        text-align: center;
+        font-size: 20px;
+        color: white;
+        outline: none;
+        transition: background cubic-bezier(.25,0,.3,1);
+        transition-duration: .1s;
+    }
+
+    .letter-input:focus {
+        border: 1px solid #ffcf00;
+        background-color: #ffcf00;
+        color: #141416;
+    }
+
+    .letter-input.correct {
+        background: #3cb371;
+        color: black;
+    }
+
+    .letter-input.wrong {
+        background: #ff5c5c;
+        color: white;
+    }
+
+    .test {
+        background: #23262f;
+        border-radius: 20px;
+        padding: 5px 0 35px 0;
+    }
+
+    .check-by-spelling {
+        display: none;
+    }
+
+    .check-by-spelling.active {
+        display: block;
+    }
+
+    .check-by-choosing {
+        display: none;
+    }
+
+    .check-by-choosing.active {
+        display: block;
+    }
+
+    .check-by-image-choosing {
+        display: none;
+    }
+
+    .check-by-image-choosing.active {
+        display: block;
+    }
+
+    .check-page.active {
+        display: block;
+    }
+
+    .check-page {
+        display: none;
+    }
+
+    .check-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 20px;
+    }
+
+    .check-btn button {
+        width: 250px;
+        height: 48px;
+        -moz-box-align: centre;
+        border-radius: 16px;
+        background: #ffcf00;
+        color: #23262f;
+        outline: none;
+        border: none;
+        font-size: 15px;
+        font-weight: 500;
+        transition: .1s background cubic-bezier(.25,0,.3,1);
+        cursor: pointer;
+    }
+
+    .check {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin: 20px;
+        width: 250px;
+        height: 48px;
+        -moz-box-align: centre;
+        border-radius: 16px;
+        background: #353945;
+        color: #23262f;
+        outline: none;
+        border: none;
+        font-size: 15px;
+        font-weight: 500;
+        transition: .1s background cubic-bezier(.25,0,.3,1);
+        cursor: not-allowed;
+    }
+
+    .check.active {
+        background: #ffcf00;
+        cursor: pointer;
+    }
+
+    .loader {
+      width: 15px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 8px solid #0000;
+      border-right-color: #ffa50097;
+      position: relative;
+      animation: l24 1s infinite linear;
+    }
+    .loader:before,
+    .loader:after {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: inherit;
+      animation: inherit;
+      animation-duration: 2s;
+    }
+    .loader:after {
+      animation-duration: 4s;
+    }
+    @keyframes l24 {
+      100% {transform: rotate(1turn)}
+    }
+
+    @media only screen and (max-width: 480px) {
+        header {
+            padding: 12px 15px;
+        }
+
+        main {
+            padding: 15px;
+        }
+
+        main .word-div {
+            gap: 15px;
+        }
+
+        main .word-div .word,
+        main .word-div .translations {
+            padding: 15px;
+        }
+
+        main .word-div .word p,
+        main .word-div .translations strong {
+            font-size: 22px;
+        }
+
+        .back {
+            width: 36px;
+            height: 36px;
+            font-size: 22px;
+        }
+
+        .task p,
+        .count p {
+            font-size: 16px;
+        }
+    }
+
+    /* For very small iPhones (like iPhone SE) */
+    @media only screen and (max-width: 375px) {
+        main .word-div .word p,
+        main .word-div .translations strong {
+            font-size: 20px;
+        }
+
+        main {
+            padding: 12px;
+        }
+
+        main .word-div .word,
+        main .word-div .translations {
+            padding: 12px;
+        }
+    }
+
+</style>
+<body>
+<header>
+    <div class="back">
+        <span class="back">←</span>
+    </div>
+
+    <div class="task">
+        <p>Task 1</p>
+    </div>
+
+    <div class="count">
+        <p>1/10</p>
+    </div>
+
+</header>
+<main>
+    <div class="words active">
+
+    </div>
+
+    <div class="result-card">
+        <img
+            src="https://web-student.inter-nation.uz/_next/image?url=/images/lesson/good_job.png&w=384&q=75"
+            alt="Good job"
+            width="260"
+            height="260"
+        >
+
+        <h2>
+            Good job! <br>
+            You have learned <strong class="good_job_counter">7</strong> words
+        </h2>
+
+        <p>Are you ready to be checked? Good luck!</p>
+
+        <div class="actions">
+            <button class="again">Learn again</button>
+            <button class="start">Start checking</button>
+        </div>
+    </div>
+
+    <div class="check-by-spelling">
+        <div class="instruction">
+            <p>Spell the word correctly</p>
+        </div>
+        <div class="check-btn">
+            <button type="submit">Check</button>
+        </div>
+    </div>
+
+    <div class="check-by-choosing">
+        <div class="instruction">
+            <p>Choose the translation</p>
+        </div>
+        <div class="check-page active">
+            <div class="image">
+                <img src="https://www.essentialenglish.review/apps-data/4000-essential-english-words-3/data/unit-1/wordlist/25950.jpg" alt="word image">
+            </div>
+            <div class="translation">
+                <p>Paydo Bo'ladi</p>
+            </div>
+            <div class="options" id="options">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="check-by-image-choosing">
+        <div class="instruction">
+            <p>Choose the translation</p>
+        </div>
+        <div class="check-page active">
+            <div class="translation">
+                <p>Paydo Bo'ladi</p>
+            </div>
+            <div class="images">
+                <img src="https://www.essentialenglish.review/apps-data/4000-essential-english-words-3/data/unit-1/wordlist/25950.jpg" alt="word image">
+            </div>
+        </div>
+    </div>
+
+
+
+</main>
+<footer>
+    <div class="carousel">
+        <div class="left">
+            <button class="" disabled=""><ion-icon name="chevron-back-outline"></ion-icon></button>
+        </div>
+        <div class="count">
+            <p></p>
+        </div>
+        <div class="right">
+            <button class="active"><ion-icon name="chevron-forward-outline"></ion-icon></button>
+        </div>
+    </div>
+</footer>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script>
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const weekId = params.get("week_id");
+
+    async function fetchWords() {
+        if (!id) {
+            alert('No vocab id!!!')
+            return False
+        }
+        const response = await fetch(`/student/get-vocabulary-words?id=${id}`, {
+            method: 'GET'
+        })
+        const result = await response.json()
+        if (response.status != 200) {
+            alert('Not found!')
+            return False
+        }
+        const wordsDiv = document.querySelector('.words');
+        const userLang = localStorage.getItem('lang') ?? 'uz'
+        async function addWords() {
+            let active = true
+            for (const word of new Set(result.words.words)) {
+                const wordDiv = document.createElement('div');
+                const imageDiv = document.createElement('div');
+                const image = document.createElement('img');
+
+                const wordDiv1 = document.createElement('div')
+                wordDiv1.classList.add('word')
+                const wordP = document.createElement('p')
+                wordP.innerHTML = word['word']
+                wordDiv1.appendChild(wordP)
+
+                const translationDiv = document.createElement('div')
+                translationDiv.classList.add('translations')
+                const translation = document.createElement('strong')
+                translation.innerHTML = word[`translation_${userLang}`]
+                const hr = document.createElement('hr');
+                const meaning = document.createElement('div');
+                meaning.classList.add('meaning')
+                const meaningP = document.createElement('p')
+                meaningP.innerHTML = word['meaning']
+
+                meaning.appendChild(meaningP)
+
+                image.src = word['photo']
+
+                imageDiv.classList.add('image')
+                wordDiv.classList.add('word-div')
+                if (active == true) {
+                    wordDiv.classList.add('active')
+                    active = false
+                }
+
+                imageDiv.appendChild(image)
+                translationDiv.appendChild(translation)
+                translationDiv.appendChild(hr)
+                translationDiv.appendChild(meaning)
+
+                wordDiv.appendChild(imageDiv)
+                wordDiv.appendChild(wordDiv1)
+                wordDiv.appendChild(translationDiv)
+
+                wordsDiv.appendChild(wordDiv)
+        }
+        async function addChecking () {
+            let active = true
+            async function addSpellChecking() {
+                const checkDiv = document.querySelector('.check-by-spelling');
+                for (const word of new Set(result.words.words)) {
+                    const checkPageDiv = document.createElement('div');
+                    checkPageDiv.classList.add('check-page');
+                    checkPageDiv.dataset.answer = word.word.toUpperCase()
+                    if (active == true) {
+                        active = false
+                        checkPageDiv.classList.add('active')
+                    }
+
+                    const imgDiv = document.createElement('div');
+                    imgDiv.classList.add('image-card')
+
+                    const img = document.createElement('img')
+                    img.src = word['photo']
+                    imgDiv.appendChild(img)
+
+                    const testDiv = document.createElement('div')
+                    testDiv.id = 'test'
+                    testDiv.className = 'test'
+
+                    const translationDiv = document.createElement('div');
+                    translationDiv.classList.add('translation')
+
+                    const translation = document.createElement('p');
+                    translation.innerHTML = word[`translation_${userLang}`]
+
+                    const hr = document.createElement('hr')
+                    hr.style.margin = '25px'
+
+                    const lettersDiv = document.createElement('div');
+                    lettersDiv.dataset.id = word.id;
+                    lettersDiv.classList.add('letters')
+
+                    word.word.split("").forEach((_, i) => {
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.maxLength = 1;
+                        input.className = "letter-input";
+
+                        input.addEventListener("input", () => {
+                            input.value = input.value.toUpperCase();
+                            const activePage = document.querySelector('.check-page.active');
+
+                            activePage.dataset.value =
+                                (activePage.dataset.value || "") + input.value;
+
+                            if (input.value && input.nextElementSibling) {
+                                input.nextElementSibling.focus();
+                            }
+                        });
+
+                        input.addEventListener("keydown", (e) => {
+                            if (e.key !== "Backspace") return;
+
+                            const activePage = document.querySelector('.check-page.active');
+                            const inputs = Array.from(activePage.querySelectorAll('input'));
+
+                            e.preventDefault();
+
+                            if (input.value) {
+                                input.value = "";
+                            } else if (input.previousElementSibling) {
+                                input.previousElementSibling.focus();
+                                input.previousElementSibling.value = "";
+                            }
+                            activePage.dataset.value = inputs.map(i => i.value).join("");
+                        });
+
+                        lettersDiv.appendChild(input);
+                    });
+
+                    translationDiv.appendChild(translation)
+                    testDiv.appendChild(translationDiv)
+                    testDiv.appendChild(hr)
+                    testDiv.appendChild(lettersDiv)
+
+                    checkPageDiv.appendChild(imgDiv)
+                    checkPageDiv.appendChild(testDiv)
+                    checkDiv.appendChild(checkPageDiv)
+                }
+            }
+
+<!--            async function addChooseChecking() {-->
+<!--            }-->
+
+<!--            async function addImageChecking() {-->
+<!--            }-->
+
+            await addSpellChecking()
+<!--            await addChooseChecking()-->
+<!--            await addImageChecking()-->
+
+        }
+        await addChecking()
+    }
+    addWords()
+    const words = document.querySelectorAll('.word-div');
+
+    const resultDiv = document.querySelector('.result-card');
+    const leftBtn = document.querySelector('.left button');
+    const rightBtn = document.querySelector('.right button');
+    const wordCounter1 = document.querySelector('header .count p');
+    const carousel = document.querySelector('footer .carousel');
+    const wordCounter2 = document.querySelector('footer .count p');
+    const wordsCount = document.querySelector('.good_job_counter');
+    const startCheckBtn = document.querySelector('.result-card .actions .start');
+    const againBtn = document.querySelector('.result-card .actions .again');
+    const checkBySpellingPage = document.querySelector('.check-by-spelling');
+
+    wordCounter1.innerHTML = `1 of ${words.length}`
+    wordCounter2.innerHTML = `1 of ${words.length}`
+    wordsCount.innerHTML = words.length
+
+    leftBtn.addEventListener('click', () => {
+        const activeWordDiv = document.querySelector('.word-div.active');
+        const currentIndex = Array.from(words).indexOf(activeWordDiv);
+        const nextIndex = currentIndex - 1;
+
+        if (nextIndex >= 0) {
+            words.forEach(div => div.classList.remove('active'));
+            words[nextIndex].classList.add('active');
+
+            const displayIndex = nextIndex + 1;
+            wordCounter1.innerHTML = `${displayIndex} of ${words.length}`;
+            wordCounter2.innerHTML = `${displayIndex} of ${words.length}`;
+            if (nextIndex === 0) {
+                leftBtn.disabled = nextIndex === 0;
+                leftBtn.classList.remove('active')
+            }
+        } else {
+            leftBtn.classList.remove('active')
+            leftBtn.disabled = true
+        }
+
+    })
+
+    rightBtn.addEventListener('click', () => {
+        const activeWordDiv = document.querySelector('.word-div.active');
+        const currentIndex = Array.from(words).indexOf(activeWordDiv);
+        const nextIndex = currentIndex + 1;
+
+        leftBtn.classList.add('active')
+        leftBtn.disabled = false
+
+        if (nextIndex < words.length) {
+            words.forEach(div => div.classList.remove('active'));
+            words[nextIndex].classList.add('active');
+
+            const displayIndex = nextIndex + 1;
+            wordCounter1.innerHTML = `${displayIndex} of ${words.length}`;
+            wordCounter2.innerHTML = `${displayIndex} of ${words.length}`;
+        } else {
+            wordsDiv.classList.remove('active')
+            resultDiv.classList.add('active')
+            carousel.style.display = 'none'
+            document.querySelector('header').style.display = 'none'
+        }
+    });
+
+    startCheckBtn.addEventListener('click', () => {
+        resultDiv.classList.remove('active')
+        checkBySpellingPage.classList.add('active')
+        const letterInput = document.querySelector('.letter-input');
+        letterInput.focus()
+        document.querySelector('header').style.display = 'flex'
+    })
+
+    againBtn.addEventListener('click', () => {
+        wordCounter1.innerHTML = `1 of ${words.length}`;
+        wordCounter2.innerHTML = `1 of ${words.length}`;
+        words.forEach(div => div.classList.remove('active'));
+        words[0].classList.add('active');
+        wordsDiv.classList.add('active')
+        resultDiv.classList.remove('active')
+        carousel.style.display = 'flex'
+        document.querySelector('header').style.display = 'flex'
+    })
+}
+
+
+fetchWords()
+    const backBtn = document.querySelector('span.back')
+    let currentExercise1 = 1
+    let answers = {
+        unit_id: id,
+        week_id: weekId,
+        results: Array()
+    }
+    backBtn.addEventListener('click', () => {
+        window.location.href = `/student/week?id=${weekId}`
+    })
+    function addLabel (correct=true) {
+        const successDiv = document.createElement('div');
+        if (correct == true) {
+            successDiv.classList.add('success')
+        } else {
+            successDiv.classList.add('error')
+        }
+        const elements = document.createElement('div')
+        elements.classList.add('elements')
+
+        const leftElements = document.createElement('div')
+        leftElements.style.display = 'flex'
+        leftElements.style.alignItems = 'center'
+        leftElements.style.gap = '24px'
+        leftElements.classList.add('left')
+
+        const iconDiv = document.createElement('div')
+        let icon = 0
+        if (correct == true) {
+            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 32 32" fill="none"><path d="M16 .703C7.55.703.7 7.553.7 16.003c0 8.45 6.85 15.3 15.3 15.3 8.45 0 15.3-6.85 15.3-15.3 0-8.45-6.85-15.3-15.3-15.3z" fill="#fff"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M.7 16.003C.7 7.553 7.55.703 16 .703c8.45 0 15.3 6.85 15.3 15.3 0 8.45-6.85 15.3-15.3 15.3-8.45 0-15.3-6.85-15.3-15.3zm21.847-2.772a1.391 1.391 0 00-1.967-1.967l-6.51 6.51-2.632-2.736a1.391 1.391 0 00-2.003 1.93l3.616 3.756a1.393 1.393 0 001.985.018l7.511-7.511z" fill="#329961"></path></svg>'
+        } else {
+            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 32 32" fill="none"><path d="M16 31.303c8.45 0 15.3-6.85 15.3-15.3 0-8.45-6.85-15.3-15.3-15.3C7.55.703.7 7.553.7 16.003c0 8.45 6.85 15.3 15.3 15.3z" fill="#c91d57"></path><path d="M9.873 22.087a1.7 1.7 0 002.42 0l3.666-3.665 3.665 3.665a1.712 1.712 0 102.42-2.42L18.38 16l3.665-3.665a1.711 1.711 0 10-2.421-2.42l-3.665 3.665-3.665-3.666a1.712 1.712 0 00-2.421 2.421l3.665 3.665-3.665 3.666a1.7 1.7 0 000 2.42z" fill="#fff"></path></svg>'
+        }
+        iconDiv.innerHTML = icon
+
+        const answerDiv = document.createElement('div')
+        answerDiv.classList.add('answer')
+
+        const answerH3 = document.createElement('h3')
+        if (correct == true) {
+            answerH3.innerHTML = 'Correct Answer'
+        } else {
+            answerH3.innerHTML = 'Wrong Answer'
+        }
+        answerDiv.appendChild(answerH3)
+        leftElements.appendChild(iconDiv)
+        leftElements.appendChild(answerDiv)
+
+        const rightElements = document.createElement('div')
+        rightElements.classList.add('right')
+
+        const nextBtn = document.createElement('button')
+        nextBtn.classList.add('next')
+        if (correct == true) {
+            nextBtn.style.backgroundColor = '#329961'
+        } else {
+            nextBtn.style.backgroundColor = '#c91d57'
+        }
+        nextBtn.style.color = '#fff'
+        nextBtn.style.cursor = 'pointer'
+        nextBtn.style.width = '228px'
+        nextBtn.style.height = '48px'
+        nextBtn.style.borderRadius = '14px'
+        nextBtn.style.border = 'none'
+        nextBtn.style.fontSize = '17px'
+        nextBtn.style.fontWeigh = '500'
+        nextBtn.type = 'submit'
+
+        nextBtn.addEventListener('click', () => {
+            successDiv.remove()
+            const exercises = document.querySelectorAll('.check-by-spelling .check-page');
+
+            exercises.forEach(exercise => {
+                exercise.classList.remove('active')
+            });
+            if (currentExercise1 < exercises.length) {
+                exercises[currentExercise1].classList.add('active')
+                currentExercise1++;
+                const input = document.querySelector('.check-page.active .test .letters .letter-input') ?? document.querySelector('.check-page.active .letter-input')
+                input.focus()
+            } else {
+                const checkBtn2 = document.querySelector('.check-btn button')
+                checkBtn2.remove()
+                const submitBtn = document.createElement('button')
+                submitBtn.classList.add('check')
+                submitBtn.classList.add('active')
+                submitBtn.innerHTML = 'Save and Submit...'
+                body.appendChild(submitBtn)
+                submitBtn.addEventListener('click', async () => {
+                    submitBtn.innerHTML = ''
+                    submitBtn.classList.remove('active')
+                    submitBtn.disabled = true
+                    const text = document.createElement('div')
+                    text.innerHTML = 'Saving... '
+                    submitBtn.appendChild(text)
+                    submitBtn.style.display = 'block ruby'
+                    submitBtn.style.fontSize = '22px'
+                    const loader = document.createElement('div')
+                    loader.classList.add('loader')
+                    submitBtn.appendChild(loader)
+                    const response = await fetch('/student/save-vocabulary-results', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(answers)
+                    })
+                    const result = await response.json()
+                    loader.remove()
+                    text.innerHTML = 'Saved'
+                    backBtn.click()
+                })
+                submitBtn.click()
+            }
+        });
+
+        const nextText = document.createElement('span')
+        nextText.innerHTML = 'Next'
+
+        nextBtn.appendChild(nextText)
+        rightElements.appendChild(nextBtn)
+
+        successDiv.appendChild(leftElements)
+        successDiv.appendChild(rightElements)
+
+        const body = document.querySelector('body')
+        body.appendChild(successDiv)
+    }
+
+    const btn = document.querySelector('.check-btn button');
+    btn.addEventListener('click', () => {
+        const activePage = document.querySelector('.check-page.active');
+        let color = '#329961';
+        const inputs = document.querySelectorAll('.check-page.active .test .letters .letter-input')
+        if (activePage.dataset.value == activePage.dataset.answer) {
+            const vocabId = document.querySelector('.check-page.active .test .letters')
+            const result = {
+                vocabulary_id: vocabId.dataset.id,
+                failed: false
+            }
+            answers.results.push(result)
+            addLabel()
+        } else {
+            const vocabId = document.querySelector('.check-page.active .test .letters')
+            const result = {
+                vocabulary_id: vocabId.dataset.id,
+                failed: true
+            }
+            answers.results.push(result)
+            color = '#c91d57'
+            addLabel(false)
+        }
+
+        if (inputs) {
+            inputs.forEach(input => {
+                input.style.backgroundColor = color
+            })
+        }
+<!--        else {-->
+<!--            image.style.border = `1px solid ${color}`-->
+<!--        }-->
+    })
+
+</script>
+</body>
+</html>

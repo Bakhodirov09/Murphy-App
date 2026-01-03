@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 
 from web.data import tashkent
 from web.general import db_dependency, create_token, decode_jwt, JWTBearer, templates
-from web.schemas import GroupDaysRequest, SaveResultsSchema
+from web.schemas import GroupDaysRequest, SaveResultsSchema, SaveVocabResultsSchema
 from web.models import GroupsModel, StudentsModel, WeeksModel, WeekScheduleModel, MurphyUnitsModel, EssentialUnitsModel, \
     MurphyExercisesModel, MurphyBooksModel, StudentResultsModel
 
@@ -226,7 +226,8 @@ async def get_week(request: Request, db: db_dependency, id: UUID = Query(...)):
     for vocabulary in vocabulary_units:
         results = db.query(StudentResultsModel).filter(
             StudentResultsModel.student_id == decoded_token['student_id'],
-            StudentResultsModel.vocabulary_unit_id == vocabulary.id
+            StudentResultsModel.vocabulary_unit_id == vocabulary.id,
+            StudentResultsModel.passed == True
         ).all()
         vocabularies.append({'id': vocabulary.id, 'words': vocabulary.words, 'percent': round((len(results) / len(vocabulary.words)) * 100)})
     for murphy in murphy_units:
@@ -245,6 +246,19 @@ async def exercise_page(request: Request):
         'request': request,
         'answerKey': '{%answer%}'
     })
+
+@router.get('/vocabulary', status_code=status.HTTP_200_OK)
+async def vocabulary_page(request: Request):
+    return templates.TemplateResponse('/students/vocabulary.html', {
+        'request': request,
+    })
+
+@router.get('/get-vocabulary-words', status_code=status.HTTP_200_OK)
+async def get_vocabulary_words(db: db_dependency, id: UUID = Query(...)):
+    words = db.query(EssentialUnitsModel).filter(
+        EssentialUnitsModel.id == id
+    ).options(selectinload(EssentialUnitsModel.words)).first()
+    return {'ok': True, 'words': words}
 
 @router.get('/get-exercise', status_code=status.HTTP_200_OK)
 async def get_exercise(db: db_dependency, id: UUID = Query(...)):
@@ -275,6 +289,39 @@ async def save_results(request: Request, data: SaveResultsSchema, db: db_depende
                 type='Exercise',
                 exercise_id=data.exercise_id,
                 exercise_question_id=result.question_id
+            )
+            if result.failed:
+                student_result.fails_count = 1
+            else:
+                student_result.passed = True
+            db.add(student_result)
+        elif old_result.passed == False:
+            if result.failed:
+                old_result.fails_count = old_result.fails_count + 1
+            else:
+                old_result.passed = True
+        db.commit()
+
+    return {'ok': True}
+
+@router.post('/save-vocabulary-results', status_code=status.HTTP_200_OK)
+async def save_results(request: Request, data: SaveVocabResultsSchema, db: db_dependency):
+    token = request.cookies.get('token')
+    decoded_token = await decode_jwt(token)
+    for result in data.results:
+        old_result = db.query(StudentResultsModel).filter(
+            StudentResultsModel.student_id == decoded_token['student_id'],
+            StudentResultsModel.week_id == data.week_id,
+            StudentResultsModel.vocabulary_unit_id == data.unit_id,
+            StudentResultsModel.vocabulary_id == result.vocabulary_id
+        ).first()
+        if not old_result:
+            student_result = StudentResultsModel(
+                student_id=decoded_token['student_id'],
+                week_id=data.week_id,
+                type='Vocab',
+                vocabulary_unit_id=data.unit_id,
+                vocabulary_id=result.vocabulary_id
             )
             if result.failed:
                 student_result.fails_count = 1
