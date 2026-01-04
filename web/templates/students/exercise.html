@@ -788,7 +788,7 @@
                 newExerciseDiv2.appendChild(br)
                 const answer = document.createElement('li')
                 answer.style.marginBottom = '10px'
-                answer.innerHTML = `${question['field']['left']} &nbsp; <input data-answers=${question['field']['correct_answer']} type="text" name="blank" class="answer-blank" question-id=${question['id']}>`
+                answer.innerHTML = `${question['field']['left']} &nbsp; <input data-answers=${question['field']['correct_answer']} type="text" name="blank" class="answer-blank" data-question-id=${question['id']}>`
                 answersOl.appendChild(answer)
             }
 
