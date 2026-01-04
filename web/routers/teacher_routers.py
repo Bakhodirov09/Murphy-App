@@ -158,7 +158,7 @@ async def question_page(request: Request):
 async def question_page(request: Request):
     token = request.cookies.get('token')
     decoded_token = await decode_jwt(token)
-    return templates.TemplateResponse("teachers/complete_the_sentences.html", {
+    return templates.TemplateResponse("teachers/separately_complete_the_sentences.html", {
         "request": request,
         "first_name": 'Sardorbek' if decoded_token['teacher'] == 'Main' else 'Sevara',
         "last_name": 'Abdulazizov' if decoded_token['teacher'] == 'Main' else 'Tolipjonova',
