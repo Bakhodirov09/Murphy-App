@@ -704,7 +704,12 @@
                 }
                 questions.appendChild(exerciseDiv)
                 for (q of question.field.question.split(' ')) {
-                    if (q != '{{ answerKey }}') {
+                    if (q == '<br>') {
+                        const br = document.createElement('div')
+                        br.style.width = '100%'
+                        exerciseDiv.appendChild(br)
+                    }
+                    else if (q != '{{ answerKey }}') {
                         const div = document.createElement('div');
                         div.classList.add('text')
                         const p = document.createElement('p')
@@ -712,11 +717,6 @@
 
                         div.appendChild(p)
                         exerciseDiv.appendChild(div)
-                    }
-                    else if (q == '<br>') {
-                        const br = document.createElement('div')
-                        br.style.width = '100%'
-                        exerciseDiv.appendChild(br)
                     }
                     else {
                         const span = document.createElement('span')
