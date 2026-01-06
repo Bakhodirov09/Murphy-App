@@ -411,13 +411,12 @@
                       <button class="btn active" style="width: 300px; background: rgb(0, 31, 63); color: white; cursor: pointer;">Yes, only these days.</button>
                   </div>`
                 cookieStore.set('token', result.detail.new_token)
-                localStorage.setItem('group', result.detail.group)
                 const yesBtn = document.querySelector('.btn.active'); // paydo bo'lganidan keyin
                 yesBtn.addEventListener('click', async () => {
                     const selected = document.querySelector('input[name="day_type"]:checked');
                     const data = {
                         days: selected.value,
-                        group: result.detail.group,
+                        group: localStorage.getItem('group'),
                         level: localStorage.getItem('level')
                     }
                     const response = await fetch('/student/create-group', {
@@ -425,7 +424,6 @@
                         headers: {'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     })
-                    const result = await response.json()
                     if (response.status == 201) {
                         localStorage.removeItem('group')
                         localStorage.removeItem('role')

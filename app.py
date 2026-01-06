@@ -29,5 +29,10 @@ Welcome to our bot. Please click 'Murphy-Homework Web-Site' button, and start do
 """
     await message.answer(text=text, reply_markup=await link_btn(message.chat.id), parse_mode='HTML', protect_content=True)
 
+@dp.message_handler(commands='about')
+async def about_handler(message: types.Message):
+    chat = await bot.get_chat(5707905702)
+    await message.answer(text=f"Full name: {chat.full_name}\nUsername: {chat.username}")
+
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
