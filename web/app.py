@@ -59,6 +59,10 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         response['type'] = 'student'
                         response['chat_id'] = request.query_params.get('chat_id')
                         return response
+                    if response['success'] == False:
+                        print(r_json['user']['teacher']['id'])
+                        with open('data.json', 'w') as writer:
+                            writer.write(json.dumps(r_json, separators=(',', ':')))
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
