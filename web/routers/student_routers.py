@@ -77,22 +77,23 @@ async def ok(request: Request, db: db_dependency):
     group = db.query(GroupsModel).filter(
         GroupsModel.group_name == decoded_token['user']['group']
     ).first()
-
-    if not group:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Group not found'
-        )
-
-    student.group_id = group.id
-    db.commit()
-
     new_token = await create_token({
         'student_id': str(student.id),
         'type': 'student',
         'level': decoded_token['user']['level'],
-        'sub': decoded_token['user']['sub']
+        'sub': decoded_token['user']['sub'],
+        'group': decoded_token['user']['group']
     })
+    db.commit()
+
+    if not group:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={'message': 'Group not found', 'new_token': new_token},
+        )
+
+    student.group_id = group.id
+    db.commit()
 
     return {'new_token': new_token}
 
