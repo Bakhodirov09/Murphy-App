@@ -417,7 +417,7 @@
                     const selected = document.querySelector('input[name="day_type"]:checked');
                     const data = {
                         days: selected.value,
-                        group: localStorage.getItem('group'),
+                        group: result.detail.group,
                         level: localStorage.getItem('level')
                     }
                     const response = await fetch('/student/create-group', {
