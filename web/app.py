@@ -53,7 +53,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                             'chat_id': chat_id
                         }
                     }
-                    if r_json['user']['teacher']['id'] == 73617:
+                    if r_json['user']['teacher']['user_id'] == 7802957:
                         response['success'] = True
                         response['token'] = await create_token({'user': response['user'], 'type': 'student'})
                         response['type'] = 'student'
