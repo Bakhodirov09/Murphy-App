@@ -19,7 +19,99 @@
       --radius:12px;
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
-    /* Days Toggle */
+    .group-main-buttons {
+      display: flex;
+      justify-content: space-between;
+      color: #b1b5c3;
+      margin: 20px 0;
+    }
+    .month-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.arrow {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #b1b5c3;
+}
+
+.arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.month-text {
+    min-width: 120px;
+    text-align: center;
+}
+
+.month-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-size: 16px;
+    font-weight: 500;
+    overflow: hidden;
+}
+
+.month-text {
+    min-width: 140px;
+    text-align: center;
+    position: relative;
+}
+
+/* ANIMATIONS */
+.slide-left {
+    animation: slideRight 0.35s ease;
+}
+
+.slide-right {
+    animation: slideLeft 0.35s ease;
+}
+
+@keyframes slideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.mini-test-btn {
+    background: #c91d57;
+    border: 0;
+    color: white;
+    width: 150px;
+    height: 35px;
+    border-radius: 20px;
+    margin-right: 30px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+}
+
     .days-toggle {
         width: 100%;
         display: flex;
@@ -289,6 +381,16 @@
 
       <section class="panel">
         <h3 id="result"></h3>
+        <div class="group-main-buttons">
+          <div class="month-carousel">
+            <button class="arrow" id="prevBtn">‹</button>
+            <span class="month-text" id="monthText">January</span>
+            <button class="arrow" id="nextBtn">›</button>
+          </div>
+          <div class="start-test">
+            <button class="mini-test-btn">Start Mini Test</button>
+          </div>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -309,7 +411,7 @@
     const now = new Date();
     const results_h3 = document.querySelector('#result');
     const monthName = now.toLocaleString('en-US', { month: 'long' });
-    results_h3.innerHTML = `Attendance & Results — ${monthName} ${now.getFullYear()}`
+    results_h3.innerHTML = `Results Of — ${monthName} ${now.getFullYear()}`
     async function fetchGroups(days) {
         const groups_tabs = document.querySelector('.groups-tabs');
         const response = await fetch(`/teacher/get-clear-groups?days=${days}`, {
@@ -434,6 +536,140 @@
             const tbody = document.querySelector('tbody');
             tbody.innerHTML = ''
         });
+    });
+    const monthNames = [
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    ];
+
+    // BUGUNGI OY
+    const currentMonth = now.getMonth(); // 0-11
+    const currentYear = now.getFullYear();
+
+    // 12 OYLIK MASSIV
+    const months = [];
+
+    for (let i = 0; i < 12; i++) {
+        const date = new Date(currentYear, currentMonth - i, 1);
+
+        months.unshift({
+            label: `${monthNames[date.getMonth()]} ${date.getFullYear()}`,
+            value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+        });
+    }
+
+    // default: eng oxirgi (bugungi oy)
+    let currentIndex = months.length - 1;
+
+    const monthText = document.getElementById("monthText");
+    monthText.textContent = months[currentIndex].label;
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    async function updateCarousel(direction = null) {
+        monthText.classList.remove("slide-left", "slide-right");
+        void monthText.offsetWidth;
+
+        if (direction === "next") {
+            monthText.classList.add("slide-left");
+        } else if (direction === "prev") {
+            monthText.classList.add("slide-right");
+        }
+
+        monthText.textContent = months[currentIndex].label;
+
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === months.length - 1;
+
+        const tab = document.querySelector('.group-tab.active')
+        if (!tab) return;
+        const theadGroup = document.querySelector('thead');
+        theadGroup.innerHTML = ''
+        const tbodyGroup = document.querySelector('tbody');
+        tbodyGroup.innerHTML = ''
+
+        document.querySelectorAll('.group-tab').forEach(g => g.classList.remove('active'));
+        tab.classList.add('active');
+        const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+        const groupId = tab.dataset.value;
+        const response = await fetch(`/teacher/get-group-results?month=${months[currentIndex].value}&id=${groupId}`, {
+            method: 'GET'
+        })
+        result = await response.json()
+        const table = document.querySelector('#students-table');
+        const tr = document.createElement('tr')
+        tr.id = 'tr_table'
+        const students_th = document.createElement('th');
+        students_th.innerHTML = 'Students'
+        tr.appendChild(students_th)
+        const thead = document.querySelector('thead');
+        thead.appendChild(tr)
+        for (schedule of result.schedule) {
+            const th = document.createElement('th');
+            th.innerHTML = `Week ${schedule.week_number}`
+            tr.appendChild(th)
+        }
+        for (student of result.students) {
+
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+
+            const student_div = document.createElement('div');
+            student_div.classList.add('student');
+
+            const avatar = document.createElement('avatar');
+            avatar.classList.add('avatar');
+            avatar.innerHTML = student.first_name[0] + student.last_name[0]
+
+            const name_div = document.createElement('div');
+            const sname_div = document.createElement('div');
+            sname_div.classList.add('sname');
+            sname_div.innerHTML = `${student['first_name']} ${student['last_name'][0]}.`
+
+            name_div.appendChild(sname_div)
+            student_div.appendChild(avatar)
+            student_div.appendChild(name_div)
+            td.appendChild(student_div)
+            tr.appendChild(td)
+            table.appendChild(tr)
+            for (result of student.progress) {
+                const td = document.createElement('td');
+                td.dataset.value = `${student.id}%${result.week_id}`
+                const mark_div = document.createElement('div');
+                let class_name = 'circle'
+                mark_div.classList.add(class_name)
+                if (result.percent <= 40) {
+                    mark_div.classList.add('red')
+                }
+                else if (result.percent > 40 && result.percent <= 60) {
+                    mark_div.classList.add('yellow')
+                }
+                else {
+                  mark_div.classList.add('green')
+                }
+                mark_div.innerHTML = result.percent
+                td.appendChild(mark_div)
+                tr.appendChild(td)
+            }
+        }
+
+        console.log(months[currentIndex].value);
+    }
+
+    prevBtn.addEventListener("click", () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel("prev");
+        }
+    });
+
+    nextBtn.addEventListener("click", () => {
+        if (currentIndex < months.length - 1) {
+            currentIndex++;
+            updateCarousel("next");
+        }
     });
   </script>
 </html>
