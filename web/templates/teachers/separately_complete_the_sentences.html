@@ -448,7 +448,6 @@
                 <label>Questions</label>
                 <div class="question">
                     <input type="text" data-value="question" placeholder="Write question here..." required>
-                    <input type="text" data-value="options" placeholder="Write question options here..." required>
                     <input type="text" data-value="answers" placeholder="Write question answers here..." required>
                 </div>
             </div>
@@ -469,10 +468,6 @@
         questionInput.type = "text"
         questionInput.dataset.value = "question"
         questionInput.placeholder = "Write question here"
-        const optionsInput = document.createElement('input')
-        optionsInput.type = "text"
-        optionsInput.dataset.value = "options"
-        optionsInput.placeholder = "Write question options here"
         const answersInput = document.createElement('input')
         answersInput.type = "text"
         answersInput.dataset.value = "answers"
@@ -483,7 +478,6 @@
         btn.innerHTML = 'x'
 
         question.appendChild(questionInput)
-        question.appendChild(optionsInput)
         question.appendChild(answersInput)
         question.appendChild(btn)
         questions.appendChild(question)
