@@ -523,9 +523,8 @@
             const data = {
                 exercise_id: result.exercise_id,
                 field: {
-                    question: questionText.split(','), // .split() ni to'g'rilash kerak
-                    options: options.split(','),       // masalan .split(',')
-                    correct_answers: answers.split(',') // masalan .split(',')
+                    question: questionText,
+                    correct_answers: answers
                 }
             };
 
