@@ -14,9 +14,6 @@ def update(questions):
                 text += q
             question_db.field = {"question": text, "correct_answers": question['field']['options']}
             db.commit()
-    except Exception as e:
-        print(e)
-        db.rollback()
     finally:
         db.close()
 
