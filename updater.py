@@ -18,7 +18,7 @@ def update(questions):
         print('Done')
         db.close()
 
-questions = {
+questions = [
 		{
 			"id": "9e4d76f7-de97-4749-ad47-62dba107811a",
 			"field": {
@@ -106,6 +106,6 @@ questions = {
 			"exercise_id": "50dce2da-1362-4e65-93d4-68ac902bd26e",
 			"updated_at": "2026-01-08T18:43:04.630493"
 		}
-}
+]
 
 print(update(questions))
