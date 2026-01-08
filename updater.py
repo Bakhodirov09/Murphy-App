@@ -14,6 +14,7 @@ def update(questions):
             question_db.field = {"question": text, "correct_answers": question['field']['options']}
             db.commit()
     finally:
+        print('Done')
         db.close()
 
 questions = {
