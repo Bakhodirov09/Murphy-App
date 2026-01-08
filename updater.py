@@ -6,7 +6,6 @@ def update(questions):
     try:
         for question in questions:
             question_db = db.query(MurphyExerciseQuestionsModel).filter(
-                exercise_id=question['exercise_id'],
                 id=question['id']
             ).first()
             text = ""
