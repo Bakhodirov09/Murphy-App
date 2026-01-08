@@ -6,7 +6,8 @@ def update(questions):
     try:
         for question in questions:
             question_db = db.query(MurphyExerciseQuestionsModel).filter(
-                id=question['id']
+                MurphyExerciseQuestionsModel.id == question['id'],
+                MurphyExerciseQuestionsModel.exercise_id == question['exercise_id'],
             ).first()
             text = ""
             for q in question['field']['question']:
