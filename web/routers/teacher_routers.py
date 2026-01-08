@@ -357,10 +357,12 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
         for week_s in available_week_schedule:
             week = db.query(WeeksModel).filter(WeeksModel.week_number == week_s.week_number).first()
             murphy_units = db.query(MurphyUnitsModel).filter(
+                MurphyUnitsModel.book_id == week.murphy_book,
                 MurphyUnitsModel.unit_number >= week.murphy_from_unit,
                 MurphyUnitsModel.unit_number <= week.murphy_to_unit
             ).all()
             vocabularies = db.query(EssentialUnitsModel).filter(
+                EssentialUnitsModel.book_id == week.essential_book,
                 EssentialUnitsModel.unit_number >= week.essential_from_unit,
                 EssentialUnitsModel.unit_number <= week.essential_to_unit
             ).all()
