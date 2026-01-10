@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, Request, HTTPException, status, Depends, Query
+from fastapi.responses import JSONResponse
 from uuid import UUID
 
 from sqlalchemy.orm import selectinload
@@ -95,7 +96,18 @@ async def ok(request: Request, db: db_dependency):
     student.group_id = group.id
     db.commit()
 
-    return {'new_token': new_token}
+    response = {'ok': True}
+    resp = JSONResponse(response)
+    resp.set_cookie(
+        key='token',
+        value=new_token,
+        httponly=True,
+        max_age=60 * 60 * 24 * 15,
+        path='/',
+        samesite='lax'
+    )
+
+    return resp
 
 @router.post('/create-group', status_code=status.HTTP_201_CREATED)
 async def create_group(request: Request, data: GroupDaysRequest, db: db_dependency):

@@ -388,7 +388,6 @@
             });
             result = await response.json()
             if (response.status == 201) {
-                cookieStore.set('token', result.new_token)
                 window.location.replace('/student/dashboard')
             }
             else if (response.status == 404) {
