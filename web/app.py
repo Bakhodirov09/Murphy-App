@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, File
 from httpx import AsyncClient
 from datetime import datetime, timedelta
 
-from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY
+from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY, tashkent
 from web.general import create_token, templates, decode_jwt
 from web.schemas import LoginRequest
 from web.header import make_header, encrypt_aes_base64, decrypt_aes_base64
@@ -66,7 +66,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                             key='token',
                             value=response['token'],
                             httponly=True,
-                            expires=datetime.utcnow() + timedelta(days=15),
+                            expires=datetime.now(tz=tashkent) + timedelta(days=15),
                             path='/',
                             samesite='lax'
                         )
@@ -93,7 +93,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                     key='token',
                     value=response['token'],
                     httponly=True,
-                    expires=datetime.utcnow() + timedelta(days=7),
+                    expires=datetime.now(tz=tashkent) + timedelta(days=15),
                     path='/',
                     samesite='lax'
                 )
@@ -114,7 +114,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                     key='token',
                     value=response['token'],
                     httponly=True,
-                    expires=datetime.utcnow() + timedelta(days=7),
+                    expires=datetime.now(tz=tashkent) + timedelta(days=15),
                     path='/',
                     samesite='lax'
                 )
