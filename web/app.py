@@ -64,7 +64,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         resp = JSONResponse(response)
                         resp.set_cookie(
                             key='token',
-                            value=data['token'],
+                            value=response['token'],
                             httponly=True,
                             expires=datetime.utcnow() + timedelta(days=15),
                             path='/',
@@ -78,7 +78,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
         teacher_numbers = ['+998 (94) 930-62-22', '+998 (90) 859-79-39']
         if data.login in teacher_numbers:
             if data.login == teacher_numbers[0] and data.password == "967402800":
-                resp = JSONResponse({
+                response = {
                     'success': True,
                     'token': await create_token({'teacher': 'Main', 'type': 'teacher'}),
                     'teacher': {
@@ -87,10 +87,11 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/7/2HE_pDQBzQyg3cVBIvyxu2ia4Q5YMu1a.jpg'
                     },
                     'role': 'Main'
-                })
+                }
+                resp = JSONResponse(response)
                 resp.set_cookie(
                     key='token',
-                    value=data['token'],
+                    value=response['token'],
                     httponly=True,
                     expires=datetime.utcnow() + timedelta(days=7),
                     path='/',
@@ -98,7 +99,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                 )
                 return resp
             elif data.login == teacher_numbers[1] and data.password == '1149620400':
-                resp = JSONResponse({
+                response = {
                     'success': True,
                     'token': await create_token({'teacher': 'Support', 'type': 'teacher'}),
                     'teacher': {
@@ -107,10 +108,11 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/10/vP9Ql_GWZ5wmcg7SjAMtivpYWtdTc--w.jpg'
                     },
                     'role': 'Support'
-                })
+                }
+                resp = JSONResponse(response)
                 resp.set_cookie(
                     key='token',
-                    value=data['token'],
+                    value=response['token'],
                     httponly=True,
                     expires=datetime.utcnow() + timedelta(days=7),
                     path='/',
