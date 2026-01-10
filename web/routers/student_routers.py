@@ -97,7 +97,7 @@ async def ok(request: Request, db: db_dependency):
     db.commit()
 
     response = {'ok': True}
-    resp = JSONResponse(response)
+    resp = JSONResponse(response, status_code=status.HTTP_201_CREATED)
     resp.set_cookie(
         key='token',
         value=new_token,
