@@ -69,7 +69,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                             path='/',
                             samesite='lax'
                         )
-                        return response
+                        return resp
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
