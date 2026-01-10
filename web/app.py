@@ -1,8 +1,8 @@
 import json
 from fastapi import FastAPI, status, Request, HTTPException, Query
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
-from httpx import AsyncClient, Client
-from starlette.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
+from httpx import AsyncClient
+from datetime import datetime, timedelta
 
 from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY
 from web.general import create_token, templates, decode_jwt
@@ -13,17 +13,20 @@ from web.routers.teacher_routers import router as teacher_router
 
 app = FastAPI()
 
-# app.mount("/static", StaticFiles(directory="static"), name="static")
-
 @app.get('/')
 async def root(request: Request):
     token = request.cookies.get('token')
     if not token:
         return RedirectResponse(url=f'/login?{request.query_params}')
-    decoded_token = await decode_jwt(token)
-    if decoded_token['type'] == 'student':
-        return RedirectResponse(url='/student/dashboard')
-    return RedirectResponse(url='/teacher/dashboard')
+    try:
+        decoded_token = await decode_jwt(token)
+        if decoded_token['type'] == 'student':
+            return RedirectResponse(url='/student/dashboard')
+        return RedirectResponse(url='/teacher/dashboard')
+    except Exception as e:
+        response = RedirectResponse(url=f'/login?{request.query_params}')
+        response.delete_cookie('token')
+        return response
 
 @app.get('/login', status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def get_login(request: Request):
@@ -58,11 +61,16 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         response['token'] = await create_token({'user': response['user'], 'type': 'student'})
                         response['type'] = 'student'
                         response['chat_id'] = request.query_params.get('chat_id')
+                        resp = JSONResponse(response)
+                        resp.set_cookie(
+                            key='token',
+                            value=data['token'],
+                            httponly=True,
+                            expires=datetime.utcnow() + timedelta(days=15),
+                            path='/',
+                            samesite='lax'
+                        )
                         return response
-                    if r_json['user']['teacher']['id'] != 73617:
-                        print(r_json['user']['teacher']['id'])
-                        with open('data.json', 'w') as writer:
-                            writer.write(json.dumps(r_json, separators=(',', ':')))
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
@@ -70,7 +78,7 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
         teacher_numbers = ['+998 (94) 930-62-22', '+998 (90) 859-79-39']
         if data.login in teacher_numbers:
             if data.login == teacher_numbers[0] and data.password == "967402800":
-                return {
+                resp = JSONResponse({
                     'success': True,
                     'token': await create_token({'teacher': 'Main', 'type': 'teacher'}),
                     'teacher': {
@@ -79,9 +87,18 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/7/2HE_pDQBzQyg3cVBIvyxu2ia4Q5YMu1a.jpg'
                     },
                     'role': 'Main'
-                }
+                })
+                resp.set_cookie(
+                    key='token',
+                    value=data['token'],
+                    httponly=True,
+                    expires=datetime.utcnow() + timedelta(days=7),
+                    path='/',
+                    samesite='lax'
+                )
+                return resp
             elif data.login == teacher_numbers[1] and data.password == '1149620400':
-                return {
+                resp = JSONResponse({
                     'success': True,
                     'token': await create_token({'teacher': 'Support', 'type': 'teacher'}),
                     'teacher': {
@@ -90,68 +107,52 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/10/vP9Ql_GWZ5wmcg7SjAMtivpYWtdTc--w.jpg'
                     },
                     'role': 'Support'
-                }
+                })
+                resp.set_cookie(
+                    key='token',
+                    value=data['token'],
+                    httponly=True,
+                    expires=datetime.utcnow() + timedelta(days=7),
+                    path='/',
+                    samesite='lax'
+                )
+                return resp
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
 
-@app.get('/success', status_code=status.HTTP_200_OK)
+@app.get('/success', status_code=200)
 async def success_audio():
-    async with AsyncClient() as client:
-        response = await client.get('https://web-student.inter-nation.uz/audio/success.mp3')
-
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "audio/mpeg"
-    }
-
-    return Response(content=response.content, status_code=200, headers=headers)
+    return FileResponse(
+        path='assets/audios/success.mp3',
+        media_type='audio/mpeg'
+    )
 
 @app.get('/incorrect', status_code=status.HTTP_200_OK)
 async def success_audio():
-    async with AsyncClient() as client:
-        response = await client.get('https://web-student.inter-nation.uz/audio/wrong.mp3')
-
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "audio/mpeg"
-    }
-
-    return Response(content=response.content, status_code=200, headers=headers)
+    return FileResponse(
+        path='assets/audios/wrong.mp3',
+        media_type='audio/mpeg'
+    )
 
 @app.get('/task', status_code=status.HTTP_200_OK)
 async def task_image():
-    async with AsyncClient() as client:
-        response = await client.get('https://web-student.inter-nation.uz/_next/image?url=%2Fimages%2Flesson%2Fexercise%2Fdefault.png&w=96&q=75')
-
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "image/png"
-    }
-
-    return Response(content=response.content, status_code=200, headers=headers)
+    return FileResponse(
+        path='assets/images/task.png',
+        media_type='audio/mpeg'
+    )
 
 @app.get('/bg1', status_code=status.HTTP_200_OK)
 async def task_image():
-    async with AsyncClient() as client:
-        response = await client.get('https://web-student.inter-nation.uz/images/lesson/bg1.png')
-
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "image/png"
-    }
-
-    return Response(content=response.content, status_code=200, headers=headers)
+    return FileResponse(
+        path='assets/images/bg1.png',
+        media_type='audio/mpeg'
+    )
 
 @app.get('/bg3', status_code=status.HTTP_200_OK)
 async def task_image():
-    async with AsyncClient() as client:
-        response = await client.get('https://web-student.inter-nation.uz/images/lesson/bg3.png')
-
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "image/png"
-    }
-
-    return Response(content=response.content, status_code=200, headers=headers)
+    return FileResponse(
+        path='assets/images/bg3.png',
+        media_type='audio/mpeg'
+    )
 
 app.include_router(student_router, prefix='/student', tags=['Student Routers'])
 app.include_router(teacher_router, prefix='/teacher')

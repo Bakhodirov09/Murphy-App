@@ -326,7 +326,6 @@
             });
             const result = await response.json();
             if (response.status == 200) {
-                cookieStore.set('token', result.token)
                 localStorage.setItem('role', result.type)
                 if (result?.user) {
                     localStorage.setItem('group', result.user.group)
