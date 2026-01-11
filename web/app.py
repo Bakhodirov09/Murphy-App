@@ -2,7 +2,7 @@ import json
 from fastapi import FastAPI, status, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
 from httpx import AsyncClient
-
+from pathlib import Path
 from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY, tashkent
 from web.general import create_token, templates, decode_jwt
 from web.schemas import LoginRequest
@@ -11,6 +11,7 @@ from web.routers.student_routers import router as student_router
 from web.routers.teacher_routers import router as teacher_router
 
 app = FastAPI()
+BASE_DIR = Path(__file__).resolve().parent
 
 @app.get('/')
 async def root(request: Request):
@@ -123,37 +124,37 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
 @app.get('/success', status_code=200)
 async def success_audio():
     return FileResponse(
-        path='assets/audios/success.mp3',
+        path=f'{BASE_DIR}/assets/audios/success.mp3',
         media_type='audio/mpeg'
     )
 
 @app.get('/incorrect', status_code=status.HTTP_200_OK)
 async def success_audio():
     return FileResponse(
-        path='assets/audios/wrong.mp3',
+        path=f'{BASE_DIR}/assets/audios/wrong.mp3',
         media_type='audio/mpeg'
     )
 
 @app.get('/task', status_code=status.HTTP_200_OK)
 async def task_image():
     return FileResponse(
-        path='assets/images/task.png',
-        media_type='audio/mpeg'
+        path=f'{BASE_DIR}/assets/images/task.png',
+        media_type='image/png'
     )
 
 @app.get('/bg1', status_code=status.HTTP_200_OK)
 async def task_image():
     return FileResponse(
-        path='assets/images/bg1.png',
-        media_type='audio/mpeg'
+        path=f'{BASE_DIR}/assets/images/bg1.png',
+        media_type='image/png'
     )
 
 @app.get('/bg3', status_code=status.HTTP_200_OK)
 async def task_image():
     return FileResponse(
-        path='assets/images/bg3.png',
-        media_type='audio/mpeg'
+        path=f'{BASE_DIR}/assets/images/bg3.png',
+        media_type='image/png'
     )
 
 app.include_router(student_router, prefix='/student', tags=['Student Routers'])
-app.include_router(teacher_router, prefix='/teacher')
+app.include_router(teacher_router, prefix='/teacher', tags=['Teacher Routers'])

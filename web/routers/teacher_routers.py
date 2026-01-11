@@ -13,7 +13,7 @@ from web.general import templates
 from web.schemas import AddWeekSchema, AddWordSchema, AddEssentialUnitSchema, AddExerciseSchema, \
     AddExerciseQuestionSchema
 
-router = APIRouter(tags=['Teacher Routers'], dependencies=[Depends(JWTBearer(type='teacher'))])
+router = APIRouter(dependencies=[Depends(JWTBearer(type='teacher'))])
 
 @router.get('/dashboard', status_code=status.HTTP_200_OK)
 async def teacher_dashboard(request: Request):
