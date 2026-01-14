@@ -518,6 +518,13 @@
                 mark_div.innerHTML = result.percent
                 td.appendChild(mark_div)
                 tr.appendChild(td)
+                mark_div.addEventListener('click', async () => {
+                    const markDivTd = mark_div.closest('td');
+                    const datas = markDivTd.dataset.value.split('%')
+                    const response = await fetch(`/teacher/get-results?student_id=${datas[0]}&week_id=${datas[1]}&type=Vocab`, {
+                        method: 'GET'
+                    })
+                })
             }
         }
 

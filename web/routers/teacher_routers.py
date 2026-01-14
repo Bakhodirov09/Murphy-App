@@ -408,3 +408,12 @@ async def add_week(data: AddWeekSchema, db: db_dependency):
     db.flush()
     db.commit()
     return {'success': True}
+
+@router.get('/get-results', status_code=status.HTTP_200_OK)
+async def get_results(db: db_dependency, student_id: UUID = Query(...), week_id: UUID = Query(...), type: str = Query(...)):
+    results = db.query(StudentResultsModel).filter(
+        StudentResultsModel.week_id == week_id,
+        StudentResultsModel.student_id == student_id,
+        StudentResultsModel.type == type
+    ).all()
+    return {'ok': True, 'results': results}
