@@ -430,7 +430,6 @@
             const level = document.createElement('span');
             level.classList.add('g-level')
             level.innerHTML = 'Level undefined'
-<!--            level.innerHTML = group.group_level-->
 
             const title = document.createElement('span');
             title.classList.add('g-title')
@@ -518,13 +517,6 @@
                 mark_div.innerHTML = result.percent
                 td.appendChild(mark_div)
                 tr.appendChild(td)
-                mark_div.addEventListener('click', async () => {
-                    const markDivTd = mark_div.closest('td');
-                    const datas = markDivTd.dataset.value.split('%')
-                    const response = await fetch(`/teacher/get-results?student_id=${datas[0]}&week_id=${datas[1]}&type=Vocab`, {
-                        method: 'GET'
-                    })
-                })
             }
         }
 
@@ -544,6 +536,47 @@
             tbody.innerHTML = ''
         });
     });
+
+    async function fetchStudentResults(studentId, weekId) {
+        const response = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=Vocab`, {
+            method: 'GET'
+        })
+<!--        <div style="display: flex;" id="addBookModal" class="modal">-->
+<!--            <div class="modal-content">-->
+<!--              <span class="close">×</span>-->
+<!--              <h2>Write the book name that you want to add</h2>-->
+<!--                <label>Write book name</label>-->
+<!--                <input type="text" id="bookName" placeholder="Write book name here">-->
+
+<!--              <button class="btn-add-book" id="saveBookBtn" style="margin-top: 10px;">Save</button>-->
+<!--            </div>-->
+<!--        </div>-->
+        const modalDiv = document.createElement('div')
+        modalDiv.classList.add('modal')
+
+        const modalContent = document.createElement('div')
+        modalContent.classList.add('modal-content')
+
+        const closeBtn = document.createElement('span')
+        closeBtn.innerHTML = '×'
+
+        const h2 = document.createElement('h2')
+        h2.innerHTML = 'Student Results'
+
+        modalContent.appendChild(closeBtn)
+        modalContent.appendChild(h2)
+        modalDiv.appendChild(modalContent)
+        const body = document.querySelector('body');
+        body.appendChild(modalDiv)
+    }
+
+    const circles = document.querySelectorAll('.circle');
+    circles.forEach(circle => {
+        const markDivTd = mark_div.closest('td');
+        const datas = markDivTd.dataset.value.split('%')
+        fetchStudentResults(datas[0], datas[1])
+    })
+
     const monthNames = [
         "January", "February", "March", "April",
         "May", "June", "July", "August",
