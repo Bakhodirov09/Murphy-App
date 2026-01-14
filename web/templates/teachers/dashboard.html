@@ -571,16 +571,6 @@
             const response = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=Vocab`, {
                 method: 'GET'
             })
-    <!--        <div style="display: flex;" id="addBookModal" class="modal">-->
-    <!--            <div class="modal-content">-->
-    <!--              <span class="close">×</span>-->
-    <!--              <h2>Write the book name that you want to add</h2>-->
-    <!--                <label>Write book name</label>-->
-    <!--                <input type="text" id="bookName" placeholder="Write book name here">-->
-
-    <!--              <button class="btn-add-book" id="saveBookBtn" style="margin-top: 10px;">Save</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
             const modalDiv = document.createElement('div')
             modalDiv.classList.add('modal')
             modalDiv.style.display = 'flex'
@@ -598,11 +588,19 @@
             h2.innerHTML = 'Student Results'
 
             const span = document.createElement('span');
-            span.innerHTML = 'Function is on the process by the developer...'
 
             modalContent.appendChild(closeBtn)
             modalContent.appendChild(h2)
-            modalContent.appendChild(span)
+
+            const vocabBtn = document.createElement('button');
+            const exerciseBtn = document.createElement('button');
+
+            const json = await response.json()
+
+            for (result of json) {
+
+            }
+
             modalDiv.appendChild(modalContent)
             const body = document.querySelector('body');
             body.appendChild(modalDiv)

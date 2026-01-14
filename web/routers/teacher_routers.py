@@ -423,4 +423,5 @@ async def get_results(db: db_dependency, student_id: UUID = Query(...), week_id:
         query = query.options(selectinload(StudentResultsModel.exercise))
 
     results = query.all()
-    return {'ok': True, 'results': results}
+    student = results[0].student if results else None
+    return {'ok': True, 'results': results, 'student': student}
