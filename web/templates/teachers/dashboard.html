@@ -572,9 +572,11 @@
 
     const circles = document.querySelectorAll('.circle');
     circles.forEach(circle => {
-        const markDivTd = mark_div.closest('td');
-        const datas = markDivTd.dataset.value.split('%')
-        fetchStudentResults(datas[0], datas[1])
+        circle.addEventListener('click', () {
+            const markDivTd = mark_div.closest('td');
+            const datas = markDivTd.dataset.value.split('%')
+            fetchStudentResults(datas[0], datas[1])
+        })
     })
 
     const monthNames = [
