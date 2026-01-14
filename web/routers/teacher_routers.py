@@ -420,7 +420,7 @@ async def get_results(db: db_dependency, student_id: UUID = Query(...), week_id:
     if type == 'Vocab':
         query = query.options(selectinload(StudentResultsModel.vocabulary))
     elif type == 'Exercise':
-        query = query.options(selectinload(StudentResultsModel.exercise.id))
+        query = query.options(selectinload(StudentResultsModel.exercise))
 
     results = query.all()
     return {'ok': True, 'results': results}
