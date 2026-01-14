@@ -571,6 +571,7 @@
             const response = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=Vocab`, {
                 method: 'GET'
             })
+            const json = await response.json()
             const modalDiv = document.createElement('div')
             modalDiv.classList.add('modal')
             modalDiv.style.display = 'flex'
@@ -585,7 +586,7 @@
             })
 
             const h2 = document.createElement('h2')
-            h2.innerHTML = 'Student Results'
+            h2.innerHTML = `${json.student.first_name} ${json.student.last_name} Results on Week ${json.week.week_number}`
 
             const span = document.createElement('span');
 
@@ -595,11 +596,9 @@
             const vocabBtn = document.createElement('button');
             const exerciseBtn = document.createElement('button');
 
-            const json = await response.json()
-            console.log(json)
-<!--            for (result of json) {-->
-<!--                -->
-<!--            }-->
+            for (result of json) {
+
+            }
 
             modalDiv.appendChild(modalContent)
             const body = document.querySelector('body');

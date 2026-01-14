@@ -424,4 +424,5 @@ async def get_results(db: db_dependency, student_id: UUID = Query(...), week_id:
 
     results = query.all()
     student = results[0].student if results else None
-    return {'ok': True, 'results': results, 'student': student}
+    week = results[0].week if results else None
+    return {'ok': True, 'results': results, 'student': student, 'week': week}
