@@ -754,6 +754,44 @@
             }
         }
 
+        async function fetchStudentResults(studentId, weekId) {
+            const response = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=Vocab`, {
+                method: 'GET'
+            })
+            const json = await response.json()
+            const modalDiv = document.createElement('div')
+            modalDiv.classList.add('modal')
+            modalDiv.style.display = 'flex'
+
+            const modalContent = document.createElement('div')
+            modalContent.classList.add('modal-content')
+
+            const closeBtn = document.createElement('span')
+            closeBtn.innerHTML = '×'
+            closeBtn.addEventListener('click', () => {
+                modalDiv.remove()
+            })
+
+            const h2 = document.createElement('h2')
+            h2.innerHTML = `${json.student.first_name} ${json.student.last_name} Results on Week ${json.week.week_number}`
+
+            const span = document.createElement('span');
+
+            modalContent.appendChild(closeBtn)
+            modalContent.appendChild(h2)
+
+            const vocabBtn = document.createElement('button');
+            const exerciseBtn = document.createElement('button');
+
+<!--            for (result of json) {-->
+
+<!--            }-->
+
+            modalDiv.appendChild(modalContent)
+            const body = document.querySelector('body');
+            body.appendChild(modalDiv)
+        }
+
         const circles = document.querySelectorAll('.circle');
         circles.forEach(circle => {
             circle.addEventListener('click', () => {
