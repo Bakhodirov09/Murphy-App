@@ -603,7 +603,7 @@
         const circles = document.querySelectorAll('.circle');
         circles.forEach(circle => {
             circle.addEventListener('click', () => {
-                const markDivTd = mark_div.closest('td');
+                const markDivTd = circle.closest('td');
                 const datas = markDivTd.dataset.value.split('%')
                 fetchStudentResults(datas[0], datas[1])
             })
