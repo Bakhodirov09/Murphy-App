@@ -34,6 +34,54 @@
     font-weight: 500;
 }
 
+.modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Modal Box */
+    .modal-content {
+      background: var(--panel);
+      padding: 25px;
+      border-radius: 16px;
+      width: 380px;
+      box-shadow: var(--card-shadow);
+      animation: popup .25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-content .types {
+        display: contents;
+    }
+
+    .modal-content .types a {
+        text-decoration: none;
+    }
+
+    .modal-content .types a:hover {
+        text-decoration: underline;
+    }
+
+    @keyframes popup {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      margin: 0 0 10px;
+    }
+
 .arrow {
     background: none;
     border: none;
@@ -572,7 +620,7 @@
 
     const circles = document.querySelectorAll('.circle');
     circles.forEach(circle => {
-        circle.addEventListener('click', () {
+        circle.addEventListener('click', () => {
             const markDivTd = mark_div.closest('td');
             const datas = markDivTd.dataset.value.split('%')
             fetchStudentResults(datas[0], datas[1])
