@@ -583,18 +583,22 @@
     <!--        </div>-->
             const modalDiv = document.createElement('div')
             modalDiv.classList.add('modal')
+            modalDiv.style.display = 'flex'
 
             const modalContent = document.createElement('div')
             modalContent.classList.add('modal-content')
 
             const closeBtn = document.createElement('span')
             closeBtn.innerHTML = '×'
+            closeBtn.addEventListener('click', () => {
+                modalDiv.remove()
+            })
 
             const h2 = document.createElement('h2')
             h2.innerHTML = 'Student Results'
 
             const span = document.createElement('span');
-            span.innerHTML = 'Function is on the process by the developer'
+            span.innerHTML = 'Function is on the process by the developer...'
 
             modalContent.appendChild(closeBtn)
             modalContent.appendChild(h2)
