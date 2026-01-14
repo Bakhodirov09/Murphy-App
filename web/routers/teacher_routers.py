@@ -411,9 +411,16 @@ async def add_week(data: AddWeekSchema, db: db_dependency):
 
 @router.get('/get-results', status_code=status.HTTP_200_OK)
 async def get_results(db: db_dependency, student_id: UUID = Query(...), week_id: UUID = Query(...), type: str = Query(...)):
-    results = db.query(StudentResultsModel).filter(
+    query = db.query(StudentResultsModel).filter(
         StudentResultsModel.week_id == week_id,
         StudentResultsModel.student_id == student_id,
         StudentResultsModel.type == type
-    ).options(selectinload(StudentResultsModel.vocabulary if type == 'Vocab' else StudentResultsModel.exercise)).all()
+    )
+
+    if type == 'Vocab':
+        query = query.options(selectinload(StudentResultsModel.vocabulary))
+    elif type == 'Exercise':
+        query = query.options(selectinload(StudentResultsModel.exercise))
+
+    results = query.all()
     return {'ok': True, 'results': results}
