@@ -658,7 +658,6 @@
 
         async function fetchStudentResults(studentId, weekId) {
 
-    // ── MODAL SHELL ──────────────────────────────────────────────────────
     const modalDiv = document.createElement('div');
     modalDiv.classList.add('modal');
     modalDiv.style.display = 'flex';
@@ -681,7 +680,9 @@
     modalDiv.appendChild(modalContent);
     document.body.appendChild(modalDiv);
 
-    // ── TAB STYLE HELPER ─────────────────────────────────────────────────
+    // ── CACHE ──────────────────────────────────────────────────────────
+    const cache = {};
+
     function tabStyle(active) {
         return `
             flex: 1; padding: 9px 0; border: none; border-radius: 10px;
@@ -692,14 +693,20 @@
         `;
     }
 
-    // ── MAIN RENDER ───────────────────────────────────────────────────────
     async function loadType(type) {
         modalContent.innerHTML = `<div style="padding:60px;text-align:center;color:#aaa;">Loading…</div>`;
 
         try {
-            const res  = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=${type}`);
-            const json = await res.json();
-            if (!json.ok) throw new Error(json.detail || 'Error');
+            // ── Use cache if already fetched, otherwise fetch & save ───
+            let json;
+            if (cache[type]) {
+                json = cache[type];
+            } else {
+                const res = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=${type}`);
+                json = await res.json();
+                if (!json.ok) throw new Error(json.detail || 'Error');
+                cache[type] = json;
+            }
 
             const pct = json.total > 0
                 ? Math.round((json.submitted_count / json.total) * 100)
@@ -707,7 +714,6 @@
 
             modalContent.innerHTML = '';
 
-            // ── STICKY HEADER ──────────────────────────────────────────
             const header = document.createElement('div');
             header.style.cssText = `
                 background: #fff;
@@ -758,7 +764,6 @@
                 btn.addEventListener('click', () => loadType(btn.dataset.t));
             });
 
-            // ── SCROLLABLE LIST ────────────────────────────────────────
             const listWrap = document.createElement('div');
             listWrap.style.cssText = `
                 overflow-y: auto; flex: 1;
@@ -790,7 +795,6 @@
                     box-shadow:0 1px 4px rgba(0,0,0,0.05);
                 `;
 
-                // thumbnail
                 const thumb = document.createElement('div');
                 thumb.style.cssText = `
                     width:52px;height:52px;border-radius:10px;
@@ -804,7 +808,6 @@
                     thumb.innerHTML = `<span style="font-size:22px;font-weight:700;color:#6c5ce7;">${(label[0] || '?').toUpperCase()}</span>`;
                 }
 
-                // info
                 const info = document.createElement('div');
                 info.style.cssText = 'flex:1;min-width:0;';
                 info.innerHTML = `
@@ -817,7 +820,6 @@
                     }
                 `;
 
-                // checkmark or empty circle
                 const check = document.createElement('div');
                 check.innerHTML = isSubmitted
                     ? `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
