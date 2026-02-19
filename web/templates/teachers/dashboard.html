@@ -336,7 +336,7 @@
     .panel{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);}
     .panel h3{margin:0 0 10px 0}
 
-    .table-wrap{overflow:auto}
+    .table-wrap{overflow:auto;position:relative;min-height:80px;}
     table{width:100%;border-collapse:collapse;min-width:920px}
     th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eef2f6}
     thead th{background:transparent;color:var(--muted);font-weight:600;font-size:13px}
@@ -353,6 +353,55 @@
     /* progress */
     .progress{height:10px;background:#eef6f5;border-radius:8px;overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#00b894)}
+
+    /* ── LOADING SKELETON ── */
+    .table-loader {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+    }
+
+    .table-loader.active {
+        display: flex;
+    }
+
+    .skeleton-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .skeleton-cell {
+        background: linear-gradient(90deg, #eef2f6 25%, #e0e6ed 50%, #eef2f6 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    .skeleton-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+    }
+
+    .skeleton-name {
+        width: 120px;
+        height: 14px;
+        border-radius: 6px;
+    }
+
+    .skeleton-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+    }
+
+    @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
 
     /* small responsive */
     @media (max-width:1100px){
@@ -446,13 +495,13 @@
           </div>
         </div>
         <div class="table-wrap">
+          <!-- Loading skeleton -->
+          <div class="table-loader" id="tableLoader">
+            <!-- Skeleton rows will be injected by JS -->
+          </div>
           <table>
-            <thead>
-
-            </thead>
-            <tbody id="students-table">
-
-            </tbody>
+            <thead></thead>
+            <tbody id="students-table"></tbody>
           </table>
         </div>
       </section>
@@ -466,6 +515,42 @@
     const results_h3 = document.querySelector('#result');
     const monthName = now.toLocaleString('en-US', { month: 'long' });
     results_h3.innerHTML = `Results Of — ${monthName} ${now.getFullYear()}`
+
+    /* ── LOADER HELPERS ── */
+    function showLoader(colCount = 5) {
+        const loader = document.getElementById('tableLoader');
+        const table = document.querySelector('table');
+        loader.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement('div');
+            row.classList.add('skeleton-row');
+            // Avatar + name cell
+            const avatarCell = document.createElement('div');
+            avatarCell.classList.add('skeleton-cell', 'skeleton-avatar');
+            const nameCell = document.createElement('div');
+            nameCell.classList.add('skeleton-cell', 'skeleton-name');
+            row.appendChild(avatarCell);
+            row.appendChild(nameCell);
+            // Circle cells
+            for (let j = 0; j < colCount; j++) {
+                const circle = document.createElement('div');
+                circle.classList.add('skeleton-cell', 'skeleton-circle');
+                circle.style.marginLeft = '16px';
+                row.appendChild(circle);
+            }
+            loader.appendChild(row);
+        }
+        loader.classList.add('active');
+        table.style.display = 'none';
+    }
+
+    function hideLoader() {
+        const loader = document.getElementById('tableLoader');
+        const table = document.querySelector('table');
+        loader.classList.remove('active');
+        table.style.display = '';
+    }
+
     async function fetchGroups(days) {
         const groups_tabs = document.querySelector('.groups-tabs');
         const response = await fetch(`/teacher/get-clear-groups?days=${days}`, {
@@ -500,38 +585,35 @@
     fetchGroups('Odd Days');
     const groups_tabs = document.querySelector('.groups-tabs');
 
-    groups_tabs.addEventListener('click', async function(e) {
-        const tab = e.target.closest('.group-tab');
-        if (!tab) return;
+    async function loadGroupResults(groupId, yearMonth) {
+        showLoader();
+
         const theadGroup = document.querySelector('thead');
-        theadGroup.innerHTML = ''
+        theadGroup.innerHTML = '';
         const tbodyGroup = document.querySelector('tbody');
-        tbodyGroup.innerHTML = ''
+        tbodyGroup.innerHTML = '';
 
-        document.querySelectorAll('.group-tab').forEach(g => g.classList.remove('active'));
-        tab.classList.add('active');
-        const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-        const groupId = tab.dataset.value;
         const response = await fetch(`/teacher/get-group-results?month=${yearMonth}&id=${groupId}`, {
             method: 'GET'
-        })
-        result = await response.json()
-        const table = document.querySelector('#students-table');
-        const tr = document.createElement('tr')
-        tr.id = 'tr_table'
-        const students_th = document.createElement('th');
-        students_th.innerHTML = 'Students'
-        tr.appendChild(students_th)
-        const thead = document.querySelector('thead');
-        thead.appendChild(tr)
-        for (schedule of result.schedule) {
-            const th = document.createElement('th');
-            th.innerHTML = `Week ${schedule.week_number}`
-            tr.appendChild(th)
-        }
-        for (student of result.students) {
+        });
+        const result = await response.json();
 
+        const table = document.querySelector('#students-table');
+        const tr = document.createElement('tr');
+        tr.id = 'tr_table';
+        const students_th = document.createElement('th');
+        students_th.innerHTML = 'Students';
+        tr.appendChild(students_th);
+        const thead = document.querySelector('thead');
+        thead.appendChild(tr);
+
+        for (const schedule of result.schedule) {
+            const th = document.createElement('th');
+            th.innerHTML = `Week ${schedule.week_number}`;
+            tr.appendChild(th);
+        }
+
+        for (const student of result.students) {
             const tr = document.createElement('tr');
             const td = document.createElement('td');
 
@@ -540,99 +622,262 @@
 
             const avatar = document.createElement('avatar');
             avatar.classList.add('avatar');
-            avatar.innerHTML = student.first_name[0] + student.last_name[0]
+            avatar.innerHTML = student.first_name[0] + student.last_name[0];
 
             const name_div = document.createElement('div');
             const sname_div = document.createElement('div');
             sname_div.classList.add('sname');
-            sname_div.innerHTML = `${student['first_name']} ${student['last_name'][0]}.`
+            sname_div.innerHTML = `${student['first_name']} ${student['last_name'][0]}.`;
 
-            name_div.appendChild(sname_div)
-            student_div.appendChild(avatar)
-            student_div.appendChild(name_div)
-            td.appendChild(student_div)
-            tr.appendChild(td)
-            table.appendChild(tr)
-            for (result of student.progress) {
+            name_div.appendChild(sname_div);
+            student_div.appendChild(avatar);
+            student_div.appendChild(name_div);
+            td.appendChild(student_div);
+            tr.appendChild(td);
+            table.appendChild(tr);
+
+            for (const res of student.progress) {
                 const td = document.createElement('td');
-                td.dataset.value = `${student.id}%${result.week_id}`
+                td.dataset.value = `${student.id}%${res.week_id}`;
                 const mark_div = document.createElement('div');
-                let class_name = 'circle'
-                mark_div.classList.add(class_name)
-                if (result.percent <= 40) {
-                    mark_div.classList.add('red')
+                mark_div.classList.add('circle');
+                if (res.percent <= 40) {
+                    mark_div.classList.add('red');
+                } else if (res.percent > 40 && res.percent <= 60) {
+                    mark_div.classList.add('yellow');
+                } else {
+                    mark_div.classList.add('green');
                 }
-                else if (result.percent > 40 && result.percent <= 60) {
-                    mark_div.classList.add('yellow')
-                }
-                else {
-                  mark_div.classList.add('green')
-                }
-                mark_div.innerHTML = result.percent
-                td.appendChild(mark_div)
-                tr.appendChild(td)
+                mark_div.innerHTML = res.percent;
+                td.appendChild(mark_div);
+                tr.appendChild(td);
             }
         }
+
+        hideLoader();
+
         async function fetchStudentResults(studentId, weekId) {
-            const response = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=Vocab`, {
-                method: 'GET'
-            })
-            const json = await response.json()
-            const modalDiv = document.createElement('div')
-            modalDiv.classList.add('modal')
-            modalDiv.style.display = 'flex'
 
-            const modalContent = document.createElement('div')
-            modalContent.classList.add('modal-content')
+    // ── MODAL SHELL ──────────────────────────────────────────────────────
+    const modalDiv = document.createElement('div');
+    modalDiv.classList.add('modal');
+    modalDiv.style.display = 'flex';
+    modalDiv.addEventListener('click', e => { if (e.target === modalDiv) modalDiv.remove(); });
 
-            const closeBtn = document.createElement('span')
-            closeBtn.innerHTML = '×'
-            closeBtn.addEventListener('click', () => {
-                modalDiv.remove()
-            })
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
+    modalContent.style.cssText = `
+        width: 390px;
+        max-height: 88vh;
+        padding: 0;
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        background: #f5f7fb;
+    `;
 
-            const h2 = document.createElement('h2')
-            h2.innerHTML = `${json.student.first_name} ${json.student.last_name} Results on Week ${json.week.week_number}`
+    modalDiv.appendChild(modalContent);
+    document.body.appendChild(modalDiv);
 
-            const span = document.createElement('span');
+    // ── TAB STYLE HELPER ─────────────────────────────────────────────────
+    function tabStyle(active) {
+        return `
+            flex: 1; padding: 9px 0; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            background: ${active ? '#FFD400' : 'transparent'};
+            color: ${active ? '#000' : '#888'};
+            transition: all .2s;
+        `;
+    }
 
-            modalContent.appendChild(closeBtn)
-            modalContent.appendChild(h2)
+    // ── MAIN RENDER ───────────────────────────────────────────────────────
+    async function loadType(type) {
+        modalContent.innerHTML = `<div style="padding:60px;text-align:center;color:#aaa;">Loading…</div>`;
 
-            const vocabBtn = document.createElement('button');
-            const exerciseBtn = document.createElement('button');
+        try {
+            const res  = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=${type}`);
+            const json = await res.json();
+            if (!json.ok) throw new Error(json.detail || 'Error');
 
-<!--            for (result of json) {-->
+            const pct = json.total > 0
+                ? Math.round((json.submitted_count / json.total) * 100)
+                : 0;
 
-<!--            }-->
+            modalContent.innerHTML = '';
 
-            modalDiv.appendChild(modalContent)
-            const body = document.querySelector('body');
-            body.appendChild(modalDiv)
+            // ── STICKY HEADER ──────────────────────────────────────────
+            const header = document.createElement('div');
+            header.style.cssText = `
+                background: #fff;
+                padding: 18px 18px 0 18px;
+                position: sticky; top: 0; z-index: 10;
+                border-radius: 20px 20px 0 0;
+            `;
+            header.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="
+                            width:44px;height:44px;border-radius:50%;
+                            background:linear-gradient(45deg,#6c5ce7,#00b894);
+                            display:flex;align-items:center;justify-content:center;
+                            color:#fff;font-weight:800;font-size:14px;flex-shrink:0;
+                        ">${pct}</div>
+                        <div>
+                            <div style="font-weight:700;font-size:15px;line-height:1.2;">
+                                ${json.student.first_name} ${json.student.last_name}
+                            </div>
+                            <div style="font-size:12px;color:#9aa4b2;margin-top:2px;">
+                                Week: ${json.week.week_number}
+                            </div>
+                        </div>
+                    </div>
+                    <span id="modal-close-x" style="font-size:24px;cursor:pointer;color:#bbb;line-height:1;">×</span>
+                </div>
+
+                <!-- Tabs -->
+                <div style="display:flex;gap:4px;background:#f5f7fb;border-radius:12px;padding:4px;">
+                    <button data-t="Vocab"    style="${tabStyle(type === 'Vocab')}">Vocabulary</button>
+                    <button data-t="Theory"   style="${tabStyle(false)};opacity:.4;cursor:not-allowed;" disabled>Theory</button>
+                    <button data-t="Exercise" style="${tabStyle(type === 'Exercise')}">Exercises</button>
+                </div>
+
+                <!-- Progress bar -->
+                <div style="padding:12px 0 14px;">
+                    <div style="height:7px;background:#eef2f6;border-radius:8px;overflow:hidden;">
+                        <div style="width:${pct}%;height:100%;background:#00b894;border-radius:8px;"></div>
+                    </div>
+                    <div style="text-align:right;font-size:11px;color:#9aa4b2;margin-top:3px;">${pct}%</div>
+                </div>
+            `;
+
+            header.querySelector('#modal-close-x').addEventListener('click', () => modalDiv.remove());
+            header.querySelectorAll('button[data-t]').forEach(btn => {
+                if (btn.disabled) return;
+                btn.addEventListener('click', () => loadType(btn.dataset.t));
+            });
+
+            // ── SCROLLABLE LIST ────────────────────────────────────────
+            const listWrap = document.createElement('div');
+            listWrap.style.cssText = `
+                overflow-y: auto; flex: 1;
+                padding: 0 12px 18px 12px;
+                display: flex; flex-direction: column; gap: 8px;
+            `;
+
+            if (!json.results.length) {
+                listWrap.innerHTML = `<div style="text-align:center;padding:40px;color:#aaa;">No results found.</div>`;
+            }
+
+            json.results.forEach(r => {
+                const isSubmitted = r.submitted;
+
+                const label = type === 'Vocab'
+                    ? (r.word?.word || r.word?.term || r.word?.text || '—')
+                    : (r.exercise?.name || r.exercise?.title || `Exercise ${r.exercise?.number ?? ''}`);
+
+                const imgUrl = r.word?.image_url || r.exercise?.image_url || null;
+
+                const score = (isSubmitted && r.result?.score !== undefined && r.result?.score !== null)
+                    ? r.result.score : null;
+
+                const card = document.createElement('div');
+                card.style.cssText = `
+                    display:flex; align-items:center;
+                    background:#fff; border-radius:14px;
+                    padding:10px 14px 10px 10px; gap:12px;
+                    box-shadow:0 1px 4px rgba(0,0,0,0.05);
+                `;
+
+                // thumbnail
+                const thumb = document.createElement('div');
+                thumb.style.cssText = `
+                    width:52px;height:52px;border-radius:10px;
+                    background:#f0f2f6;flex-shrink:0;
+                    overflow:hidden;display:flex;align-items:center;justify-content:center;
+                `;
+                if (imgUrl) {
+                    thumb.innerHTML = `<img src="${imgUrl}" style="width:100%;height:100%;object-fit:cover;" />`;
+                } else {
+                    thumb.style.background = '#e8e4ff';
+                    thumb.innerHTML = `<span style="font-size:22px;font-weight:700;color:#6c5ce7;">${(label[0] || '?').toUpperCase()}</span>`;
+                }
+
+                // info
+                const info = document.createElement('div');
+                info.style.cssText = 'flex:1;min-width:0;';
+                info.innerHTML = `
+                    <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        ${label}
+                    </div>
+                    ${score !== null
+                        ? `<div style="font-size:12px;color:#9aa4b2;margin-top:2px;">Score: <strong style="color:${score>=80?'#00b894':score>=50?'#f9a825':'#ff7675'}">${score}%</strong></div>`
+                        : `<div style="font-size:12px;color:#ccc;margin-top:2px;">Not submitted</div>`
+                    }
+                `;
+
+                // checkmark or empty circle
+                const check = document.createElement('div');
+                check.innerHTML = isSubmitted
+                    ? `<svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <circle cx="14" cy="14" r="14" fill="#00b894"/>
+                            <path d="M8 14.5l4.5 4.5 7.5-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                       </svg>`
+                    : `<svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                          <path d="M16 31.303c8.45 0 15.3-6.85 15.3-15.3 0-8.45-6.85-15.3-15.3-15.3C7.55.703.7 7.553.7 16.003c0 8.45 6.85 15.3 15.3 15.3z" fill="#e04b4b"></path><path d="M9.873 22.087a1.7 1.7 0 002.42 0l3.666-3.665 3.665 3.665a1.712 1.712 0 102.42-2.42L18.38 16l3.665-3.665a1.711 1.711 0 10-2.421-2.42l-3.665 3.665-3.665-3.666a1.712 1.712 0 00-2.421 2.421l3.665 3.665-3.665 3.666a1.7 1.7 0 000 2.42z" fill="#fff"></path></svg>`;
+
+                card.appendChild(thumb);
+                card.appendChild(info);
+                card.appendChild(check);
+                listWrap.appendChild(card);
+            });
+
+            modalContent.appendChild(header);
+            modalContent.appendChild(listWrap);
+
+        } catch (err) {
+            modalContent.innerHTML = `<div style="padding:40px;text-align:center;color:#ff7675;">Error: ${err.message}</div>`;
         }
+    }
+
+    loadType('Vocab');
+}
 
         const circles = document.querySelectorAll('.circle');
         circles.forEach(circle => {
             circle.addEventListener('click', () => {
                 const markDivTd = circle.closest('td');
-                const datas = markDivTd.dataset.value.split('%')
-                fetchStudentResults(datas[0], datas[1])
-            })
-        })
+                const datas = markDivTd.dataset.value.split('%');
+                fetchStudentResults(datas[0], datas[1]);
+            });
+        });
+    }
+
+    groups_tabs.addEventListener('click', async function(e) {
+        const tab = e.target.closest('.group-tab');
+        if (!tab) return;
+
+        document.querySelectorAll('.group-tab').forEach(g => g.classList.remove('active'));
+        tab.classList.add('active');
+
+        const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        await loadGroupResults(tab.dataset.value, months[currentIndex].value);
     });
+
     const buttons = document.querySelectorAll('.day-btn');
 
     buttons.forEach(btn => {
         btn.addEventListener('click', async () => {
             buttons.forEach(g => g.classList.remove('active'));
-            btn.classList.add('active')
+            btn.classList.add('active');
             const groups_table = document.querySelector('.groups-tabs');
-            groups_table.innerHTML = ''
-            fetchGroups(btn.textContent)
+            groups_table.innerHTML = '';
+            fetchGroups(btn.textContent);
             const thead = document.querySelector('thead');
-            thead.innerHTML = ''
+            thead.innerHTML = '';
             const tbody = document.querySelector('tbody');
-            tbody.innerHTML = ''
+            tbody.innerHTML = '';
         });
     });
 
@@ -642,23 +887,19 @@
         "September", "October", "November", "December"
     ];
 
-    // BUGUNGI OY
-    const currentMonth = now.getMonth(); // 0-11
+    const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    // 12 OYLIK MASSIV
     const months = [];
 
     for (let i = 0; i < 12; i++) {
         const date = new Date(currentYear, currentMonth - i, 1);
-
         months.unshift({
             label: `${monthNames[date.getMonth()]} ${date.getFullYear()}`,
             value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
         });
     }
 
-    // default: eng oxirgi (bugungi oy)
     let currentIndex = months.length - 1;
 
     const monthText = document.getElementById("monthText");
@@ -677,129 +918,16 @@
         }
 
         monthText.textContent = months[currentIndex].label;
-
         prevBtn.disabled = currentIndex === 0;
         nextBtn.disabled = currentIndex === months.length - 1;
 
-        const tab = document.querySelector('.group-tab.active')
+        const tab = document.querySelector('.group-tab.active');
         if (!tab) return;
-        const theadGroup = document.querySelector('thead');
-        theadGroup.innerHTML = ''
-        const tbodyGroup = document.querySelector('tbody');
-        tbodyGroup.innerHTML = ''
 
         document.querySelectorAll('.group-tab').forEach(g => g.classList.remove('active'));
         tab.classList.add('active');
-        const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-        const groupId = tab.dataset.value;
-        const response = await fetch(`/teacher/get-group-results?month=${months[currentIndex].value}&id=${groupId}`, {
-            method: 'GET'
-        })
-        result = await response.json()
-        const table = document.querySelector('#students-table');
-        const tr = document.createElement('tr')
-        tr.id = 'tr_table'
-        const students_th = document.createElement('th');
-        students_th.innerHTML = 'Students'
-        tr.appendChild(students_th)
-        const thead = document.querySelector('thead');
-        thead.appendChild(tr)
-        for (schedule of result.schedule) {
-            const th = document.createElement('th');
-            th.innerHTML = `Week ${schedule.week_number}`
-            tr.appendChild(th)
-        }
-        for (student of result.students) {
-
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
-
-            const student_div = document.createElement('div');
-            student_div.classList.add('student');
-
-            const avatar = document.createElement('avatar');
-            avatar.classList.add('avatar');
-            avatar.innerHTML = student.first_name[0] + student.last_name[0]
-
-            const name_div = document.createElement('div');
-            const sname_div = document.createElement('div');
-            sname_div.classList.add('sname');
-            sname_div.innerHTML = `${student['first_name']} ${student['last_name'][0]}.`
-
-            name_div.appendChild(sname_div)
-            student_div.appendChild(avatar)
-            student_div.appendChild(name_div)
-            td.appendChild(student_div)
-            tr.appendChild(td)
-            table.appendChild(tr)
-            for (result of student.progress) {
-                const td = document.createElement('td');
-                td.dataset.value = `${student.id}%${result.week_id}`
-                const mark_div = document.createElement('div');
-                let class_name = 'circle'
-                mark_div.classList.add(class_name)
-                if (result.percent <= 40) {
-                    mark_div.classList.add('red')
-                }
-                else if (result.percent > 40 && result.percent <= 60) {
-                    mark_div.classList.add('yellow')
-                }
-                else {
-                  mark_div.classList.add('green')
-                }
-                mark_div.innerHTML = result.percent
-                td.appendChild(mark_div)
-                tr.appendChild(td)
-            }
-        }
-
-        async function fetchStudentResults(studentId, weekId) {
-            const response = await fetch(`/teacher/get-results?student_id=${studentId}&week_id=${weekId}&type=Vocab`, {
-                method: 'GET'
-            })
-            const json = await response.json()
-            const modalDiv = document.createElement('div')
-            modalDiv.classList.add('modal')
-            modalDiv.style.display = 'flex'
-
-            const modalContent = document.createElement('div')
-            modalContent.classList.add('modal-content')
-
-            const closeBtn = document.createElement('span')
-            closeBtn.innerHTML = '×'
-            closeBtn.addEventListener('click', () => {
-                modalDiv.remove()
-            })
-
-            const h2 = document.createElement('h2')
-            h2.innerHTML = `${json.student.first_name} ${json.student.last_name} Results on Week ${json.week.week_number}`
-
-            const span = document.createElement('span');
-
-            modalContent.appendChild(closeBtn)
-            modalContent.appendChild(h2)
-
-            const vocabBtn = document.createElement('button');
-            const exerciseBtn = document.createElement('button');
-
-<!--            for (result of json) {-->
-
-<!--            }-->
-
-            modalDiv.appendChild(modalContent)
-            const body = document.querySelector('body');
-            body.appendChild(modalDiv)
-        }
-
-        const circles = document.querySelectorAll('.circle');
-        circles.forEach(circle => {
-            circle.addEventListener('click', () => {
-                const markDivTd = circle.closest('td');
-                const datas = markDivTd.dataset.value.split('%')
-                fetchStudentResults(datas[0], datas[1])
-            })
-        })
+        await loadGroupResults(tab.dataset.value, months[currentIndex].value);
     }
 
     prevBtn.addEventListener("click", () => {
@@ -815,6 +943,5 @@
             updateCarousel("next");
         }
     });
-  </script>
+</script>
 </html>
-
