@@ -3,8 +3,11 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, Enum, BigInteger
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
-from web.general import tashkent
+from web.data import tashkent
 from web.database import Base
+
+import enum
+from sqlalchemy import Enum
 
 
 class BaseModel(Base):
@@ -12,6 +15,7 @@ class BaseModel(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
     created_at = Column(DateTime, default=datetime.now(tashkent))
     updated_at = Column(DateTime, default=datetime.now(tashkent), onupdate=datetime.now(tashkent))
+
 
 class GroupsModel(BaseModel):
     __tablename__ = "groups"
@@ -25,6 +29,7 @@ class GroupsModel(BaseModel):
         back_populates="group",
         cascade="all, delete-orphan"
     )
+
 
 class StudentsModel(BaseModel):
     __tablename__ = "students"
@@ -42,6 +47,7 @@ class StudentsModel(BaseModel):
 
     group = relationship("GroupsModel", back_populates="students")
     results = relationship("StudentResultsModel", back_populates="student", cascade='all, delete-orphan')
+
 
 class StudentResultsModel(BaseModel):
     __tablename__ = 'student_results'
@@ -67,6 +73,7 @@ class StudentResultsModel(BaseModel):
     exercise = relationship("MurphyExercisesModel", back_populates="results")
     exercise_question = relationship("MurphyExerciseQuestionsModel", back_populates="results")
 
+
 class WeekScheduleModel(BaseModel):
     __tablename__ = "week_schedule"
 
@@ -74,6 +81,7 @@ class WeekScheduleModel(BaseModel):
 
     week_number = Column(Integer, nullable=False)
     lesson_date = Column(DateTime(timezone=True), nullable=False)
+
 
 class WeeksModel(BaseModel):
     __tablename__ = "weeks"
@@ -92,6 +100,7 @@ class WeeksModel(BaseModel):
 
     keys = Column(Integer, default=10, nullable=False)
 
+
 class EssentialBooksModel(BaseModel):
     __tablename__ = 'essential_books'
 
@@ -102,6 +111,7 @@ class EssentialBooksModel(BaseModel):
         back_populates='book',
         cascade='all, delete-orphan'
     )
+
 
 class EssentialUnitsModel(BaseModel):
     __tablename__ = 'essential_units'
@@ -117,6 +127,7 @@ class EssentialUnitsModel(BaseModel):
     )
 
     results = relationship('StudentResultsModel', back_populates='vocabulary_unit')
+
 
 class EssentialWordsModel(BaseModel):
     __tablename__ = 'essential_words'
@@ -134,10 +145,16 @@ class EssentialWordsModel(BaseModel):
     unit = relationship('EssentialUnitsModel', back_populates='words')
     results = relationship('StudentResultsModel', back_populates='vocabulary')
 
+
 class MurphyBooksModel(BaseModel):
     __tablename__ = 'murphy_books'
 
     book_name = Column(String(150), nullable=False)
+    level = Column(
+        Enum('Upper-Intermediate', 'IELTS', name="book_level_enum", create_type=True),
+        default='Upper-Intermediate',
+        nullable=True
+    )
 
     units = relationship(
         'MurphyUnitsModel',
@@ -146,14 +163,17 @@ class MurphyBooksModel(BaseModel):
         order_by="MurphyUnitsModel.unit_number"
     )
 
+
 class MurphyUnitsModel(BaseModel):
     __tablename__ = 'murphy_units'
 
     book_id = Column(UUID, ForeignKey('murphy_books.id', ondelete='CASCADE'))
     unit_number = Column(Integer, nullable=False)
 
-    book = relationship('MurphyBooksModel',back_populates='units')
+    book = relationship('MurphyBooksModel', back_populates='units')
     exercises = relationship('MurphyExercisesModel', back_populates='unit', cascade='all, delete-orphan')
+    ielts_exercises = relationship("IELTSMaterialsModel", back_populates='unit')
+
 
 class MurphyExercisesModel(BaseModel):
     __tablename__ = "murphy_exercises"
@@ -167,6 +187,7 @@ class MurphyExercisesModel(BaseModel):
     questions = relationship('MurphyExerciseQuestionsModel', back_populates='exercise', cascade='all, delete-orphan')
     results = relationship('StudentResultsModel', back_populates='exercise')
 
+
 class MurphyExerciseQuestionsModel(BaseModel):
     __tablename__ = "murphy_exercise_questions"
 
@@ -175,3 +196,24 @@ class MurphyExerciseQuestionsModel(BaseModel):
 
     exercise = relationship('MurphyExercisesModel', back_populates='questions')
     results = relationship('StudentResultsModel', back_populates='exercise_question')
+
+
+class IELTSMaterialsModel(BaseModel):
+    __tablename__ = "ielts_materials"
+
+    condition = Column(String, nullable=False)
+    type = Column(Enum('Listening', 'Reading', name='ielts_material_type_enum'), nullable=False)
+    script = Column(Text, nullable=True)
+    cleaned_script = Column(Text, nullable=True)
+    removed_words = Column(JSONB, nullable=True)
+    status = Column(String, default="pending")
+    audio_id = Column(UUID, nullable=True)
+    unit_id = Column(UUID(as_uuid=True), ForeignKey("murphy_units.id"), nullable=False)
+
+    unit = relationship('MurphyUnitsModel', back_populates='ielts_exercises')
+
+
+class FilesModel(BaseModel):
+    __tablename__ = "files"
+
+    file_path = Column(String, nullable=False)

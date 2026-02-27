@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+import openai
 from typing import Annotated
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import HTTPException
@@ -8,12 +8,13 @@ from jose import jwt
 from jose.exceptions import ExpiredSignatureError
 from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
-
-from web.data import SECRET_KEY, ALGORITHM, tashkent
+from web.data import SECRET_KEY, ALGORITHM, OPENAI_API_KEY
 from web.database import SessionLocal
+from web.models import IELTSMaterialsModel
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 def get_db():
     db = SessionLocal()
@@ -57,3 +58,47 @@ class JWTBearer(HTTPBearer):
             payload = None
 
         return [bool(payload), payload] if payload else False
+
+def process_script_with_ai(listening_id: int):
+    db = SessionLocal()
+
+    try:
+        listening = db.query(IELTSMaterialsModel).get(listening_id)
+        if not listening:
+            return
+
+        prompt = f"""
+You are an expert English teacher and IELTS listening grader.
+I will give you a listening script. 
+Your task:
+1. Remove all unnecessary words, stopwords (the, a, an, is, are, was, were, to, of, in, on, at, for, with, and, etc.), filler words, and punctuation.
+2. Keep only the important words that a student should write down.
+3. Return JSON with two keys:
+   - "canonical_text": the cleaned text the student should write.
+   - "removed_words": list of words or characters you removed.
+
+Listening script:
+\"\"\"
+{listening.script}
+\"\"\"
+"""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0
+        )
+
+        cleaned = response.choices[0].message.content
+
+        listening.cleaned_script = cleaned['canonical_text']
+        listening.removed_words = cleaned['removed_words']
+        listening.status = "done"
+        db.commit()
+
+    except Exception as e:
+        listening.status = "error"
+        db.commit()
+
+    finally:
+        db.close()

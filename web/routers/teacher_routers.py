@@ -1,26 +1,33 @@
+import shutil
 from datetime import datetime
-from fastapi import APIRouter, Depends, status, Request, Query, HTTPException
-from uuid import UUID
-from sqlalchemy.orm import selectinload
-from sqlalchemy import and_, func, or_
+from pathlib import Path
+from uuid import UUID, uuid4
 
-from web.general import JWTBearer, db_dependency, decode_jwt
+from fastapi import APIRouter, Depends, status, Request, Query, HTTPException, UploadFile, File, BackgroundTasks
+from sqlalchemy import and_, func, or_
+from sqlalchemy.orm import selectinload
+
+from web.general import JWTBearer, db_dependency, decode_jwt, process_script_with_ai
+from web.general import templates
 from web.models import (
     GroupsModel, WeeksModel, WeekScheduleModel,
     EssentialUnitsModel, MurphyUnitsModel, StudentResultsModel,
     EssentialBooksModel, EssentialWordsModel, MurphyBooksModel,
-    MurphyExercisesModel, MurphyExerciseQuestionsModel, StudentsModel
+    MurphyExercisesModel, MurphyExerciseQuestionsModel, StudentsModel, FilesModel, IELTSMaterialsModel
 )
-from web.general import templates
 from web.schemas import (
     AddWeekSchema, AddWordSchema, AddEssentialUnitSchema,
-    AddExerciseSchema, AddExerciseQuestionSchema,
+    AddExerciseSchema, AddExerciseQuestionSchema, AddIELTSListeningSchema,
 )
 
 router = APIRouter(dependencies=[Depends(JWTBearer(type='teacher'))])
 
+BASE_DIR = Path(__file__).resolve().parents[2]
 
-# ── Shared helper (eliminates ALL the copy-pasted token logic) ───────────────
+UPLOAD_DIR = BASE_DIR / "static" / "uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+
 async def get_teacher_context(request: Request) -> dict:
     """Returns template context with teacher info from JWT."""
     token = request.cookies.get('token')
@@ -29,13 +36,12 @@ async def get_teacher_context(request: Request) -> dict:
     return {
         'request': request,
         'first_name': 'Sardorbek' if is_main else 'Sevara',
-        'last_name':  'Abdulazizov' if is_main else 'Tolipjonova',
-        'letters':    'SA' if is_main else 'ST',
-        'type':       'Main' if is_main else 'Support',
+        'last_name': 'Abdulazizov' if is_main else 'Tolipjonova',
+        'letters': 'SA' if is_main else 'ST',
+        'type': 'Main' if is_main else 'Support',
     }
 
 
-# ── Page routes (clean & short now) ─────────────────────────────────────────
 @router.get('/dashboard', status_code=status.HTTP_200_OK)
 async def teacher_dashboard(request: Request):
     ctx = await get_teacher_context(request)
@@ -125,30 +131,43 @@ async def separately_choose_correct_alt(request: Request):
     ctx = await get_teacher_context(request)
     return templates.TemplateResponse("teachers/choose_the_correct_alternative.html", ctx)
 
+
 @router.get('/get-murphy-books', status_code=status.HTTP_200_OK)
 async def get_murphy_books(db: db_dependency):
     books = db.query(MurphyBooksModel).all()
     return {'success': True, 'books': books}
 
 
-@router.get('/get-book', status_code=status.HTTP_200_OK)
+@router.get("/get-book", status_code=status.HTTP_200_OK)
 async def get_book(db: db_dependency, book_id: UUID = Query(...)):
     book = (
         db.query(MurphyBooksModel)
-        .filter(MurphyBooksModel.id == book_id)
         .options(
             selectinload(MurphyBooksModel.units)
-            .selectinload(MurphyUnitsModel.exercises)
+            .selectinload(MurphyUnitsModel.exercises),
+            selectinload(MurphyBooksModel.units)
+            .selectinload(MurphyUnitsModel.ielts_exercises)
         )
+        .filter(MurphyBooksModel.id == book_id)
         .first()
     )
-    return {'success': True, 'book': book}
+
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    for unit in book.units:
+        if book.level == "Upper-Intermediate":
+            unit.ielts_exercises = []
+        else:
+            unit.exercises = []
+
+    return {"success": True, "book": book}
 
 
 @router.post('/add-murphy-book', status_code=status.HTTP_201_CREATED)
 async def add_murphy_book(request: Request, db: db_dependency):
     json = await request.json()
-    db.add(MurphyBooksModel(book_name=json['name']))
+    db.add(MurphyBooksModel(book_name=json['name'], level=json['level']))
     db.commit()
     return {'success': True}
 
@@ -256,7 +275,6 @@ async def get_clear_groups(db: db_dependency, days: str = Query(...)):
 
 @router.get('/get-group-results', status_code=status.HTTP_200_OK)
 async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...)):
-
     # 1. Group + students — 1 query
     group = (
         db.query(GroupsModel)
@@ -333,9 +351,9 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
         .all()
     ) if essential_filters else []
 
-    student_ids  = [s.id for s in group.students]
+    student_ids = [s.id for s in group.students]
     exercise_ids = [e.id for mu in murphy_units for e in mu.exercises]
-    vocab_ids    = [v.id for v in vocabularies]
+    vocab_ids = [v.id for v in vocabularies]
 
     ex_results = (
         db.query(
@@ -368,21 +386,21 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
     ) if vocab_ids else []
 
     # 8. Fast lookup dicts
-    ex_lookup  = {(r.student_id, r.exercise_id): r.cnt          for r in ex_results}
-    voc_lookup = {(r.student_id, r.vocabulary_unit_id): r.cnt   for r in voc_results}
+    ex_lookup = {(r.student_id, r.exercise_id): r.cnt for r in ex_results}
+    voc_lookup = {(r.student_id, r.vocabulary_unit_id): r.cnt for r in voc_results}
 
     murphy_by_week = {}
-    vocab_by_week  = {}
+    vocab_by_week = {}
     for w in weeks_list:
         murphy_by_week[w.id] = [
             mu for mu in murphy_units
             if mu.book_id == w.murphy_book
-            and w.murphy_from_unit <= mu.unit_number <= w.murphy_to_unit
+               and w.murphy_from_unit <= mu.unit_number <= w.murphy_to_unit
         ]
         vocab_by_week[w.id] = [
             v for v in vocabularies
             if v.book_id == w.essential_book
-            and w.essential_from_unit <= v.unit_number <= w.essential_to_unit
+               and w.essential_from_unit <= v.unit_number <= w.essential_to_unit
         ]
 
     students_copy = []
@@ -417,7 +435,6 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
     return {'success': True, 'students': students_copy, 'schedule': week_schedule}
 
 
-# ── get-results (unchanged but cleaned up) ───────────────────────────────────
 @router.post('/add-week', status_code=status.HTTP_200_OK)
 async def add_week(data: AddWeekSchema, db: db_dependency):
     db.add(WeeksModel(
@@ -435,12 +452,13 @@ async def add_week(data: AddWeekSchema, db: db_dependency):
     db.commit()
     return {'success': True}
 
+
 @router.get('/get-results', status_code=status.HTTP_200_OK)
 async def get_results(
-    db: db_dependency,
-    student_id: UUID = Query(...),
-    week_id: UUID = Query(...),
-    type: str = Query(...),
+        db: db_dependency,
+        student_id: UUID = Query(...),
+        week_id: UUID = Query(...),
+        type: str = Query(...),
 ):
     # 1. Get the week
     week = db.query(WeeksModel).filter(WeeksModel.id == week_id).first()
@@ -547,3 +565,80 @@ async def get_results(
 
     else:
         raise HTTPException(status_code=400, detail="type must be 'Vocab' or 'Exercise'")
+
+
+@router.post('/upload', status_code=status.HTTP_201_CREATED)
+async def file_upload(db: db_dependency, file: UploadFile = File()):
+    ext = Path(file.filename).suffix
+    unique_name = f"{uuid4().hex}{ext}"
+    file_path = UPLOAD_DIR / unique_name
+
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        file_model = FilesModel(
+            file_path=str(file_path)
+        )
+
+        db.add(file_model)
+        db.commit()
+        db.refresh(file_model)
+
+        return {
+            "ok": True,
+            "id": file_model.id,
+            "filename": unique_name
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"There was an error uploading the file: {e}"
+        )
+    finally:
+        await file.close()
+
+
+@router.get('/add-ielts-listening-what-you-hear', status_code=status.HTTP_200_OK)
+async def add_ielts_listening_task(request: Request):
+    ctx = await get_teacher_context(request)
+    return templates.TemplateResponse("teachers/add_ielts_listening.html", ctx)
+
+
+@router.post('/add-ielts-listening', status_code=201)
+async def add_ielts_listening(
+        data: AddIELTSListeningSchema,
+        background_tasks: BackgroundTasks,
+        db: db_dependency
+):
+    audio = db.query(FilesModel).filter(
+        FilesModel.id == data.audio_id
+    ).first()
+
+    if not audio:
+        raise HTTPException(404, 'Audio not found')
+
+    listening = IELTSMaterialsModel(
+        condition=data.condition,
+        type='Listening',
+        script=data.script,
+        audio_id=data.audio_id,
+        status="processing",
+        unit_id=data.unit_id
+    )
+
+    db.add(listening)
+    db.commit()
+    db.refresh(listening)
+
+    # background_tasks.add_task(
+    #     process_script_with_ai,
+    #     listening.id
+    # )
+
+    return {
+        "ok": True,
+        "message": "Audio qo‘shildi, AI ishlayapti",
+        "id": listening.id
+    }

@@ -1,7 +1,8 @@
+import os
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, Request, HTTPException, status, Depends, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from uuid import UUID
 
 from sqlalchemy.orm import selectinload
@@ -10,7 +11,7 @@ from web.data import tashkent
 from web.general import db_dependency, create_token, decode_jwt, JWTBearer, templates
 from web.schemas import GroupDaysRequest, SaveResultsSchema, SaveVocabResultsSchema
 from web.models import GroupsModel, StudentsModel, WeeksModel, WeekScheduleModel, MurphyUnitsModel, EssentialUnitsModel, \
-    MurphyExercisesModel, MurphyBooksModel, StudentResultsModel
+    MurphyExercisesModel, MurphyBooksModel, StudentResultsModel, FilesModel
 
 router = APIRouter(dependencies=[Depends(JWTBearer(type='student'))])
 
@@ -366,3 +367,20 @@ async def save_results(request: Request, data: SaveVocabResultsSchema, db: db_de
         db.commit()
 
     return {'ok': True}
+
+@router.get('/file/{file_id}', status_code=status.HTTP_200_OK)
+async def get_file(db: db_dependency, file_id: UUID):
+    file_db = db.query(FilesModel).filter(
+        FilesModel.id == file_id
+    ).first()
+    if not file_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
+            'ok': False,
+            'message': 'File not found'
+        })
+    if not os.path.exists(file_db.file_path):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={
+            'ok': False,
+            'message': 'File not found on disk'
+        })
+    return FileResponse(file_db.file_path)

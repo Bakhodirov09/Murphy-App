@@ -3,14 +3,17 @@ from typing import List
 
 from pydantic import BaseModel, Field, validator
 
+
 class LoginRequest(BaseModel):
     login: str
     password: str
+
 
 class GroupDaysRequest(BaseModel):
     days: int
     group: str
     level: str
+
 
 class AddWordSchema(BaseModel):
     book_id: str
@@ -21,8 +24,10 @@ class AddWordSchema(BaseModel):
     translation_ru: str
     word_photo: str
 
+
 class GroupTypeRequest(BaseModel):
     days: str
+
 
 class AddWeekSchema(BaseModel):
     week_number: int
@@ -38,9 +43,11 @@ class AddWeekSchema(BaseModel):
     murphy_from_unit: int
     murphy_to_unit: int
 
+
 class AddEssentialUnitSchema(BaseModel):
     book_id: str
     unit_number: int
+
 
 class AddExerciseSchema(BaseModel):
     unit_id: str
@@ -48,24 +55,36 @@ class AddExerciseSchema(BaseModel):
     type: int
     exercise_number: int
 
+
 class AddExerciseQuestionSchema(BaseModel):
     exercise_id: str
     field: dict
+
 
 class ResultItem(BaseModel):
     question_id: str
     failed: bool
 
+
 class VocabularyResultItem(BaseModel):
     vocabulary_id: str
     failed: bool
+
 
 class SaveResultsSchema(BaseModel):
     exercise_id: str
     week_id: str
     results: List[ResultItem]
 
+
 class SaveVocabResultsSchema(BaseModel):
     unit_id: str
     week_id: str
     results: List[VocabularyResultItem]
+
+
+class AddIELTSListeningSchema(BaseModel):
+    condition: str
+    audio_id: str
+    script: str
+    unit_id: str

@@ -19,373 +19,138 @@
       --radius:12px;
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
-    /* Days Toggle */
     .days-toggle {
         width: 100%;
         display: flex;
         justify-content: center;
         margin: 20px 0 10px;
     }
-
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:16px
-    }
-
+    .topbar{ display:flex;align-items:center;justify-content:space-between;gap:16px }
     .profile{display:flex;align-items:center;margin-left:auto;}
-
     .day-btn {
-        background: transparent;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: 500;
-        color: #555;
+        background: transparent; border: none; padding: 10px 20px;
+        border-radius: 20px; font-size: 14px; cursor: pointer; font-weight: 500; color: #555;
     }
-
-    .day-btn.active {
-        background: #FFD400;
-        color: #000;
-        font-weight: 600;
-    }
-
-    .books {
-        padding: 20px;
-    }
-
+    .day-btn.active { background: #FFD400; color: #000; font-weight: 600; }
+    .books { padding: 20px; }
     .book {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        background-color: #d5c7c7;
-        margin-bottom: 10px;
-        border-radius: 20px;
-        padding: 20px;
+        display: flex; justify-content: space-between; align-items: flex-end;
+        background-color: #d5c7c7; margin-bottom: 10px; border-radius: 20px; padding: 20px;
     }
-
-    .text {
-        display: flex;
-        flex-direction: column;
-    }
-
-<!--    .book-units {-->
-<!--        padding: 20px;-->
-<!--        background: var(&#45;&#45;panel);-->
-<!--        border-radius: 20px;-->
-<!--    }-->
-
-<!--    .unit {-->
-<!--        display: flex;-->
-<!--        justify-content: space-between;-->
-<!--        background-color: #f0f0f0;-->
-<!--        padding: 6px 0 5px 20px;-->
-<!--    }-->
-
-    .unit .unit-header .icon {
-        width: 50px;
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-    }
-
-    .book-units {
-      padding: 20px;
-      background: var(--panel);
-      border-radius: 20px;
-    }
-
-    .unit {
-      background: #f0f0f0;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 12px;
-      padding: 6px 0 5px 20px;
-    }
-
-    .unit-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 20px;
-      cursor: pointer;
-    }
-
-    .unit-header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .toggle-btn {
-      width: 40px;
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .unit.open .toggle-btn {
-      transform: rotate(180deg);
-    }
-
-    .exercises {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease;
-      background: #fff;
-    }
-
-    .unit.open .exercises {
-      max-height: 500px;
-    }
-
-    .exercise {
-      padding: 16px 20px;
-      border-top: 1px solid #e0e0e0;
-      cursor: pointer;
-    }
-
-    .exercise h1 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .exercise p {
-      margin: 4px 0 0;
-      color: #666;
-    }
-
+    .text { display: flex; flex-direction: column; }
+    .unit .unit-header .icon { width: 50px; background: none; border: none; font-size: 24px; cursor: pointer; }
+    .book-units { padding: 20px; background: var(--panel); border-radius: 20px; }
+    .unit { background: #f0f0f0; border-radius: 12px; overflow: hidden; margin-bottom: 12px; padding: 6px 0 5px 20px; }
+    .unit-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; cursor: pointer; }
+    .unit-header h1 { margin: 0; font-size: 20px; }
+    .toggle-btn { width: 40px; background: none; border: none; font-size: 22px; cursor: pointer; transition: transform 0.3s ease; }
+    .unit.open .toggle-btn { transform: rotate(180deg); }
+    .exercises { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; background: #fff; }
+    .unit.open .exercises { max-height: 500px; }
+    .exercise { padding: 16px 20px; border-top: 1px solid #e0e0e0; cursor: pointer; }
+    .exercise h1 { margin: 0; font-size: 18px; }
+    .exercise p { margin: 4px 0 0; color: #666; }
     .exercises > button {
-      width: 100%;
-      margin: 12px 0;
-      padding: 12px 16px;
-      border: 2px dashed #b0b0b0;
-      background: #fafafa;
-      border-radius: 10px;
-
-      font-size: 16px;
-      font-weight: 600;
-      color: #444;
-      cursor: pointer;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-
-      transition: all 0.25s ease;
+      width: 100%; margin: 12px 0; padding: 12px 16px; border: 2px dashed #b0b0b0;
+      background: #fafafa; border-radius: 10px; font-size: 16px; font-weight: 600; color: #444;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.25s ease;
     }
-
     #addUnitBtn {
-        width: 100%;
-        margin: 12px 0;
-        padding: 12px 16px;
-        border: 2px dashed #b0b0b0;
-        background: #fafafa;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
-        color: #444;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.25s ease;
+        width: 100%; margin: 12px 0; padding: 12px 16px; border: 2px dashed #b0b0b0;
+        background: #fafafa; border-radius: 10px; font-size: 16px; font-weight: 600; color: #444;
+        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.25s ease;
     }
-
-    #addUnitBtn:hover {
-        background: #f0f8ff;
-        border-color: #4a90e2;
-        color: #4a90e2;
-    }
-
-    /* Hover */
-    .exercises > button:hover {
-      background: #f0f8ff;
-      border-color: #4a90e2;
-      color: #4a90e2;
-    }
-
-    /* Active (click) */
-    .exercises > button:active {
-      transform: scale(0.98);
-    }
-
-
-
+    #addUnitBtn:hover { background: #f0f8ff; border-color: #4a90e2; color: #4a90e2; }
+    .exercises > button:hover { background: #f0f8ff; border-color: #4a90e2; color: #4a90e2; }
+    .exercises > button:active { transform: scale(0.98); }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:#1f2d3d;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      font-size:14px;
-      line-height:1.3;
-    }
-
-    /* Layout */
-    .app{
-      display:flex;
-      min-height:100vh;
-      gap:24px;
-      padding:28px;
-    }
-
-    /* Sidebar */
+    body{ margin:0; background:var(--bg); color:#1f2d3d; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-size:14px; line-height:1.3; }
+    .app{ display:flex; min-height:100vh; gap:24px; padding:28px; }
     .sidebar{
-      width:260px;
-      background:linear-gradient(180deg,#0f1724,#0b1220);
-      color:#dbe7ff;
-      border-radius:16px;
-      padding:22px;
-      box-shadow:0 10px 30px rgba(2,6,23,0.3);
-      flex-shrink:0;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
+      width:260px; background:linear-gradient(180deg,#0f1724,#0b1220); color:#dbe7ff;
+      border-radius:16px; padding:22px; box-shadow:0 10px 30px rgba(2,6,23,0.3);
+      flex-shrink:0; display:flex; flex-direction:column; gap:18px;
     }
     .logo{display:flex;align-items:center;gap:12px}
     .logo .dot{width:38px;height:38px;border-radius:50%;background:linear-gradient(45deg,#6c5ce7,#00b894);display:flex;align-items:center;justify-content:center;font-weight:700}
     .logo h1{font-size:16px;margin:0}
-
     .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
     .nav a{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;color:rgba(255,255,255,0.85);text-decoration:none}
     .nav a.active{background:rgba(255,255,255,0.06)}
-
     .sidebar .spacer{flex:1}
-    .logout{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .main{ flex:1; display:flex; flex-direction:column; gap:18px; }
+    .close { cursor: pointer; }
 
-    /* Main content */
-    .main{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-    }
-
-    .close {
-        cursor: pointer;
-    }
-
-    /* Modal Background */
+    /* Modal */
     .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(3px);
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px); justify-content: center; align-items: center;
     }
-
-    /* Modal Box */
     .modal-content {
-      background: var(--panel);
-      padding: 25px;
-      border-radius: 16px;
-      width: 380px;
-      box-shadow: var(--card-shadow);
-      animation: popup .25s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      background: var(--panel); padding: 25px; border-radius: 16px;
+      width: 380px; box-shadow: var(--card-shadow); animation: popup .25s ease;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .modal-content .types { display: contents; }
+    .modal-content .types a { text-decoration: none; }
+    .modal-content .types a:hover { text-decoration: underline; }
+    @keyframes popup { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-content h2 { margin: 0 0 10px; }
+    .modal-content label { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 2px; }
+    .modal-content input[type="text"],
+    .modal-content input[type="number"] {
+      padding: 10px 14px; border: 2px solid #e0e0e0; border-radius: 8px;
+      font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s;
+    }
+    .modal-content input:focus { border-color: var(--accent); }
+
+    /* ── Level radio buttons ── */
+    .level-options { display: flex; gap: 10px; margin-top: 4px; }
+    .level-radio { display: none; }
+    .level-label {
+      flex: 1; text-align: center; padding: 10px 16px; border: 2px solid #e0e0e0;
+      border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+      color: #555; transition: all .2s; user-select: none;
+    }
+    .level-label:hover { border-color: var(--accent); color: var(--accent); }
+    .level-radio:checked + .level-label {
+      border-color: var(--accent); background: var(--accent); color: #fff;
     }
 
-    .modal-content .types {
-        display: contents;
-    }
-
-    .modal-content .types a {
-        text-decoration: none;
-    }
-
-    .modal-content .types a:hover {
-        text-decoration: underline;
-    }
-
-    @keyframes popup {
-      from { transform: scale(0.9); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-content h2 {
-      margin: 0 0 10px;
-    }
-
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:16px
-    }
     .search{display:flex;align-items:center;gap:10px;background:var(--panel);padding:10px;border-radius:12px;box-shadow:var(--card-shadow);min-width:320px}
     .search input{border:0;outline:0;background:transparent}
-
-    .profile{display:flex;align-items:center;margin-left:auto;}
-
-    /* Stats cards */
     .stats-row{display:flex;gap:14px}
-    .stat-card{
-      background:var(--panel);
-      padding:14px 16px;
-      border-radius:12px;
-      box-shadow:var(--card-shadow);
-      min-width:110px;
-      display:flex;flex-direction:column;gap:6px;align-items:flex-start
-    }
+    .stat-card{ background:var(--panel); padding:14px 16px; border-radius:12px; box-shadow:var(--card-shadow); min-width:110px; display:flex;flex-direction:column;gap:6px;align-items:flex-start }
     .stat-card .num{font-size:20px;font-weight:700}
     .stat-card .label{color:var(--muted);font-size:12px}
     .avatar{margin-left: 20px;width:44px;height:44px;border-radius:50%;background:linear-gradient(45deg,#ffd166,#ef476f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-
-    /* Controls */
     .controls{display:flex;gap:12px;align-items:center}
     .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
     .btn-add{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
     .btn-add-book{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
     .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(108,92,231,0.12)}
-
-    /* Summary cards */
     .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
     .summary .card{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);display:flex;flex-direction:column;gap:8px}
     .summary small{color:var(--muted)}
-
-    /* Table / schedule */
     .panel{background:var(--panel);padding:14px;border-radius:12px;box-shadow:var(--card-shadow);}
     .panel h3{margin:0 0 10px 0}
-
     .table-wrap{overflow:auto}
     table{width:100%;border-collapse:collapse;min-width:920px}
     th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eef2f6}
     thead th{background:transparent;color:var(--muted);font-weight:600;font-size:13px}
-
     td .student{display:flex;align-items:center;gap:10px}
     .student .sname{font-weight:600}
     .student .smeta{color:var(--muted);font-size:12px}
-
     .circle{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
     .circle.green{background:#008f5f;color:#e6fbf3}
     .circle.yellow{background:#d68e00;color:#fff7e6}
     .circle.red{background:#e04b4b;color:#fff0f0}
-
-    /* progress */
     .progress{height:10px;background:#eef6f5;border-radius:8px;overflow:hidden}
     .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#00b894)}
-
-    /* small responsive */
-    @media (max-width:1100px){
-      .summary{grid-template-columns:repeat(2,1fr)}
-      .sidebar{display:none}
-    }
-    @media (max-width:700px){
-      .topbar{flex-direction:column;align-items:flex-start}
-      .stats-row{flex-wrap:wrap}
-    }
+    @media (max-width:1100px){ .summary{grid-template-columns:repeat(2,1fr)} .sidebar{display:none} }
+    @media (max-width:700px){ .topbar{flex-direction:column;align-items:flex-start} .stats-row{flex-wrap:wrap} }
   </style>
 </head>
 <body>
@@ -399,7 +164,6 @@
           <div style="font-size:12px;color:rgba(255,255,255,0.6)">Teachers Panel</div>
         </div>
       </div>
-
       <nav class="nav">
         <a href="/teacher/dashboard">
           <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#979C9E">
@@ -422,21 +186,18 @@
           Exercises
         </a>
         <a href="/teacher/vocabularies">
-          <svg width="24" height="24" color="#ffcf00" viewBox="0 0 73 60" fill="#979C9E" xmlns="http://www.w3.org/2000/svg">
+          <svg width="24" height="24" viewBox="0 0 73 60" fill="#979C9E" xmlns="http://www.w3.org/2000/svg">
               <path d="M11.1677 0.000266147H11.1615C10.8215 -0.00051141 10.4847 0.0702849 10.1706 0.208567C9.85645 0.346848 9.57122 0.549875 9.33135 0.805926C9.08679 1.06381 8.89289 1.37074 8.76091 1.70891C8.62893 2.04707 8.56149 2.40972 8.56251 2.77581V44.3946C8.56251 45.9208 9.73568 47.1655 11.178 47.1694C17.2584 47.1848 27.4455 48.5313 34.4732 56.3453V12.79C34.4732 12.2727 34.3488 11.7867 34.1141 11.3845C28.3461 1.51496 17.2618 0.0154131 11.1677 0.000266147ZM64.4394 44.3946V2.77555C64.4394 2.03074 64.1663 1.33111 63.6706 0.805665C63.4307 0.54968 63.1455 0.346694 62.8314 0.208416C62.5174 0.0701379 62.1806 -0.000694789 61.8406 5.1369e-06H61.8343C55.7403 0.0154132 44.6561 1.51496 38.8878 11.3845C38.6531 11.7867 38.529 12.2727 38.529 12.79V56.345C45.5567 48.531 55.7438 47.1845 61.8242 47.1691C63.2662 47.1652 64.4394 45.9205 64.4394 44.3946Z"/>
               <path d="M70.3882 9.59814H68.4941V44.3946C68.4941 48.2913 65.506 51.4687 61.8329 51.4784C56.6755 51.4914 48.1716 52.563 42.1489 58.6194C52.5651 55.9096 63.5456 57.6711 69.8035 59.1864C70.1868 59.2803 70.5852 59.2808 70.9688 59.188C71.3523 59.0951 71.7112 58.9111 72.0183 58.6499C72.3253 58.3908 72.5732 58.0611 72.7432 57.6857C72.9132 57.3102 73.001 56.8987 73 56.4821V12.3732C73.0002 10.8431 71.8283 9.59814 70.3882 9.59814ZM4.50586 44.3946V9.59814H2.61179C1.17194 9.59814 0 10.8431 0 12.3732V56.4813C0 57.3301 0.357873 58.1203 0.981694 58.6492C1.28878 58.9105 1.64758 59.0945 2.03118 59.1874C2.41477 59.2803 2.81319 59.2797 3.19653 59.1856C9.45439 57.6701 20.4352 55.9089 30.8508 58.6186C24.8284 52.5624 16.3245 51.4912 11.1671 51.4781C7.4942 51.4687 4.50586 48.2913 4.50586 44.3946Z"/>
           </svg>
-
           Vocabularies
         </a>
       </nav>
-
       <div class="spacer"></div>
     </aside>
 
     <main class="main">
-
-        <div class="topbar">
+      <div class="topbar">
         <div class="profile">
           <div style="text-align:right">
             <div style="font-weight:700">{{ first_name }} {{ last_name }}</div>
@@ -444,241 +205,325 @@
           </div>
           <div class="avatar">{{ letters }}</div>
         </div>
+      </div>
+
+      <div class="days-toggle">
+        <button class="day-btn active" data-type="odd">Books</button>
+      </div>
+
+      <button class="btn-add" style="background-color: #b03434;" id="addBookBtn">+ Add a Book</button>
+
+      <div class="books"></div>
+
+      <!-- ── Add Book Modal (FIXED: now has level selector) ── -->
+      <div style="display:none;" id="addBookModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Add a new book</h2>
+
+          <label>Book name</label>
+          <input type="text" id="bookName" placeholder="Write book name here">
+
+          <label style="margin-top:8px;">Book level</label>
+          <div class="level-options">
+            <input type="radio" name="bookLevel" id="levelUI" class="level-radio" value="Upper-Intermediate">
+            <label for="levelUI" class="level-label">Upper-Intermediate</label>
+
+            <input type="radio" name="bookLevel" id="levelIELTS" class="level-radio" value="IELTS">
+            <label for="levelIELTS" class="level-label">IELTS</label>
+          </div>
+
+          <button class="btn-add-book" id="saveBookBtn" style="margin-top:12px;">Save</button>
         </div>
+      </div>
 
-        <!-- Days Toggle -->
-        <div class="days-toggle">
-          <button class="day-btn active" data-type="odd">Books</button>
+      <!-- Add Book Unit Modal -->
+      <div style="display:none;" id="addBookUnitModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Add a unit</h2>
+          <label>Unit number</label>
+          <input type="number" id="bookUnitNumber" placeholder="Write book unit number here">
+          <button class="btn-add-book" id="saveBookUnitBtn" style="margin-top:10px;">Save</button>
         </div>
+      </div>
 
-        <button class="btn-add" style="background-color: #b03434;" id="addBookBtn">+ Add a Book</button>
-
-        <div class="books">
-
+      <!-- Level selector modal (for adding exercises) -->
+      <div style="display:none;" id="addLevelModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Choose Level</h2>
+          <div class="types">
+            <a href="#" class="level-option" data-level="upper-intermediate">Upper-Intermediate</a>
+            <a href="#" class="level-option" data-level="ielts">IELTS</a>
+          </div>
         </div>
-        <div style="display: none;" id="addWeekModal" class="modal">
-            <div class="modal-content">
-              <span class="close">&times;</span>
-              <h2>Choose Exercise Type to add</h2>
-              <div class="types">
-                  <a href="/teacher/add-choose-the-correct-alternative">Choose the correct alternative</a>
-                  <a href="/teacher/add-separately-choose-the-correct-alternative">Separately Choose the correct alternative</a>
-                  <a href="/teacher/add-fill-the-gap">Fill the gap</a>
-                  <a href="/teacher/add-separately-fill-the-gap">Separately Fill the gap</a>
-                  <a href="/teacher/add-complete-the-sentences">Complete the sentences</a>
-                  <a href="/teacher/add-separately-complete-the-sentences">Separately Complete the sentences</a>
-                  <a href="/teacher/add-matching">Matching</a>
-                  <a href="/teacher/add-rewrite-the-sentences">Rewrite the sentence</a>
-                  <a href="/teacher/add-word-order">Word ordering</a>
-                  <a href="/teacher/add-error-correction">Error Correction</a>
-<!--                  <a href="/teacher/add-error-correction">Choose </a>-->
-              </div>
+      </div>
 
-              <button class="btn-add" id="saveWeekBtn" style="margin-top: 10px;">Save</button>
-            </div>
+      <!-- IELTS exercise types modal -->
+      <div style="display:none;" id="addIeltsModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Choose Exercise Type to add</h2>
+          <div class="types">
+            <strong style="margin-top:6px;">🎧 Listening</strong>
+            <a href="/teacher/add-ielts-listening-fill-the-gap">Fill the gaps</a>
+            <a href="/teacher/add-ielts-listening-what-you-hear">Listen what you hear</a>
+            <strong style="margin-top:6px;">📖 Reading</strong>
+            <a href="/teacher/add-ielts-reading-fill-the-gap">Fill the gaps</a>
+          </div>
         </div>
-        <div style="display: none;" id="addBookModal" class="modal">
-            <div class="modal-content">
-              <span class="close">&times;</span>
-              <h2>Write the book name that you want to add</h2>
-                <label>Write book name</label>
-                <input type="text" id="bookName" placeholder="Write book name here">
+      </div>
 
-              <button class="btn-add-book" id="saveBookBtn" style="margin-top: 10px;">Save</button>
-            </div>
+      <!-- Upper-Intermediate exercise types modal -->
+      <div style="display:none;" id="addWeekModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Choose Exercise Type to add</h2>
+          <div class="types">
+            <a href="/teacher/add-choose-the-correct-alternative">Choose the correct alternative</a>
+            <a href="/teacher/add-separately-choose-the-correct-alternative">Separately Choose the correct alternative</a>
+            <a href="/teacher/add-fill-the-gap">Fill the gap</a>
+            <a href="/teacher/add-separately-fill-the-gap">Separately Fill the gap</a>
+            <a href="/teacher/add-matching">Matching</a>
+            <a href="/teacher/add-rewrite-the-sentences">Rewrite the sentence</a>
+            <a href="/teacher/add-word-order">Word ordering</a>
+            <a href="/teacher/add-error-correction">Error Correction</a>
+          </div>
         </div>
-        <div style="display: none;" id="addBookUnitModal" class="modal">
-            <div class="modal-content">
-              <span class="close">&times;</span>
-              <h2>Write the book name that you want to add</h2>
-                <label>Write book name</label>
-                <input type="number" id="bookUnitNumber" placeholder="Write book unit number here">
-
-              <button class="btn-add-book" id="saveBookUnitBtn" style="margin-top: 10px;">Save</button>
-            </div>
-        </div>
+      </div>
 
     </main>
   </div>
-</body>
+
 <script>
-    async function fetchBooks() {
-        const response = await fetch('/teacher/get-murphy-books', {
-            method: 'GET',
-        })
-        const result = await response.json()
-        const booksDiv = document.querySelector('.books');
-        for (book of result.books) {
-            const bookDiv = document.createElement('div');
-            bookDiv.classList.add('book')
+  /* ── Close any modal ── */
+  document.querySelectorAll('.close').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.modal').style.display = 'none';
+      // clean unit_id / level from exercise links
+      document.querySelectorAll('#addWeekModal .types a, #addIeltsModal .types a').forEach(link => {
+        const url = new URL(link.href);
+        url.searchParams.delete('unit_id');
+        url.searchParams.delete('level');
+        link.href = url.toString();
+      });
+    });
+  });
 
-            const textDiv = document.createElement('div');
-            textDiv.classList.add('text')
+  /* ── Open "Add Book" modal ── */
+  document.getElementById('addBookBtn').addEventListener('click', () => {
+    // reset form
+    document.getElementById('bookName').value = '';
+    document.querySelectorAll('input[name="bookLevel"]').forEach(r => r.checked = false);
+    const btn = document.getElementById('saveBookBtn');
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerHTML = 'Save';
+    document.getElementById('addBookModal').style.display = 'flex';
+  });
 
-            const h1 = document.createElement('h1');
-            h1.innerHTML = book.book_name
+  /* ── Save Book (sends name + book_level) ── */
+  document.getElementById('saveBookBtn').addEventListener('click', async () => {
+    const bookName  = document.getElementById('bookName').value.trim();
+    const levelEl   = document.querySelector('input[name="bookLevel"]:checked');
 
-            const bookBtn = document.createElement('button');
-            bookBtn.classList.add('btn')
-            bookBtn.innerHTML = 'This Book'
-            bookBtn.dataset.value = book.id
+    if (!bookName)  { alert('Please write a book name!'); return; }
+    if (!levelEl)   { alert('Please choose a book level!'); return; }
 
-            textDiv.appendChild(h1)
-            bookDiv.appendChild(textDiv)
-            bookDiv.appendChild(bookBtn)
-            booksDiv.appendChild(bookDiv)
-        }
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const bookId = btn.dataset.value
-                booksDiv.innerHTML = ''
-                booksDiv.classList = 'book-units'
-                const response = await fetch(`/teacher/get-book?book_id=${bookId}`, {
-                    method: 'GET'
-                })
-                const result = await response.json()
-                const h1 = document.createElement('h1');
-                h1.innerHTML = `Book: ${result.book.book_name}`
-                booksDiv.appendChild(h1)
-                const addUnitBtn = document.createElement('button');
-                addUnitBtn.innerHTML = '+ Add Unit'
-                addUnitBtn.id = 'addUnitBtn'
-                addUnitBtn.dataset.value = bookId
-                booksDiv.appendChild(addUnitBtn)
-                for (unit of result.book.units) {
-                    const unitDiv = document.createElement('div');
-                    unitDiv.classList.add('unit')
+    const bookLevel = levelEl.value;   // 'upper-intermediate' or 'ielts'
 
-                    const headerDiv = document.createElement('div');
-                    headerDiv.classList.add('unit-header')
+    const btn = document.getElementById('saveBookBtn');
+    btn.disabled = true; btn.style.opacity = '50%'; btn.innerHTML = 'Adding...';
 
-                    const unitH1 = document.createElement('h1');
-                    unitH1.innerHTML = `Unit ${unit.unit_number}`
-                    const bottom = document.createElement('button');
-                    bottom.innerHTML = '⌄'
-                    bottom.classList.add('icon')
+    const response = await fetch('/teacher/add-murphy-book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: bookName, level: bookLevel })
+    });
 
-                    headerDiv.appendChild(unitH1)
-                    headerDiv.appendChild(bottom)
-                    unitDiv.appendChild(headerDiv)
-                    booksDiv.appendChild(unitDiv)
+    if (response.status === 201) {
+      btn.innerHTML = 'Added successfully :)';
+    } else {
+      btn.innerHTML = 'Something went wrong :(';
+      btn.disabled = false; btn.style.opacity = '1';
+    }
+  });
 
-                    const unitExercises = document.createElement('div');
-                    const addExerciseBtn = document.createElement('button')
-                    addExerciseBtn.classList.add('add_exercise_btn')
-                    addExerciseBtn.dataset.value = unit.id
-                    addExerciseBtn.innerHTML = `<span class="plus">+</span> Add exercise to Unit ${unit.unit_number}`
+  /* ── Fetch & render books list ── */
+  async function fetchBooks() {
+    const response = await fetch('/teacher/get-murphy-books', { method: 'GET' });
+    const result = await response.json();
+    const booksDiv = document.querySelector('.books');
 
-                    unitExercises.appendChild(addExerciseBtn)
-                    unitExercises.classList.add('exercises')
-                    for (exercise of unit.exercises) {
-                        const exerciseDiv = document.createElement('div');
-                        exerciseDiv.classList.add('exercise')
-                        exerciseDiv.dataset.value = exercise.id
+    for (const book of result.books) {
+      const bookDiv = document.createElement('div');
+      bookDiv.classList.add('book');
 
-                        const textsDiv = document.createElement('div');
-                        textsDiv.classList.add('text')
+      const textDiv = document.createElement('div');
+      textDiv.classList.add('text');
 
-                        const exerciseNumber = document.createElement('h1');
-                        exerciseNumber.innerHTML = `<strong>${exercise.exercise_number}</strong> Exercise`
-                        const condition = document.createElement('p')
-                        condition.innerHTML = exercise.condition
+      const h1 = document.createElement('h1');
+      h1.innerHTML = book.book_name;
 
-                        textsDiv.appendChild(exerciseNumber)
-                        textsDiv.appendChild(condition)
-                        exerciseDiv.appendChild(textsDiv)
+      // show level badge if available
+      if (book.book_level) {
+        const badge = document.createElement('span');
+        badge.style.cssText = 'font-size:11px;font-weight:600;color:#fff;background:#6c5ce7;padding:2px 10px;border-radius:20px;margin-top:4px;display:inline-block;width:fit-content;';
+        badge.textContent = book.book_level === 'IELTS' ? 'IELTS' : 'Upper-Intermediate';
+        textDiv.appendChild(h1);
+        textDiv.appendChild(badge);
+      } else {
+        textDiv.appendChild(h1);
+      }
 
-                        unitExercises.appendChild(exerciseDiv)
-                    }
-                    unitDiv.appendChild(unitExercises)
-                }
-                document.querySelectorAll('.unit-header').forEach(header => {
-                    header.addEventListener('click', () => {
-                      const unit = header.parentElement;
-                      unit.classList.toggle('open');
-                    });
-                });
-                document.querySelectorAll('.exercise').forEach(div => {
-                    div.addEventListener('click', async () => {
-                        window.location.href = `/teacher/exercise?id=${div.dataset.value}`
-                    })
-                });
-                document.querySelectorAll('.add_exercise_btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        const types = document.querySelector('#addWeekModal');
-                        types.style.display = "flex"
-                        document.querySelectorAll('.types a').forEach(link => {
-                            link.href += `?unit_id=${btn.dataset.value}`;
-                        });
-                    })
-                })
-                addUnitBtn.addEventListener('click', async () => {
-                    const addBookUnitModal = document.getElementById('addBookUnitModal');
-                    addBookUnitModal.style.display = 'flex'
-                })
-                const saveBookBtn = document.getElementById('saveBookUnitBtn');
-                saveBookBtn.addEventListener('click', async () => {
-                    saveBookBtn.innerHTML = 'Adding ...'
-                    saveBookBtn.disabled = true
-                    saveBookBtn.style.opacity = '50%'
-                    const number = document.getElementById('bookUnitNumber');
-                    const response = await fetch('/teacher/add-book-unit', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({book_id: bookId, unit: Number(number.value)})
-                    })
-                    if (response.status == 201) {
-                        saveBookBtn.innerHTML = 'Added successfully... :)'
-                    }
-                    else {
-                        saveBookBtn.innerHTML = 'Something went wrong... :('
-                    }
-                })
-            })
-        })
+      const bookBtn = document.createElement('button');
+      bookBtn.classList.add('btn');
+      bookBtn.innerHTML = 'This Book';
+      bookBtn.dataset.value = book.id;
+
+      bookDiv.appendChild(textDiv);
+      bookDiv.appendChild(bookBtn);
+      booksDiv.appendChild(bookDiv);
     }
 
-    const addBookBtn = document.getElementById('addBookBtn')
-    addBookBtn.addEventListener('click', () => {
-        const modal = document.getElementById('addBookModal');
-        modal.style.display = 'flex'
-    })
+    /* ── Book "This Book" click → show units ── */
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const bookId = btn.dataset.value;
+        booksDiv.innerHTML = '';
+        booksDiv.className = 'book-units';
 
-    const closeBtns = document.querySelectorAll('.close').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const nearModal = btn.closest('.modal')
-            nearModal.style.display = 'none'
-            document.querySelectorAll('a').forEach(link => {
-                const url = new URL(link.href);
-                url.searchParams.delete('unit_id');
-                link.href = url.toString();
-            });
-        })
-    })
+        const res = await fetch(`/teacher/get-book?book_id=${bookId}`, { method: 'GET' });
+        const result = await res.json();
 
-    const addBook = document.querySelector('.btn-add-book');
-    addBook.addEventListener('click', async () => {
-        const bookName = document.getElementById('bookName');
-        addBook.disabled = true
-        addBook.style.opacity = '50%'
-        addBook.innerHTML = 'Adding ...'
-        const response = await fetch('/teacher/add-murphy-book', {
+        const h1 = document.createElement('h1');
+        h1.innerHTML = `Book: ${result.book.book_name}`;
+        booksDiv.appendChild(h1);
+
+        const addUnitBtn = document.createElement('button');
+        addUnitBtn.innerHTML = '+ Add Unit';
+        addUnitBtn.id = 'addUnitBtn';
+        addUnitBtn.dataset.value = bookId;
+        booksDiv.appendChild(addUnitBtn);
+
+        for (const unit of result.book.units) {
+          const unitDiv = document.createElement('div');
+          unitDiv.classList.add('unit');
+
+          const headerDiv = document.createElement('div');
+          headerDiv.classList.add('unit-header');
+
+          const unitH1 = document.createElement('h1');
+          unitH1.innerHTML = `Unit ${unit.unit_number}`;
+          const toggleBtn = document.createElement('button');
+          toggleBtn.innerHTML = '⌄';
+          toggleBtn.classList.add('toggle-btn');
+
+          headerDiv.appendChild(unitH1);
+          headerDiv.appendChild(toggleBtn);
+          unitDiv.appendChild(headerDiv);
+
+          const unitExercises = document.createElement('div');
+          unitExercises.classList.add('exercises');
+
+          const addExerciseBtn = document.createElement('button');
+          addExerciseBtn.classList.add('add_exercise_btn');
+          addExerciseBtn.dataset.value = unit.id;
+          addExerciseBtn.innerHTML = `<span>+</span> Add exercise to Unit ${unit.unit_number}`;
+          unitExercises.appendChild(addExerciseBtn);
+
+          const exercises = unit.exercises?.length ? unit.exercises : unit.ielts_exercises ?? [];
+
+          for (const exercise of exercises) {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.classList.add('exercise');
+            exerciseDiv.dataset.value = exercise.id;
+
+            const textsDiv = document.createElement('div');
+            textsDiv.classList.add('text');
+
+            const exerciseNumber = document.createElement('h1');
+            exerciseNumber.innerHTML = `<strong>${exercise.exercise_number}</strong> Exercise`;
+            const condition = document.createElement('p');
+            condition.innerHTML = exercise.condition;
+
+            textsDiv.appendChild(exerciseNumber);
+            textsDiv.appendChild(condition);
+            exerciseDiv.appendChild(textsDiv);
+            unitExercises.appendChild(exerciseDiv);
+          }
+
+          unitDiv.appendChild(unitExercises);
+          booksDiv.appendChild(unitDiv);
+        }
+
+        /* Toggle unit open/close */
+        document.querySelectorAll('.unit-header').forEach(header => {
+          header.addEventListener('click', () => header.parentElement.classList.toggle('open'));
+        });
+
+        /* Navigate to exercise */
+        document.querySelectorAll('.exercise').forEach(div => {
+          div.addEventListener('click', () => {
+            window.location.href = `/teacher/exercise?id=${div.dataset.value}`;
+          });
+        });
+
+        /* Add exercise → show level picker first */
+        document.querySelectorAll('.add_exercise_btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const levelModal = document.getElementById('addLevelModal');
+            levelModal.style.display = 'flex';
+            levelModal._unitId = btn.dataset.value;
+          });
+        });
+
+        /* Add Unit button */
+        document.getElementById('addUnitBtn').addEventListener('click', () => {
+          document.getElementById('bookUnitNumber').value = '';
+          const saveBtn = document.getElementById('saveBookUnitBtn');
+          saveBtn.disabled = false; saveBtn.style.opacity = '1'; saveBtn.innerHTML = 'Save';
+          document.getElementById('addBookUnitModal').style.display = 'flex';
+        });
+
+        /* Save Unit */
+        document.getElementById('saveBookUnitBtn').addEventListener('click', async () => {
+          const saveBtn = document.getElementById('saveBookUnitBtn');
+          saveBtn.innerHTML = 'Adding...'; saveBtn.disabled = true; saveBtn.style.opacity = '50%';
+          const number = document.getElementById('bookUnitNumber');
+          const res = await fetch('/teacher/add-book-unit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({'name': bookName.value})
-        })
-        if (response.status == 201) {
-            addBook.innerHTML = 'Added successfully :)'
-        }
-        else {
-            addBook.innerHTML = 'Something went wrong. :('
-        }
-    })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_id: bookId, unit: Number(number.value) })
+          });
+          saveBtn.innerHTML = res.status === 201 ? 'Added successfully :)' : 'Something went wrong :(';
+        });
+      });
+    });
+  }
 
-fetchBooks()
+  /* ── Level option click (for adding exercises to a unit) ── */
+  document.querySelectorAll('.level-option').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const levelModal = document.getElementById('addLevelModal');
+      const selectedLevel = link.dataset.level;
+      const unitId = levelModal._unitId;
+      levelModal.style.display = 'none';
+
+      const targetModalId = selectedLevel === 'ielts' ? 'addIeltsModal' : 'addWeekModal';
+      const targetModal = document.getElementById(targetModalId);
+      targetModal.style.display = 'flex';
+
+      document.querySelectorAll(`#${targetModalId} .types a`).forEach(typeLink => {
+        const url = new URL(typeLink.href);
+        url.searchParams.set('unit_id', unitId);
+        url.searchParams.set('level', selectedLevel);
+        typeLink.href = url.toString();
+      });
+    });
+  });
+
+  fetchBooks();
 </script>
+</body>
 </html>

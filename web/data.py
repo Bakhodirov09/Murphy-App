@@ -24,5 +24,7 @@ LOGIN_HEADER_HEX_KEY = env.str('LOGIN_HEADER_HEX_KEY')
 LOGIN_SECRET_KEY = env.str('LOGIN_SECRET_KEY')
 LOGIN_STATIC_STR = env.str('LOGIN_STATIC_STR')
 
+OPENAI_API_KEY = env.str('OPENAI_API_KEY')
+
 # Timezone
 tashkent = timezone("Asia/Tashkent")
