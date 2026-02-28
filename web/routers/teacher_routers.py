@@ -632,13 +632,13 @@ async def add_ielts_listening(
     db.commit()
     db.refresh(listening)
 
-    # background_tasks.add_task(
-    #     process_script_with_ai,
-    #     listening.id
-    # )
+    background_tasks.add_task(
+        process_script_with_ai,
+        listening.id
+    )
 
     return {
         "ok": True,
-        "message": "Audio qo‘shildi, AI ishlayapti",
+        "message": "Audio added. Ai is working on.",
         "id": listening.id
     }

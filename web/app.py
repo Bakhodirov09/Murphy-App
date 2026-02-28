@@ -4,8 +4,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, File
 from httpx import AsyncClient
 from pathlib import Path
 from web.data import LOGIN_REQUEST_HEX_KEY, LOGIN_INTER_URL, LOGIN_RESPONSE_HEX_KEY, tashkent
-from web.general import create_token, templates, decode_jwt
-from web.schemas import LoginRequest
+from web.general import create_token, templates, decode_jwt, db_dependency, send_otp_for_teacher
+from web.models import TeachersModel, OTPCodesModel
+from web.schemas import LoginRequest, UpdatePasswordSchema, SendOTPSchema
 from web.header import make_header, encrypt_aes_base64, decrypt_aes_base64
 from web.routers.student_routers import router as student_router
 from web.routers.teacher_routers import router as teacher_router
@@ -43,8 +44,25 @@ async def get_login(request: Request):
 
 
 @app.post('/login', status_code=status.HTTP_200_OK)
-async def login(request: Request, data: LoginRequest, chat_id: int = Query(...)):
-    if not data.password.isdigit():
+async def login(request: Request, data: LoginRequest, db: db_dependency, chat_id: int = Query(...)):
+    phone_clean = data.login.replace(" ", "").replace("(", "").replace(")", "").replace("-", "").replace("+", "")
+    teacher = db.query(TeachersModel).filter(
+        TeachersModel.phone_number == phone_clean
+    ).first()
+    if teacher:
+        if teacher.password == data.password:
+            response = {
+                'success': True,
+                'token': await create_token({'teacher': teacher.type, 'type': 'teacher'}),
+                'teacher': {
+                    'first_name': teacher.first_name,
+                    'last_name': teacher.last_name,
+                    'avatar_url': teacher.avatar_url
+                },
+                'role': teacher.type
+            }
+            return response
+    else:
         body = {'project': 'lms-v2', 'action': 'client_auth_universal_login',
                 'body': {'login': data.login, 'password': data.password}}
         encrypted = {'a': await encrypt_aes_base64(body, LOGIN_REQUEST_HEX_KEY)}
@@ -67,8 +85,8 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                             'chat_id': chat_id
                         }
                     }
-                    if r_json['user']['teacher']['first_name'] == "Sardorbek" and r_json['user']['teacher'][
-                        'last_name'] == "Abdulazizov":
+                    if r_json['user']['teacher']['first_name'] == "Sardorbek" \
+                            and r_json['user']['teacher']['last_name'] == "Abdulazizov":
                         response['success'] = True
                         response['token'] = await create_token({'user': response['user'], 'type': 'student'})
                         response['type'] = 'student'
@@ -85,53 +103,8 @@ async def login(request: Request, data: LoginRequest, chat_id: int = Query(...))
                         return resp
                     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=response)
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={'success': False, 'level': False})
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
-    else:
-        teacher_numbers = ['+998 (94) 930-62-22', '+998 (90) 859-79-39']
-        if data.login in teacher_numbers:
-            if data.login == teacher_numbers[0] and data.password == "967402800":
-                response = {
-                    'success': True,
-                    'token': await create_token({'teacher': 'Main', 'type': 'teacher'}),
-                    'teacher': {
-                        'first_name': 'Sardorbek',
-                        'last_name': 'Abdulazizov',
-                        'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/7/2HE_pDQBzQyg3cVBIvyxu2ia4Q5YMu1a.jpg'
-                    },
-                    'role': 'Main'
-                }
-                resp = JSONResponse(response)
-                resp.set_cookie(
-                    key='token',
-                    value=response['token'],
-                    httponly=True,
-                    max_age=60 * 60 * 24 * 15,
-                    path='/',
-                    samesite='lax'
-                )
-                return resp
-            elif data.login == teacher_numbers[1] and data.password == '1149620400':
-                response = {
-                    'success': True,
-                    'token': await create_token({'teacher': 'Support', 'type': 'teacher'}),
-                    'teacher': {
-                        'first_name': 'Sevara',
-                        'last_name': 'Tolipjonova',
-                        'avatar_url': 'https://file-server-5x5bbmyc8vmh94yt.inter-nation.uz/10/vP9Ql_GWZ5wmcg7SjAMtivpYWtdTc--w.jpg'
-                    },
-                    'role': 'Support'
-                }
-                resp = JSONResponse(response)
-                resp.set_cookie(
-                    key='token',
-                    value=response['token'],
-                    httponly=True,
-                    max_age=60 * 60 * 24 * 15,
-                    path='/',
-                    samesite='lax'
-                )
-                return resp
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Login or password is incorrect')
+
 
 
 @app.get('/success', status_code=200)
@@ -172,6 +145,45 @@ async def task_image():
         path=f'{BASE_DIR}/assets/images/bg3.png',
         media_type='image/png'
     )
+
+@app.post('/teacher/login/send-otp', status_code=status.HTTP_200_OK)
+async def request_to_update_password(data: SendOTPSchema, db: db_dependency):
+    phone_clean = data.phone_number.replace(" ", "").replace("(", "").replace(")", "").replace("-", "").replace("+", "")
+    teacher = db.query(TeachersModel).filter(
+        TeachersModel.phone_number == phone_clean
+    ).first()
+    if teacher:
+        sent = await send_otp_for_teacher(phone_clean)
+        if sent['ok']:
+            code = OTPCodesModel(
+                code=sent['code'],
+                phone_number=phone_clean
+            )
+            db.add(code)
+            db.commit()
+            return {'ok': True, 'message': 'OTP Sent'}
+        return HTTPException(detail={'ok': False, 'message': "OTP couldn't send"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    raise HTTPException(detail={'ok': False}, status_code=status.HTTP_404_NOT_FOUND)
+
+@app.post('/teacher/login/update-password', status_code=status.HTTP_200_OK)
+async def update_password(data: UpdatePasswordSchema, db: db_dependency):
+    phone_clean = data.phone_number.replace(" ", "").replace("(", "").replace(")", "").replace("-", "").replace("+", "")
+    code = db.query(OTPCodesModel).filter(
+        OTPCodesModel.code == int(data.otp_code),
+    ).first()
+    if not code:
+        raise HTTPException(detail={'ok': False, 'message': 'OTP Code not found'}, status_code=status.HTTP_404_NOT_FOUND)
+
+    teacher = db.query(TeachersModel).filter(
+        TeachersModel.phone_number == phone_clean
+    ).first()
+    if not teacher:
+        db.delete(code)
+        db.commit()
+        raise HTTPException(detail={'ok': False, 'message': 'Teacher not found'}, status_code=status.HTTP_404_NOT_FOUND)
+    teacher.password = data.new_password
+    db.commit()
+    return {'ok': True, 'message': 'Updated successfully'}
 
 
 app.include_router(student_router, prefix='/student', tags=['Student Routers'])

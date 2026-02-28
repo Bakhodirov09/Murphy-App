@@ -1,5 +1,8 @@
 import os
+import random
+
 import openai
+import vonage
 from typing import Annotated
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import HTTPException
@@ -8,13 +11,17 @@ from jose import jwt
 from jose.exceptions import ExpiredSignatureError
 from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
-from web.data import SECRET_KEY, ALGORITHM, OPENAI_API_KEY
+from web.data import SECRET_KEY, ALGORITHM, OPENAI_API_KEY, VONAGE_KEY, VONAGE_API_SECRET
 from web.database import SessionLocal
 from web.models import IELTSMaterialsModel
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
-client = openai.OpenAI(api_key=OPENAI_API_KEY)
+
+openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
+vonage_client = vonage.Client(key=VONAGE_KEY, secret=VONAGE_API_SECRET)
+sms = vonage.Sms(vonage_client)
+
 
 def get_db():
     db = SessionLocal()
@@ -23,17 +30,21 @@ def get_db():
     finally:
         db.close()
 
+
 async def create_token(token_data):
     encoded = token_data
     return jwt.encode(encoded, SECRET_KEY, ALGORITHM)
 
+
 db_dependency = Annotated[Session, Depends(get_db)]
+
 
 async def decode_jwt(token: str) -> dict:
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except ExpiredSignatureError:
         return {}
+
 
 class JWTBearer(HTTPBearer):
     def __init__(self, cookie_name: str = 'token', auto_error: bool = True, type: str = None):
@@ -59,6 +70,7 @@ class JWTBearer(HTTPBearer):
 
         return [bool(payload), payload] if payload else False
 
+
 def process_script_with_ai(listening_id: int):
     db = SessionLocal()
 
@@ -83,7 +95,7 @@ Listening script:
 \"\"\"
 """
 
-        response = client.chat.completions.create(
+        response = openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0
@@ -102,3 +114,19 @@ Listening script:
 
     finally:
         db.close()
+
+
+async def send_otp_for_teacher(phone_number):
+    code = ''
+    for _ in range(6):
+        code += str(random.randint(0, 9))
+    response_data = sms.send_message(
+        {
+            'from': 'Murphy-App',
+            'to': phone_number,
+            'text': f'Your code: {code}'
+        }
+    )
+    if response_data["messages"][0]["status"] == "0":
+        return {'ok': True, 'code': code}
+    return {'ok': False}

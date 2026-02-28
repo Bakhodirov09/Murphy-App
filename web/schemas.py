@@ -88,3 +88,13 @@ class AddIELTSListeningSchema(BaseModel):
     audio_id: str
     script: str
     unit_id: str
+
+
+class SendOTPSchema(BaseModel):
+    phone_number: str
+
+
+class UpdatePasswordSchema(BaseModel):
+    phone_number: str
+    otp_code: int
+    new_password: str

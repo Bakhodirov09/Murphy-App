@@ -16,6 +16,21 @@ class BaseModel(Base):
     created_at = Column(DateTime, default=datetime.now(tashkent))
     updated_at = Column(DateTime, default=datetime.now(tashkent), onupdate=datetime.now(tashkent))
 
+class TeachersModel(BaseModel):
+    __tablename__ = 'teachers'
+
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    avatar_url = Column(String, nullable=False)
+    type = Column(Enum('Main', 'Support', name='teacher_type_enum'))
+    phone_number = Column(String, nullable=False)
+    password = Column(Text, nullable=False)
+
+class OTPCodesModel(BaseModel):
+    __tablename__ = 'otp_codes'
+
+    code = Column(Integer, nullable=False)
+    phone_number = Column(String, nullable=False)
 
 class GroupsModel(BaseModel):
     __tablename__ = "groups"
