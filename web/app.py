@@ -1,5 +1,5 @@
 import json
-from fastapi import FastAPI, status, Request, HTTPException, Query
+from fastapi import FastAPI, status, Request, HTTPException, Query, Response
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
 from httpx import AsyncClient
 from pathlib import Path
@@ -44,16 +44,25 @@ async def get_login(request: Request):
 
 
 @app.post('/login', status_code=status.HTTP_200_OK)
-async def login(request: Request, data: LoginRequest, db: db_dependency, chat_id: int = Query(...)):
+async def login(request: Request, data: LoginRequest, db: db_dependency, response: Response, chat_id: int = Query(...)):
     phone_clean = data.login.replace(" ", "").replace("(", "").replace(")", "").replace("-", "").replace("+", "")
     teacher = db.query(TeachersModel).filter(
         TeachersModel.phone_number == phone_clean
     ).first()
     if teacher:
         if teacher.password == data.password:
+            token = await create_token({'teacher': teacher.type, 'type': 'teacher'})
+            response.set_cookie(
+                key="token",
+                value=token,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=60 * 60 * 24
+            )
             response = {
                 'success': True,
-                'token': await create_token({'teacher': teacher.type, 'type': 'teacher'}),
+                'token': token,
                 'teacher': {
                     'first_name': teacher.first_name,
                     'last_name': teacher.last_name,

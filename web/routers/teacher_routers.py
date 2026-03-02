@@ -642,3 +642,13 @@ async def add_ielts_listening(
         "message": "Audio added. Ai is working on.",
         "id": listening.id
     }
+
+@router.get('/add-ielts-reading-fill-the-gap', status_code=status.HTTP_200_OK)
+async def add_ielts_reading(request: Request):
+    ctx = await get_teacher_context(request)
+    return templates.TemplateResponse("teachers/add_ielts_reading.html", ctx)\
+
+@router.get('/add-ielts-listening-fill-the-gap', status_code=status.HTTP_200_OK)
+async def add_ielts_reading(request: Request):
+    ctx = await get_teacher_context(request)
+    return templates.TemplateResponse("teachers/add_ielts_listening_fill_the_gaps.html", ctx)
