@@ -7,13 +7,13 @@ from fastapi import APIRouter, Depends, status, Request, Query, HTTPException, U
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import selectinload
 
-from web.general import JWTBearer, db_dependency, decode_jwt, process_script_with_ai
+from web.general import JWTBearer, db_dependency, decode_jwt
 from web.general import templates
 from web.models import (
     GroupsModel, WeeksModel, WeekScheduleModel,
-    EssentialUnitsModel, MurphyUnitsModel, StudentResultsModel,
-    EssentialBooksModel, EssentialWordsModel, MurphyBooksModel,
-    MurphyExercisesModel, MurphyExerciseQuestionsModel, StudentsModel, FilesModel, IELTSMaterialsModel
+    EssentialUnitsModel, UnitsModel, StudentResultsModel,
+    EssentialBooksModel, EssentialWordsModel, BooksModel,
+    ExercisesModel, ExerciseQuestionsModel, StudentsModel, FilesModel, IELTSSectionsModel, IELTSTestsModel, DaysEnum
 )
 from web.schemas import (
     AddWeekSchema, AddWordSchema, AddEssentialUnitSchema,
@@ -134,21 +134,21 @@ async def separately_choose_correct_alt(request: Request):
 
 @router.get('/get-murphy-books', status_code=status.HTTP_200_OK)
 async def get_murphy_books(db: db_dependency):
-    books = db.query(MurphyBooksModel).all()
+    books = db.query(BooksModel).all()
     return {'success': True, 'books': books}
 
 
 @router.get("/get-book", status_code=status.HTTP_200_OK)
 async def get_book(db: db_dependency, book_id: UUID = Query(...)):
     book = (
-        db.query(MurphyBooksModel)
+        db.query(BooksModel)
         .options(
-            selectinload(MurphyBooksModel.units)
-            .selectinload(MurphyUnitsModel.exercises),
-            selectinload(MurphyBooksModel.units)
-            .selectinload(MurphyUnitsModel.ielts_exercises)
+            selectinload(BooksModel.units)
+            .selectinload(UnitsModel.exercises),
+            selectinload(BooksModel.ielts_tests)
+            .selectinload(IELTSTestsModel.sections)
         )
-        .filter(MurphyBooksModel.id == book_id)
+        .filter(BooksModel.id == book_id)
         .first()
     )
 
@@ -156,7 +156,7 @@ async def get_book(db: db_dependency, book_id: UUID = Query(...)):
         raise HTTPException(status_code=404, detail="Book not found")
 
     for unit in book.units:
-        if book.level == "Upper-Intermediate":
+        if book.level == "UPPER-INTERMEDIATE":
             unit.ielts_exercises = []
         else:
             unit.exercises = []
@@ -167,7 +167,7 @@ async def get_book(db: db_dependency, book_id: UUID = Query(...)):
 @router.post('/add-murphy-book', status_code=status.HTTP_201_CREATED)
 async def add_murphy_book(request: Request, db: db_dependency):
     json = await request.json()
-    db.add(MurphyBooksModel(book_name=json['name'], level=json['level']))
+    db.add(BooksModel(book_name=json['name'], level=json['level']))
     db.commit()
     return {'success': True}
 
@@ -175,14 +175,25 @@ async def add_murphy_book(request: Request, db: db_dependency):
 @router.post('/add-book-unit', status_code=status.HTTP_201_CREATED)
 async def add_book_unit(request: Request, db: db_dependency):
     json = await request.json()
-    db.add(MurphyUnitsModel(book_id=json['book_id'], unit_number=json['unit']))
+    unit = ''
+    if json['level'] == 'Upper-Intermediate':
+        unit = UnitsModel(
+            book_id=json['book_id'],
+            unit_number=json['unit']
+        )
+    else:
+        unit = IELTSTestsModel(
+            book_id=json['book_id'],
+            test_number=json['unit']
+        )
+    db.add(unit)
     db.commit()
     return {'success': True}
 
 
 @router.post('/add-exercise', status_code=status.HTTP_201_CREATED)
 async def add_exercise(data: AddExerciseSchema, db: db_dependency):
-    exercise = MurphyExercisesModel(
+    exercise = ExercisesModel(
         unit_id=data.unit_id,
         exercise_type=data.type,
         condition=data.condition,
@@ -197,9 +208,9 @@ async def add_exercise(data: AddExerciseSchema, db: db_dependency):
 @router.get('/get-exercise', status_code=status.HTTP_200_OK)
 async def get_exercise(db: db_dependency, id: UUID = Query(...)):
     exercise = (
-        db.query(MurphyExercisesModel)
-        .filter(MurphyExercisesModel.id == id)
-        .options(selectinload(MurphyExercisesModel.questions))
+        db.query(ExercisesModel)
+        .filter(ExercisesModel.id == id)
+        .options(selectinload(ExercisesModel.questions))
         .first()
     )
     return {'success': True, 'exercise': exercise}
@@ -207,7 +218,7 @@ async def get_exercise(db: db_dependency, id: UUID = Query(...)):
 
 @router.post('/add-question', status_code=status.HTTP_201_CREATED)
 async def add_question(data: AddExerciseQuestionSchema, db: db_dependency):
-    db.add(MurphyExerciseQuestionsModel(exercise_id=data.exercise_id, field=data.field))
+    db.add(ExerciseQuestionsModel(exercise_id=data.exercise_id, field=data.field))
     db.commit()
     return {'success': True}
 
@@ -268,8 +279,9 @@ async def get_level_weeks(db: db_dependency, level: str = Query(...)):
 
 
 @router.get('/get-clear-groups', status_code=status.HTTP_200_OK)
-async def get_clear_groups(db: db_dependency, days: str = Query(...)):
-    groups = db.query(GroupsModel).filter(GroupsModel.group_days == days).all()
+async def get_clear_groups(db: db_dependency, days: DaysEnum = Query(...)):
+    print(f"ccc {days}")
+    groups = db.query(GroupsModel).filter(GroupsModel.group_days == days.value).all()
     return {'success': True, 'groups': groups}
 
 
@@ -319,17 +331,17 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
     # 5. All Murphy units + exercises + questions — 1 query
     murphy_filters = [
         and_(
-            MurphyUnitsModel.book_id == w.murphy_book,
-            MurphyUnitsModel.unit_number >= w.murphy_from_unit,
-            MurphyUnitsModel.unit_number <= w.murphy_to_unit,
+            UnitsModel.book_id == w.murphy_book,
+            UnitsModel.unit_number >= w.murphy_from_unit,
+            UnitsModel.unit_number <= w.murphy_to_unit,
         )
         for w in weeks_list
     ]
     murphy_units = (
-        db.query(MurphyUnitsModel)
+        db.query(UnitsModel)
         .options(
-            selectinload(MurphyUnitsModel.exercises)
-            .selectinload(MurphyExercisesModel.questions)
+            selectinload(UnitsModel.exercises)
+            .selectinload(ExercisesModel.questions)
         )
         .filter(or_(*murphy_filters))
         .all()
@@ -518,15 +530,15 @@ async def get_results(
     elif type == 'Exercise':
         # Get ALL murphy units + exercises + questions for this week
         murphy_units = (
-            db.query(MurphyUnitsModel)
+            db.query(UnitsModel)
             .options(
-                selectinload(MurphyUnitsModel.exercises)
-                .selectinload(MurphyExercisesModel.questions)
+                selectinload(UnitsModel.exercises)
+                .selectinload(ExercisesModel.questions)
             )
             .filter(
-                MurphyUnitsModel.book_id == week.murphy_book,
-                MurphyUnitsModel.unit_number >= week.murphy_from_unit,
-                MurphyUnitsModel.unit_number <= week.murphy_to_unit,
+                UnitsModel.book_id == week.murphy_book,
+                UnitsModel.unit_number >= week.murphy_from_unit,
+                UnitsModel.unit_number <= week.murphy_to_unit,
             )
             .all()
         )
@@ -600,13 +612,13 @@ async def file_upload(db: db_dependency, file: UploadFile = File()):
         await file.close()
 
 
-@router.get('/add-ielts-listening-what-you-hear', status_code=status.HTTP_200_OK)
+@router.get('/add-ielts-listening-dictation-test', status_code=status.HTTP_200_OK)
 async def add_ielts_listening_task(request: Request):
     ctx = await get_teacher_context(request)
     return templates.TemplateResponse("teachers/add_ielts_listening.html", ctx)
 
 
-@router.post('/add-ielts-listening', status_code=201)
+@router.post('/add-ielts-listening-dictation', status_code=201)
 async def add_ielts_listening(
         data: AddIELTSListeningSchema,
         background_tasks: BackgroundTasks,
@@ -618,6 +630,10 @@ async def add_ielts_listening(
 
     if not audio:
         raise HTTPException(404, 'Audio not found')
+
+    test = IELTSTestsModel(
+
+    )
 
     listening = IELTSMaterialsModel(
         condition=data.condition,
@@ -632,10 +648,10 @@ async def add_ielts_listening(
     db.commit()
     db.refresh(listening)
 
-    background_tasks.add_task(
-        process_script_with_ai,
-        listening.id
-    )
+    # background_tasks.add_task(
+    #     process_script_with_ai,
+    #     listening.id
+    # )
 
     return {
         "ok": True,

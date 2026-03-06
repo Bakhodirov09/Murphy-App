@@ -1,490 +1,594 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>IELTS Listening — Fill in the Gap Builder</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#f5f7fb;--panel:#ffffff;--muted:#9aa4b2;
-      --accent:#6c5ce7;--accent-2:#00b894;--danger:#ff7675;--warn:#fdcb6e;
-      --card-shadow:0 6px 18px rgba(34,40,49,0.06);
-
-      /* student preview dark vars */
-      --s-bg:#16181f;--s-surface:#1c1f28;--s-surface2:#23262f;--s-surface3:#2a2e3d;
-      --s-border:rgba(255,255,255,0.07);--s-border2:rgba(255,255,255,0.13);
-      --s-text:#e8eaf0;--s-text2:#9aa4b2;--s-text3:#5a6270;--s-muted:#3a3f4e;
-
-      font-family:'Inter',system-ui,sans-serif;
+    :root {
+      --bg: #0e1117;
+      --surface: #161b27;
+      --surface2: #1e2538;
+      --surface3: #252d42;
+      --border: #2a3350;
+      --border2: #3a4566;
+      --accent: #4f8ef7;
+      --accent2: #38d9a9;
+      --accent3: #f7c94f;
+      --danger: #f7604f;
+      --muted: #6b7a99;
+      --text: #e8ecf5;
+      --text2: #a8b4cc;
+      --gap-color: #f7c94f;
+      --gap-bg: rgba(247,201,79,0.12);
+      --gap-border: rgba(247,201,79,0.4);
+      --section-color: #4f8ef7;
+      --bullet-color: #38d9a9;
+      --r: 10px;
     }
-    *{box-sizing:border-box} html,body{height:100%;overflow:hidden;}
-    body{margin:0;background:var(--bg);color:#1f2d3d;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.3;}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
 
-    /* ══════════════════════════════════
-       APP SHELL
-    ══════════════════════════════════ */
-    .shell{display:flex;height:100vh;overflow:hidden;}
+    /* ── Layout ── */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 20px 16px;
+      gap: 8px;
+    }
+    .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface);
+    }
+    .content-area {
+      flex: 1; display: flex; gap: 0; overflow: hidden;
+    }
+    .builder-panel {
+      flex: 1; padding: 24px; overflow-y: auto;
+    }
+    .preview-panel {
+      width: 380px; flex-shrink: 0;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .preview-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600; font-size: 13px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .5px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .preview-body { flex: 1; overflow-y: auto; padding: 20px; }
 
     /* ── Sidebar ── */
-    .sidebar{width:220px;background:linear-gradient(180deg,#0f1724,#0b1220);color:#dbe7ff;padding:20px 16px;box-shadow:0 10px 30px rgba(2,6,23,0.3);flex-shrink:0;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
-    .logo{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.08);}
-    .logo .dot{width:36px;height:36px;border-radius:50%;background:linear-gradient(45deg,#6c5ce7,#00b894);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
-    .logo h1{font-size:15px;margin:0;line-height:1.2;}
-    .nav{display:flex;flex-direction:column;gap:6px;}
-    .nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:13px;}
-    .nav a.active{background:rgba(255,255,255,0.07);color:#fff;}
-    .sidebar .spacer{flex:1;}
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 4px 0 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .logo-dot {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; color: white;
+    }
+    .logo-text { font-weight: 700; font-size: 15px; }
+    .logo-sub { font-size: 11px; color: var(--muted); }
 
-    /* ── Content area: preview | builder ── */
-    .content{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;}
+    .nav-section { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; padding: 8px 8px 4px; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: 8px;
+      color: var(--text2); font-size: 13.5px; font-weight: 500;
+      cursor: pointer; border: none; background: none; width: 100%;
+      text-decoration: none; transition: all .15s;
+    }
+    .nav-btn:hover { background: var(--surface2); color: var(--text); }
+    .nav-btn.active { background: rgba(79,142,247,.12); color: var(--accent); }
+    .nav-icon { width: 18px; height: 18px; opacity: .7; flex-shrink: 0; }
 
-    /* ══════════════════════════════════
-       LEFT — STUDENT PREVIEW
-    ══════════════════════════════════ */
-    .preview-col{
-      background:var(--s-bg);
-      display:flex;flex-direction:column;
-      overflow:hidden;
-      border-right:1px solid rgba(255,255,255,0.06);
+    /* ── Topbar ── */
+    .page-title { font-size: 17px; font-weight: 700; }
+    .page-sub { font-size: 13px; color: var(--muted); margin-left: 4px; }
+    .topbar-actions { display: flex; gap: 8px; margin-left: auto; }
+    .btn {
+      padding: 8px 18px; border-radius: 8px; border: none;
+      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px;
+      cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #3a7be8; transform: translateY(-1px); }
+    .btn-success { background: var(--accent2); color: #0a2820; }
+    .btn-success:hover { background: #2bc49a; }
+    .btn-ghost { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+    .btn-danger { background: rgba(247,96,79,.15); color: var(--danger); border: 1px solid rgba(247,96,79,.3); }
+    .btn-danger:hover { background: rgba(247,96,79,.25); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+
+    /* ── Meta Fields ── */
+    .meta-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      margin-bottom: 24px;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .field-input {
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+      outline: none; transition: border-color .2s;
+    }
+    .field-input:focus { border-color: var(--accent); }
+    .field-input::placeholder { color: var(--muted); }
+
+    /* ── Section Card ── */
+    .section-card {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .section-card:focus-within { border-color: var(--border2); }
+
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface3);
+      border-bottom: 1px solid var(--border);
+    }
+    .section-drag {
+      cursor: grab; color: var(--muted); font-size: 16px;
+      user-select: none; flex-shrink: 0;
+    }
+    .section-type-badge {
+      font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: .5px; flex-shrink: 0;
+    }
+    .badge-heading { background: rgba(79,142,247,.2); color: var(--accent); }
+    .badge-subheading { background: rgba(56,217,169,.15); color: var(--accent2); }
+    .badge-bullets { background: rgba(247,201,79,.15); color: var(--accent3); }
+
+    .section-title-input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+    }
+    .section-title-input::placeholder { color: var(--muted); }
+
+    .section-actions { display: flex; gap: 4px; margin-left: auto; }
+    .icon-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); padding: 4px 6px; border-radius: 6px;
+      font-size: 15px; transition: all .15s; line-height: 1;
+    }
+    .icon-btn:hover { background: var(--surface); color: var(--text); }
+    .icon-btn.del:hover { color: var(--danger); background: rgba(247,96,79,.1); }
+
+    /* ── Bullet Items ── */
+    .bullets-container { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+    .bullet-row {
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .bullet-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent2); margin-top: 8px; flex-shrink: 0;
     }
 
-    .preview-topbar{
-      height:48px;background:#13151c;
-      border-bottom:1px solid var(--s-border);
-      display:flex;align-items:center;justify-content:space-between;
-      padding:0 18px;flex-shrink:0;
+    /* ── Rich Bullet Editor ── */
+    .bullet-editor-wrap { flex: 1; position: relative; }
+    .bullet-editor {
+      width: 100%; min-height: 32px;
+      background: var(--surface3); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 6px 10px;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13.5px;
+      outline: none; transition: border-color .2s; line-height: 1.6;
+      word-break: break-word;
     }
-    .preview-topbar-title{font-weight:700;font-size:13px;color:var(--s-text);}
-    .preview-topbar-sub{font-size:10px;color:var(--s-text3);margin-top:1px;}
-    .preview-badge{
-      font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
-      background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.3);color:#a78bfa;
+    .bullet-editor:focus { border-color: var(--border2); }
+    .bullet-editor:empty::before { content: attr(data-placeholder); color: var(--muted); pointer-events: none; }
+
+    /* Gap span inside editor */
+    .gap-token {
+      display: inline-block;
+      background: var(--gap-bg);
+      border: 1.5px solid var(--gap-border);
+      color: var(--gap-color);
+      border-radius: 6px;
+      padding: 0px 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: all .15s;
+      position: relative;
     }
-    .timer-pill-mini{
-      display:flex;align-items:center;gap:5px;
-      background:var(--s-surface2);border:1px solid var(--s-border2);
-      padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;
+    .gap-token:hover { background: rgba(247,201,79,.22); border-color: var(--gap-color); }
+    .gap-token .gap-num { font-size: 10px; opacity: .6; margin-right: 3px; }
+    .gap-token .gap-answer { font-size: 12px; }
+    .gap-token .gap-del {
+      margin-left: 5px; font-size: 11px; opacity: .5;
+      cursor: pointer; color: var(--danger);
     }
-    .timer-dot-mini{width:5px;height:5px;border-radius:50%;background:var(--accent-2);animation:blink 1.5s ease-in-out infinite;}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-    .timer-val-mini{color:var(--accent-2);letter-spacing:.5px;}
+    .gap-token .gap-del:hover { opacity: 1; }
 
-    .preview-body{flex:1;overflow-y:auto;padding:24px 22px 80px;scrollbar-width:thin;scrollbar-color:var(--s-muted) transparent;}
-    .preview-body::-webkit-scrollbar{width:3px;}
-    .preview-body::-webkit-scrollbar-thumb{background:var(--s-muted);border-radius:99px;}
+    /* Bold span */
+    .bold-token { font-weight: 700; color: var(--text); }
 
-    /* Question banner */
-    .pv-banner{
-      background:rgba(108,92,231,0.08);
-      border:1px solid rgba(108,92,231,0.2);
-      border-left:3px solid var(--accent);
-      border-radius:0 8px 8px 0;
-      padding:10px 14px;margin-bottom:18px;
+    .bullet-toolbar {
+      display: none; position: absolute; top: -38px; left: 0; z-index: 100;
+      background: var(--surface3); border: 1.5px solid var(--border2);
+      border-radius: 8px; padding: 4px; gap: 3px; align-items: center;
+      box-shadow: 0 6px 24px rgba(0,0,0,.4);
+      animation: popIn .15s ease;
     }
-    .pv-range{font-size:13px;font-weight:700;color:var(--s-text);margin-bottom:3px;}
-    .pv-instr{font-size:12px;color:var(--s-text2);line-height:1.5;}
-    .pv-instr strong{color:var(--s-text);}
+    .bullet-toolbar.show { display: flex; }
+    @keyframes popIn { from { opacity:0; transform:translateY(4px) } to { opacity:1; transform:translateY(0) } }
 
-    /* Doc elements in preview */
-    .pv-heading{font-size:13px;font-weight:700;color:var(--s-text);margin:16px 0 4px;}
-    .pv-heading:first-child{margin-top:0;}
-    .pv-subheading{font-size:12px;font-weight:700;color:var(--accent-2);margin:10px 0 5px;}
-    .pv-bullet{display:flex;align-items:baseline;gap:7px;font-size:13px;color:#c2c8d4;line-height:1.85;margin-bottom:3px;}
-    .pv-dot{width:5px;height:5px;border-radius:50%;background:var(--accent-2);flex-shrink:0;margin-top:7px;}
-    .pv-bold{font-weight:700;color:var(--s-text);}
-
-    /* Gap in preview — looks like student input */
-    .pv-gap{
-      display:inline-flex;align-items:center;gap:4px;
-      background:var(--s-surface3);
-      border:1.5px solid rgba(108,92,231,0.4);
-      border-radius:6px;padding:1px 10px;
-      font-size:11px;font-weight:700;color:#a78bfa;
-      white-space:nowrap;vertical-align:middle;margin:0 2px;
+    .toolbar-btn {
+      padding: 5px 10px; border-radius: 6px; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px;
+      transition: all .15s;
     }
-    .pv-gap-num{font-size:9px;opacity:.6;}
+    .toolbar-btn.gap-btn { background: var(--gap-bg); color: var(--gap-color); border: 1px solid var(--gap-border); }
+    .toolbar-btn.gap-btn:hover { background: rgba(247,201,79,.25); }
+    .toolbar-btn.bold-btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+    .toolbar-btn.bold-btn:hover { background: var(--surface3); }
+    .toolbar-sep { width: 1px; height: 20px; background: var(--border2); margin: 0 2px; }
 
-    /* Answer inputs strip */
-    .pv-answers{
-      margin-top:22px;
-      padding-top:18px;
-      border-top:1px solid var(--s-border);
+    /* Gap answer input popup */
+    .gap-input-popup {
+      display: none; position: absolute; top: -76px; left: 0; z-index: 200;
+      background: var(--surface3); border: 1.5px solid var(--accent);
+      border-radius: 10px; padding: 10px 12px; gap: 8px; align-items: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      animation: popIn .15s ease;
+      min-width: 240px;
     }
-    .pv-answers-label{font-size:10px;font-weight:700;color:var(--s-text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;}
-    .pv-answer-row{
-      display:flex;align-items:center;gap:10px;
-      padding:9px 12px;
-      background:rgba(255,255,255,0.02);
-      border:1px solid var(--s-border);
-      border-radius:8px;margin-bottom:6px;
+    .gap-input-popup.show { display: flex; }
+    .gap-input-popup input {
+      flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: 7px; padding: 6px 10px;
+      color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
+      outline: none; transition: border-color .2s;
     }
-    .pv-ans-num{
-      width:26px;height:26px;border-radius:7px;flex-shrink:0;
-      background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.3);
-      color:#a78bfa;font-weight:700;font-size:12px;
-      display:flex;align-items:center;justify-content:center;
+    .gap-input-popup input:focus { border-color: var(--accent); }
+    .gap-input-popup input::placeholder { color: var(--muted); font-family: 'DM Sans', sans-serif; }
+
+    .bullet-remove-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 16px; padding: 4px; border-radius: 6px;
+      transition: all .15s; line-height: 1; margin-top: 3px; flex-shrink: 0;
     }
-    .pv-ans-input{
-      flex:1;height:30px;background:var(--s-surface2);
-      border:1.5px solid var(--s-border2);border-radius:6px;
+    .bullet-remove-btn:hover { color: var(--danger); background: rgba(247,96,79,.1); }
+
+    /* ── Add buttons ── */
+    .add-section-row { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .add-item-row { padding: 6px 12px 10px; }
+
+    /* ── Gap counter ── */
+    .gap-counter-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; background: rgba(247,201,79,.07);
+      border: 1px solid rgba(247,201,79,.2); border-radius: 10px;
+      margin-bottom: 20px;
     }
-    .pv-empty{text-align:center;padding:40px 20px;color:var(--s-text3);font-size:12px;}
-    .pv-empty-icon{font-size:32px;margin-bottom:8px;}
+    .gap-counter-label { font-size: 12px; color: var(--accent3); font-weight: 600; }
+    .gap-counter-num { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--accent3); }
+    .gap-range-display { font-size: 12px; color: var(--muted); margin-left: auto; }
 
-    /* ══════════════════════════════════
-       RIGHT — BUILDER
-    ══════════════════════════════════ */
-    .builder-col{
-      display:flex;flex-direction:column;
-      overflow:hidden;
-      background:var(--bg);
+    /* ── Preview Panel ── */
+    .preview-doc {
+      font-family: 'Times New Roman', Georgia, serif;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #1a1a1a;
+      background: white;
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .preview-doc .q-header { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .preview-doc .q-instruction { margin-bottom: 14px; font-size: 13px; }
+    .preview-doc .q-instruction b { font-weight: 800; }
+    .preview-doc .p-heading { font-weight: 700; font-size: 14px; margin-top: 10px; margin-bottom: 2px; }
+    .preview-doc .p-subheading { font-weight: 700; font-size: 13.5px; margin-top: 6px; margin-bottom: 2px; }
+    .preview-doc .p-bullet {
+      display: flex; gap: 8px; align-items: baseline;
+      font-size: 13px; margin-bottom: 2px; padding-left: 4px;
+    }
+    .preview-doc .p-bullet::before { content: "•"; flex-shrink: 0; }
+    .preview-gap {
+      display: inline-block;
+      border: 1.5px solid #888;
+      border-radius: 3px;
+      min-width: 70px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      font-family: Arial, sans-serif;
+      margin: 0 2px;
+      vertical-align: middle;
+      padding: 0 6px;
+    }
+    .preview-bold { font-weight: 700; }
+
+    /* ── JSON output ── */
+    .json-panel {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease;
+    }
+    .json-panel.open { max-height: 300px; }
+    .json-inner { padding: 16px 20px; overflow-y: auto; max-height: 300px; }
+    .json-pre {
+      font-family: 'DM Mono', monospace;
+      font-size: 11.5px;
+      color: var(--accent2);
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
     }
 
-    .builder-topbar{
-      height:60px;background:#fff;
-      border-bottom:1px solid #e8eaf0;
-      display:flex;align-items:center;
-      padding:0 24px;gap:14px;
-      box-shadow:0 2px 8px rgba(34,40,49,0.04);
-      flex-shrink:0;
+    /* ── Drag styles ── */
+    .section-card.dragging { opacity: .4; }
+    .section-card.drag-over { border-color: var(--accent); }
+
+    /* ── Scroll ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center; padding: 40px 20px;
+      color: var(--muted); font-size: 13px;
     }
-    .builder-title{font-size:16px;font-weight:800;color:#1f2d3d;}
-    .builder-topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
-    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(45deg,#ffd166,#ef476f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;}
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
 
-    .builder-body{flex:1;overflow-y:auto;padding:22px 24px 40px;scrollbar-width:thin;scrollbar-color:#d5d9e8 transparent;}
-    .builder-body::-webkit-scrollbar{width:4px;}
-    .builder-body::-webkit-scrollbar-thumb{background:#d5d9e8;border-radius:99px;}
-
-    /* Form elements */
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
-    .form-group{display:flex;flex-direction:column;gap:6px;}
-    .form-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-    .form-input{padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;background:#fff;color:#1f2d3d;outline:none;transition:border-color .2s;width:100%;}
-    .form-input:focus{border-color:var(--accent);}
-    .form-input::placeholder{color:#bbb;}
-
-    /* Gap counter */
-    .gap-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#fffbee;border:2px solid #fde68a;border-radius:10px;margin-bottom:20px;}
-    .gap-bar-label{font-size:12px;font-weight:700;color:#92400e;}
-    .gap-bar-num{font-size:20px;font-weight:800;color:var(--warn);}
-    .gap-bar-hint{font-size:11px;color:var(--muted);margin-left:auto;}
-
-    /* Section divider */
-    .divider{display:flex;align-items:center;gap:10px;margin:20px 0 14px;}
-    .divider span{font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:#e8eaf0;}
-
-    /* Section cards */
-    .sections-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
-    .section-card{background:#fff;border:2px solid #e8eaf0;border-radius:12px;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
-    .section-card:hover{border-color:#c5cbe0;}
-    .section-card.drag-over{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,92,231,.1);}
-    .section-card.dragging{opacity:.4;}
-    .section-header{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f5f6fa;border-bottom:1px solid #e8eaf0;}
-    .section-drag{cursor:grab;color:var(--muted);font-size:15px;user-select:none;flex-shrink:0;}
-    .section-drag:active{cursor:grabbing;}
-    .type-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;}
-    .badge-heading{background:rgba(108,92,231,.1);color:var(--accent);}
-    .badge-subheading{background:rgba(0,184,148,.1);color:var(--accent-2);}
-    .badge-bullets{background:rgba(253,203,110,.2);color:#b7791f;}
-    .section-title-inp{flex:1;background:none;border:none;outline:none;color:#1f2d3d;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;}
-    .section-title-inp::placeholder{color:var(--muted);}
-    .icon-btn{background:none;border:none;cursor:pointer;color:var(--muted);padding:3px 6px;border-radius:5px;font-size:14px;transition:all .15s;line-height:1;}
-    .icon-btn:hover{background:#eef0f5;color:#1f2d3d;}
-    .icon-btn.del:hover{background:#ffeaea;color:var(--danger);}
-
-    /* Bullets */
-    .bullets-container{padding:10px 12px;display:flex;flex-direction:column;gap:7px;}
-    .bullet-row{display:flex;align-items:flex-start;gap:7px;}
-    .bullet-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);margin-top:10px;flex-shrink:0;}
-    .bullet-editor-wrap{flex:1;position:relative;}
-    .bullet-editor{
-      width:100%;min-height:34px;padding:7px 10px;
-      border:2px solid #e0e0e0;border-radius:7px;
-      background:#fff;color:#1f2d3d;font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;
-      outline:none;transition:border-color .2s;word-break:break-word;
+    /* ── Save status ── */
+    .save-status {
+      display: none; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
     }
-    .bullet-editor:focus{border-color:var(--accent);}
-    .bullet-editor:empty::before{content:attr(data-placeholder);color:#ccc;pointer-events:none;}
-
-    /* Gap token in builder editor */
-    .gap-token{
-      display:inline-block;background:#fffbee;border:1.5px solid #fde68a;
-      color:#92400e;border-radius:5px;padding:1px 7px;
-      font-size:11px;font-weight:700;cursor:default;user-select:none;white-space:nowrap;transition:all .15s;
-    }
-    .gap-token:hover{background:#fef3c7;}
-    .gap-num{font-size:9px;opacity:.6;margin-right:2px;}
-    .gap-answer{font-size:11px;}
-    .gap-del{margin-left:4px;font-size:10px;color:var(--danger);cursor:pointer;opacity:.5;}
-    .gap-del:hover{opacity:1;}
-    .bold-token{font-weight:700;color:#1f2d3d;background:#d4edff;padding:1px 3px;border-radius:3px;}
-
-    .bullet-remove-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:17px;padding:3px 5px;border-radius:5px;transition:all .15s;line-height:1;margin-top:4px;flex-shrink:0;}
-    .bullet-remove-btn:hover{background:#ffeaea;color:var(--danger);}
-
-    /* Add buttons */
-    .add-section-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px;}
-    .add-item-row{padding:4px 12px 10px;}
-    .add-q-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;background:transparent;border:2px dashed #c5cbe0;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted);transition:all .2s;width:100%;justify-content:center;font-family:'Inter',sans-serif;}
-    .add-q-btn:hover{border-color:var(--accent);color:var(--accent);background:#f3f1ff;}
-    .btn{padding:10px 20px;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:all .2s;font-family:'Inter',sans-serif;}
-    .btn:hover{background:#5f4ed1;transform:translateY(-1px);}
-    .btn:disabled{cursor:not-allowed;transform:none;opacity:.5;}
-    .btn-ghost{background:#eef0f5;color:#555;border:none;}
-    .btn-ghost:hover{background:#e0e4f0;color:#1f2d3d;transform:none;}
-    .btn-sm{padding:7px 14px;font-size:12px;}
-
-    /* Status */
-    .status-msg{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:500;margin-top:10px;}
-    .status-msg.show{display:flex;}
-    .status-msg.success{background:#f0fdf8;border:1.5px solid #b2dfdb;color:#00897b;}
-    .status-msg.error{background:#fff5f5;border:1.5px solid #ffcdd2;color:#c62828;}
-    .spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* JSON */
-    .json-panel{background:#f8f9fc;border:2px solid #e8eaf0;border-radius:10px;padding:0;max-height:0;overflow:hidden;transition:max-height .3s ease;margin-top:14px;}
-    .json-panel.open{max-height:260px;}
-    .json-inner{padding:14px;overflow-y:auto;max-height:260px;}
-    .json-pre{font-family:'Courier New',monospace;font-size:11px;color:#6c5ce7;white-space:pre-wrap;word-break:break-all;line-height:1.6;}
-
-    /* Floating toolbar */
-    #floating-toolbar{position:fixed;z-index:9999;background:#fff;border:2px solid #e0e0e0;border-radius:8px;padding:4px;display:none;gap:4px;align-items:center;box-shadow:0 6px 24px rgba(34,40,49,0.12);}
-    @keyframes popIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-    .toolbar-btn{padding:5px 11px;border-radius:6px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:12px;transition:all .15s;}
-    .toolbar-btn.gap-btn{background:#fffbee;color:#92400e;border:1px solid #fde68a;}
-    .toolbar-btn.gap-btn:hover{background:#fef3c7;}
-    .toolbar-btn.bold-btn{background:#eef0f5;color:#1f2d3d;border:1px solid #d5d9e8;}
-    .toolbar-btn.bold-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .toolbar-sep{width:1px;height:17px;background:#e0e0e0;margin:0 2px;}
-
-    /* Gap popup */
-    #gap-popup{display:none;position:fixed;z-index:10000;background:#fff;border:2px solid var(--accent);border-radius:10px;padding:12px 14px;box-shadow:0 8px 32px rgba(34,40,49,0.14);min-width:250px;}
-    #gap-popup .p-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
-    #gap-popup .p-row{display:flex;gap:7px;align-items:center;}
-    #gap-answer-input{flex:1;padding:7px 11px;border:2px solid #e0e0e0;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;color:#1f2d3d;outline:none;transition:border-color .2s;}
-    #gap-answer-input:focus{border-color:var(--accent);}
-    #gap-answer-input::placeholder{color:#bbb;}
+    .save-status.show { display: flex; }
+    .save-status.success { background: rgba(56,217,169,.1); color: var(--accent2); border: 1px solid rgba(56,217,169,.3); }
+    .save-status.error { background: rgba(247,96,79,.1); color: var(--danger); border: 1px solid rgba(247,96,79,.3); }
+    .spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-<div class="shell">
+<div class="app">
 
   <!-- ── Sidebar ── -->
   <aside class="sidebar">
     <div class="logo">
-      <div class="dot">MA</div>
-      <div><h1>Murphy-App</h1><div style="font-size:11px;color:rgba(255,255,255,0.5)">Teachers Panel</div></div>
+      <div class="logo-dot">MA</div>
+      <div>
+        <div class="logo-text">Murphy-App</div>
+        <div class="logo-sub">Teachers Panel</div>
+      </div>
     </div>
-    <nav class="nav">
-      <a href="/teacher/dashboard">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:.6"><path d="M21.36 10.7L13.2 2.54A1.99 1.99 0 0 0 11.9 2c-.49 0-.95.19-1.3.54L2.44 10.69C1.72 11.42 1.72 12.59 2.44 13.3c.33.33.76.52 1.22.54H4.04v5.99C4.04 21.04 5.01 22 6.2 22h3.19c.32 0 .59-.27.59-.59v-4.71c0-.54.44-.98.98-.98h1.87c.54 0 .98.44.98.98V21.4c0 .33.26.6.59.6h3.19c1.19 0 2.16-.97 2.16-2.16v-5.99h.3c.49 0 .95-.19 1.3-.54.72-.72.72-1.88.01-2.6z"/></svg>
-        Home
-      </a>
-      <a href="/teacher/weeks">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:.6"><path d="M7.43 1.5a.75.75 0 0 0-.75.75v1.03H5.78A3.39 3.39 0 0 0 2.39 6.68v.75h16.92v-.75A3.39 3.39 0 0 0 15.92 3.28h-.9V2.25a.75.75 0 0 0-1.5 0v1.03H8.18V2.25a.75.75 0 0 0-.75-.75zm-5.04 7.43v7.88A3.39 3.39 0 0 0 5.78 20.2h4.86a5.39 5.39 0 0 1-.61-2.54A5.54 5.54 0 0 1 15.58 12.1V8.93H2.39z"/></svg>
-        Weeks
-      </a>
-      <a href="/teacher/exercises" class="active">
-        <svg width="18" height="18" viewBox="0 0 25 24" fill="#ffcf00"><path d="M14.37 22.4l-1.67.02a.6.6 0 0 1-.6-.6l.02-1.67a.6.6 0 0 1 .18-.43l8.33-8.33a.6.6 0 0 1 .85 0l1.65 1.65a.6.6 0 0 1 0 .85l-8.33 8.33a.6.6 0 0 1-.43.18z"/><path d="M16.05 1.5H6.44A2.94 2.94 0 0 0 3.5 4.44v14.62c0 1.62 1.32 2.94 2.94 2.94h4.63c-.11-.24-.18-.5-.18-.78l.02-1.67a2.1 2.1 0 0 1 .62-1.47l8.33-8.33V4.44A2.94 2.94 0 0 0 16.05 1.5z"/></svg>
-        Exercises
-      </a>
-      <a href="/teacher/vocabularies">
-        <svg width="18" height="18" viewBox="0 0 73 60" fill="currentColor" style="opacity:.6"><path d="M11.17 0H11.16A4.47 4.47 0 0 0 .5 4.97v16.55a4.47 4.47 0 0 0 3.97 4.47c2.43.06 6.13.5 8.87 3.14V4.6c0-.2-.05-.39-.14-.56A12.08 12.08 0 0 0 4.47.5zm15.06 0h-.01a12.08 12.08 0 0 0-8.73 4.1c-.09.17-.14.36-.14.56v18.54c2.74-2.64 6.44-3.08 8.87-3.14a4.47 4.47 0 0 0 3.97-4.47V4.97A4.47 4.47 0 0 0 19.53.5z"/></svg>
-        Vocabularies
-      </a>
-    </nav>
-    <div class="spacer"></div>
+
+    <div class="nav-section">Menu</div>
+    <a class="nav-btn" href="/teacher/dashboard">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21.36 10.7L13.2 2.54A1.99 1.99 0 0 0 11.9 2c-.49 0-.95.19-1.3.54L2.44 10.69a.38.38 0 0 0-.01.01C1.72 11.42 1.72 12.59 2.44 13.3c.33.33.76.52 1.22.54H4.04v5.99C4.04 21.04 5.01 22 6.2 22h3.19c.32 0 .59-.27.59-.59v-4.71c0-.54.44-.98.98-.98h1.87c.54 0 .98.44.98.98V21.4c0 .33.26.6.59.6h3.19c1.19 0 2.16-.97 2.16-2.16v-5.99h.3c.49 0 .95-.19 1.3-.54.72-.72.72-1.88.01-2.6z"/></svg>
+      Home
+    </a>
+    <a class="nav-btn" href="/teacher/weeks">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7.43 1.5a.75.75 0 0 0-.75.75v1.03H5.78A3.39 3.39 0 0 0 2.39 6.68v.75h16.92v-.75A3.39 3.39 0 0 0 15.92 3.28h-.9V2.25a.75.75 0 0 0-1.5 0v1.03H8.18V2.25a.75.75 0 0 0-.75-.75zm-5.04 7.43v7.88A3.39 3.39 0 0 0 5.78 20.2h4.86a5.39 5.39 0 0 1-.61-2.54 5.54 5.54 0 0 1 5.55-5.55c.97 0 1.89.27 2.68.73V8.93H2.39z"/></svg>
+      Weeks
+    </a>
+    <a class="nav-btn active" href="/teacher/exercises">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14.37 22.4l-1.67.02a.6.6 0 0 1-.6-.6l.02-1.67a.6.6 0 0 1 .18-.43l8.33-8.33a.6.6 0 0 1 .85 0l1.65 1.65a.6.6 0 0 1 0 .85l-8.33 8.33a.6.6 0 0 1-.43.18z"/><path d="M16.05 1.5H6.44A2.94 2.94 0 0 0 3.5 4.44v14.62c0 1.62 1.32 2.94 2.94 2.94h4.63c-.11-.24-.18-.5-.18-.78l.02-1.67a2.1 2.1 0 0 1 .62-1.47l8.33-8.33V4.44A2.94 2.94 0 0 0 16.05 1.5z"/></svg>
+      Exercises
+    </a>
+    <a class="nav-btn" href="/teacher/vocabularies">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M4.47.5h-.01A4.47 4.47 0 0 0 .5 4.97v16.55a4.47 4.47 0 0 0 3.97 4.47c2.43.06 6.13.5 8.87 3.14V4.6c0-.2-.05-.39-.14-.56A12.08 12.08 0 0 0 4.47.5zm15.06 0h-.01a12.08 12.08 0 0 0-8.73 4.1c-.09.17-.14.36-.14.56v18.54c2.74-2.64 6.44-3.08 8.87-3.14a4.47 4.47 0 0 0 3.97-4.47V4.97A4.47 4.47 0 0 0 19.53.5z"/></svg>
+      Vocabularies
+    </a>
   </aside>
 
-  <!-- ── Content (preview + builder) ── -->
-  <div class="content">
-
-    <!-- ══ LEFT: Student Preview ══ -->
-    <div class="preview-col">
-      <div class="preview-topbar">
-        <div>
-          <div class="preview-topbar-title">👁 Student View</div>
-          <div style="font-size:10px;color:var(--s-text3);margin-top:1px;">Live preview — updates as you type</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="timer-pill-mini">
-            <div class="timer-dot-mini"></div>
-            <span class="timer-val-mini">20:00</span>
-          </div>
-          <div class="preview-badge">Preview</div>
-        </div>
+  <!-- ── Workspace ── -->
+  <div class="workspace">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Fill in the Gap Builder</div>
       </div>
-
-      <div class="preview-body" id="preview-body">
-        <div class="pv-empty">
-          <div class="pv-empty-icon">📋</div>
-          <div>Add sections on the right<br>to see student view here</div>
-        </div>
+      <div class="save-status" id="save-status"></div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="toggleJson()">{ } JSON</button>
+        <button class="btn btn-success" onclick="saveExercise()">💾 Save Exercise</button>
       </div>
     </div>
 
-    <!-- ══ RIGHT: Builder ══ -->
-    <div class="builder-col">
-      <div class="builder-topbar">
-        <div>
-          <div class="builder-title">🎧 Fill in the Gap Builder</div>
-        </div>
-        <div class="builder-topbar-right">
-          <div style="text-align:right;">
-            <div style="font-weight:700;font-size:13px;">{{ first_name }} {{ last_name }}</div>
-            <div style="font-size:11px;color:var(--muted);">{{ type }} Teacher</div>
-          </div>
-          <div class="avatar">{{ letters }}</div>
-        </div>
-      </div>
-
-      <div class="builder-body">
+    <div class="content-area">
+      <!-- ── Builder Panel ── -->
+      <div class="builder-panel">
 
         <!-- Meta -->
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">📌 Questions Range</label>
-            <input class="form-input" type="text" id="q-range" placeholder="e.g. 1-10" value="1-10" oninput="updatePreview();updateGapCounter()">
+        <div class="meta-row">
+          <div class="field-group">
+            <label class="field-label">Questions Range</label>
+            <input class="field-input" id="q-range" placeholder="e.g. 1-10" value="1-10" oninput="updatePreview()"/>
           </div>
-          <div class="form-group">
-            <label class="form-label">📋 Instruction</label>
-            <input class="form-input" type="text" id="q-instruction" placeholder="Complete the notes below..." value="Complete the notes below. Write NO MORE THAN ONE WORD AND/OR A NUMBER for each answer." oninput="updatePreview()">
+          <div class="field-group">
+            <label class="field-label">Instruction Text</label>
+            <input class="field-input" id="q-instruction" placeholder="Complete the notes below..." value="Complete the notes below. Write NO MORE THAN ONE WORD AND/OR NUMBER for each answer." oninput="updatePreview()"/>
           </div>
         </div>
 
         <!-- Gap counter -->
-        <div class="gap-bar">
-          <span class="gap-bar-label">⬜ Total Gaps</span>
-          <span class="gap-bar-num" id="gap-total">0</span>
-          <span class="gap-bar-hint" id="gap-range-hint"></span>
+        <div class="gap-counter-bar">
+          <div class="gap-counter-label">⬜ Total Gaps</div>
+          <div class="gap-counter-num" id="gap-total">0</div>
+          <div class="gap-range-display" id="gap-range-hint"></div>
         </div>
 
-        <!-- Sections -->
-        <div class="divider"><span>📝 Content Sections</span></div>
-        <div class="sections-list" id="sections-list"></div>
+        <!-- Sections list -->
+        <div id="sections-list"></div>
 
-        <!-- Add section -->
+        <!-- Add section buttons -->
         <div class="add-section-row">
           <button class="btn btn-ghost btn-sm" onclick="addSection('heading')">＋ Heading</button>
           <button class="btn btn-ghost btn-sm" onclick="addSection('subheading')">＋ Sub-heading</button>
           <button class="btn btn-ghost btn-sm" onclick="addSection('bullets')">＋ Bullet Group</button>
         </div>
 
-        <!-- Save -->
-        <div style="display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap;">
-          <button class="btn" id="save-btn" onclick="saveExercise()">💾 Save Exercise</button>
-          <button class="btn btn-ghost btn-sm" onclick="toggleJson()">{ } JSON</button>
-        </div>
-
+        <!-- JSON panel -->
         <div class="json-panel" id="json-panel">
-          <div class="json-inner"><pre class="json-pre" id="json-output"></pre></div>
+          <div class="json-inner">
+            <pre class="json-pre" id="json-output"></pre>
+          </div>
         </div>
+      </div>
 
-        <div class="status-msg" id="save-status"></div>
+      <!-- ── Preview Panel ── -->
+      <div class="preview-panel">
+        <div class="preview-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          Student Preview
+        </div>
+        <div class="preview-body">
+          <div class="preview-doc" id="preview-doc">
+            <div style="color:#999;font-size:13px;text-align:center;padding:30px 0;">Add sections to see preview...</div>
+          </div>
+        </div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- Floating toolbar -->
-<div id="floating-toolbar">
+<!-- Hidden toolbar (moved into DOM dynamically) -->
+<div id="floating-toolbar" class="bullet-toolbar" style="display:none;position:fixed;z-index:9999;">
   <button class="toolbar-btn gap-btn" id="toolbar-gap-btn">⬜ Add Gap</button>
   <div class="toolbar-sep"></div>
   <button class="toolbar-btn bold-btn" id="toolbar-bold-btn"><b>B</b> Bold</button>
 </div>
 
-<!-- Gap answer popup -->
-<div id="gap-popup">
-  <div class="p-label">✏️ Correct Answer</div>
-  <div class="p-row">
-    <input id="gap-answer-input" placeholder="Type the answer..." />
-    <button class="btn btn-sm" onclick="confirmGap()" style="padding:7px 13px;font-size:12px;">OK</button>
-    <button class="btn btn-ghost btn-sm" onclick="cancelGap()" style="padding:7px 10px;font-size:12px;">✕</button>
+<!-- Gap answer input popup (fixed) -->
+<div id="gap-popup" style="display:none;position:fixed;z-index:10000;background:var(--surface3);border:1.5px solid var(--accent);border-radius:10px;padding:10px 14px;box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:240px;animation:popIn .15s ease;">
+  <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;">✏️ Correct Answer</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input id="gap-answer-input" style="flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;" placeholder="Type the answer..." />
+    <button class="btn btn-primary btn-sm" onclick="confirmGap()">OK</button>
+    <button class="btn btn-ghost btn-sm" onclick="cancelGap()">✕</button>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
-let sections     = [];
-let gapCounter   = 0;
-let pendingGapRange = null;
-let activeEditorEl  = null;
-let savedSelection  = null;
-let dragSrcId       = null;
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let sections = [];
+let gapCounter = 0;
+let pendingGapRange = null; // {editor, range, selectedText}
+let activeEditorEl = null;
+let savedSelection = null;
 
-/* ═══════════════════════════════════════════
-   SECTIONS
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// SECTION MANAGEMENT
+// ═══════════════════════════════════════════════════════
 function addSection(type) {
   const id = 'sec_' + Date.now();
-  sections.push({ id, type, title:'', items: type==='bullets' ? [createItem()] : [] });
-  renderSection(sections[sections.length-1]);
-  updatePreview(); updateGapCounter();
+  const section = { id, type, title: '', items: type === 'bullets' ? [createItem()] : [] };
+  sections.push(section);
+  renderSection(section);
+  updatePreview();
+  updateGapCounter();
 }
 
 function createItem() {
-  return { id:'item_'+Date.now()+'_'+Math.random().toString(36).slice(2,6) };
+  return { id: 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2,6) };
 }
 
 function removeSection(id) {
-  sections = sections.filter(s=>s.id!==id);
-  document.getElementById('card_'+id)?.remove();
-  updatePreview(); updateGapCounter();
+  sections = sections.filter(s => s.id !== id);
+  document.getElementById('card_' + id)?.remove();
+  updatePreview();
+  updateGapCounter();
 }
 
 function renderSection(section) {
   const list = document.getElementById('sections-list');
   const card = document.createElement('div');
-  card.className = 'section-card'; card.id = 'card_'+section.id; card.draggable = true;
+  card.className = 'section-card';
+  card.id = 'card_' + section.id;
+  card.draggable = true;
 
-  const typeLabels    = {heading:'Heading',subheading:'Sub-heading',bullets:'Bullet Group'};
-  const typeBadge     = {heading:'badge-heading',subheading:'badge-subheading',bullets:'badge-bullets'};
-  const typePH        = {
-    heading:'Section heading (e.g. Building Work...)',
-    subheading:'Sub-heading (e.g. Contact Information...)',
-    bullets:'Group label (optional)'
+  const typeLabels = { heading: 'Heading', subheading: 'Sub-heading', bullets: 'Bullet Group' };
+  const typeBadge  = { heading: 'badge-heading', subheading: 'badge-subheading', bullets: 'badge-bullets' };
+  const typePlaceholder = {
+    heading: 'Section heading (e.g. Building Work, Kitchen...)',
+    subheading: 'Sub-heading (e.g. Contact Information, Address...)',
+    bullets: 'Group label (optional)'
   };
 
   card.innerHTML = `
     <div class="section-header">
       <span class="section-drag" title="Drag to reorder">⠿</span>
-      <span class="type-badge ${typeBadge[section.type]}">${typeLabels[section.type]}</span>
-      <input class="section-title-inp" placeholder="${typePH[section.type]}"
-        value="${section.title}"
-        oninput="onTitleChange('${section.id}',this.value)">
-      <button class="icon-btn del" onclick="removeSection('${section.id}')" title="Delete">🗑</button>
+      <span class="section-type-badge ${typeBadge[section.type]}">${typeLabels[section.type]}</span>
+      <input class="section-title-input" placeholder="${typePlaceholder[section.type]}"
+        value="${section.title}" oninput="onTitleChange('${section.id}', this.value)" />
+      <div class="section-actions">
+        <button class="icon-btn del" onclick="removeSection('${section.id}')" title="Delete section">🗑</button>
+      </div>
     </div>
-    ${section.type==='bullets' ? `
+    ${section.type === 'bullets' ? `
       <div class="bullets-container" id="bullets_${section.id}"></div>
       <div class="add-item-row">
-        <button class="add-q-btn" onclick="addBullet('${section.id}')">＋ Add bullet</button>
-      </div>` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="addBullet('${section.id}')">＋ Add bullet</button>
+      </div>
+    ` : ''}
   `;
 
   list.appendChild(card);
-  if (section.type==='bullets') section.items.forEach(item => renderBullet(section.id, item));
+
+  if (section.type === 'bullets') {
+    section.items.forEach(item => renderBullet(section.id, item));
+  }
+
   setupDrag(card, section.id);
 }
 
 function onTitleChange(sectionId, value) {
-  const s = sections.find(s=>s.id===sectionId);
+  const s = sections.find(s => s.id === sectionId);
   if (s) s.title = value;
   updatePreview();
 }
 
-/* ═══════════════════════════════════════════
-   BULLETS
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// BULLET MANAGEMENT
+// ═══════════════════════════════════════════════════════
 function addBullet(sectionId) {
-  const section = sections.find(s=>s.id===sectionId);
+  const section = sections.find(s => s.id === sectionId);
   if (!section) return;
   const item = createItem();
   section.items.push(item);
@@ -493,346 +597,485 @@ function addBullet(sectionId) {
 }
 
 function removeBullet(sectionId, itemId) {
-  const section = sections.find(s=>s.id===sectionId);
+  const section = sections.find(s => s.id === sectionId);
   if (!section) return;
-  section.items = section.items.filter(i=>i.id!==itemId);
-  document.getElementById('bullet_'+itemId)?.remove();
-  updatePreview(); updateGapCounter();
+  section.items = section.items.filter(i => i.id !== itemId);
+  document.getElementById('bullet_' + itemId)?.remove();
+  updatePreview();
+  updateGapCounter();
 }
 
 function renderBullet(sectionId, item) {
-  const container = document.getElementById('bullets_'+sectionId);
+  const container = document.getElementById('bullets_' + sectionId);
   if (!container) return;
+
   const row = document.createElement('div');
-  row.className = 'bullet-row'; row.id = 'bullet_'+item.id;
+  row.className = 'bullet-row';
+  row.id = 'bullet_' + item.id;
+
   row.innerHTML = `
     <div class="bullet-dot"></div>
-    <div class="bullet-editor-wrap">
-      <div class="bullet-editor" contenteditable="true"
-        data-item-id="${item.id}" data-section-id="${sectionId}"
-        data-placeholder="Type text... select to add gap or bold"></div>
+    <div class="bullet-editor-wrap" style="position:relative;">
+      <div class="bullet-editor"
+        contenteditable="true"
+        data-item-id="${item.id}"
+        data-section-id="${sectionId}"
+        data-placeholder="Type bullet text... select text to add gap or bold"
+      ></div>
     </div>
     <button class="bullet-remove-btn" onclick="removeBullet('${sectionId}','${item.id}')" title="Remove">×</button>
   `;
+
   container.appendChild(row);
 
   const editor = row.querySelector('.bullet-editor');
-  editor.addEventListener('mouseup', e => handleSel(e, editor));
-  editor.addEventListener('keyup',   e => handleSel(e, editor));
-  editor.addEventListener('input',   () => { updatePreview(); updateGapCounter(); });
-  editor.addEventListener('keydown', e => { if(e.key==='Enter') e.preventDefault(); });
+  editor.addEventListener('mouseup', e => handleEditorSelection(e, editor));
+  editor.addEventListener('keyup', e => handleEditorSelection(e, editor));
+  editor.addEventListener('input', () => { updatePreview(); updateGapCounter(); });
+  editor.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); }
+  });
 }
 
-/* ═══════════════════════════════════════════
-   SELECTION → TOOLBAR
-═══════════════════════════════════════════ */
-const toolbar  = document.getElementById('floating-toolbar');
+// ═══════════════════════════════════════════════════════
+// SELECTION → TOOLBAR
+// ═══════════════════════════════════════════════════════
+const toolbar = document.getElementById('floating-toolbar');
 const gapPopup = document.getElementById('gap-popup');
 
-function handleSel(e, editor) {
-  const sel  = window.getSelection();
+function handleEditorSelection(e, editor) {
+  const sel = window.getSelection();
   const text = sel?.toString().trim();
+
   if (!text || !sel.rangeCount) {
-    setTimeout(() => { if(!window.getSelection().toString().trim()) hideToolbar(); }, 150);
+    setTimeout(() => { if (!window.getSelection().toString().trim()) hideToolbar(); }, 150);
     return;
   }
+
   const range = sel.getRangeAt(0);
+  // Make sure selection is within this editor
   if (!editor.contains(range.commonAncestorContainer)) return;
+
   activeEditorEl = editor;
   savedSelection = range.cloneRange();
+
   const rect = range.getBoundingClientRect();
   toolbar.style.display = 'flex';
-  toolbar.style.left    = rect.left + 'px';
-  toolbar.style.top     = (rect.top - 44) + 'px';
+  toolbar.style.left = rect.left + 'px';
+  toolbar.style.top = (rect.top - 44 + window.scrollY) + 'px';
+  toolbar.style.position = 'fixed';
+  toolbar.style.top = (rect.top - 44) + 'px';
 }
 
-function hideToolbar() { toolbar.style.display='none'; activeEditorEl=null; }
+function hideToolbar() {
+  toolbar.style.display = 'none';
+  activeEditorEl = null;
+}
 
 document.getElementById('toolbar-gap-btn').onclick = () => {
   if (!savedSelection || !activeEditorEl) return;
   const sel = window.getSelection();
-  sel.removeAllRanges(); sel.addRange(savedSelection);
+  sel.removeAllRanges();
+  sel.addRange(savedSelection);
   const text = sel.toString().trim();
   if (!text) return;
-  pendingGapRange = { editor:activeEditorEl, range:savedSelection.cloneRange(), selectedText:text };
+
+  pendingGapRange = {
+    editor: activeEditorEl,
+    range: savedSelection.cloneRange(),
+    selectedText: text
+  };
+
   hideToolbar();
+  // Show gap answer popup
   const rect = savedSelection.getBoundingClientRect();
   gapPopup.style.display = 'block';
-  gapPopup.style.left    = rect.left + 'px';
-  gapPopup.style.top     = (rect.top - 100) + 'px';
-  const inp = document.getElementById('gap-answer-input');
-  inp.value = text; inp.focus(); inp.select();
+  gapPopup.style.left = rect.left + 'px';
+  gapPopup.style.top = (rect.top - 90) + 'px';
+  const input = document.getElementById('gap-answer-input');
+  input.value = text;
+  input.focus();
+  input.select();
 };
 
 document.getElementById('gap-answer-input').addEventListener('keydown', e => {
-  if (e.key==='Enter')  confirmGap();
-  if (e.key==='Escape') cancelGap();
+  if (e.key === 'Enter') confirmGap();
+  if (e.key === 'Escape') cancelGap();
 });
 
 document.getElementById('toolbar-bold-btn').onclick = () => {
   if (!savedSelection || !activeEditorEl) return;
   const sel = window.getSelection();
-  sel.removeAllRanges(); sel.addRange(savedSelection);
+  sel.removeAllRanges();
+  sel.addRange(savedSelection);
   const text = sel.toString().trim();
   if (!text) return;
+
   const range = savedSelection.cloneRange();
-  const span  = document.createElement('strong');
-  span.className = 'bold-token'; span.textContent = text;
-  range.deleteContents(); range.insertNode(span);
-  range.setStartAfter(span); range.collapse(true);
-  sel.removeAllRanges(); sel.addRange(range);
-  hideToolbar(); updatePreview();
+  const span = document.createElement('strong');
+  span.className = 'bold-token';
+  span.textContent = text;
+  range.deleteContents();
+  range.insertNode(span);
+  // Move cursor after
+  range.setStartAfter(span);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  hideToolbar();
+  updatePreview();
 };
 
 document.addEventListener('mousedown', e => {
-  if (!toolbar.contains(e.target) && !gapPopup.contains(e.target)) hideToolbar();
-  if (!gapPopup.contains(e.target) && !toolbar.contains(e.target)) cancelGap();
+  if (!toolbar.contains(e.target) && !gapPopup.contains(e.target)) {
+    hideToolbar();
+  }
+  if (!gapPopup.contains(e.target)) {
+    // don't cancel if clicking toolbar
+    if (!toolbar.contains(e.target)) cancelGap();
+  }
 });
 
-/* ═══════════════════════════════════════════
-   GAP INSERTION
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// GAP INSERTION
+// ═══════════════════════════════════════════════════════
 function confirmGap() {
   if (!pendingGapRange) return;
   const answer = document.getElementById('gap-answer-input').value.trim();
-  if (!answer) { document.getElementById('gap-answer-input').style.borderColor='var(--danger)'; return; }
+  if (!answer) {
+    document.getElementById('gap-answer-input').style.borderColor = 'var(--danger)';
+    return;
+  }
   document.getElementById('gap-answer-input').style.borderColor = '';
 
   gapCounter++;
+  const num = gapCounter;
+
   const { editor, range } = pendingGapRange;
   const sel = window.getSelection();
-  sel.removeAllRanges(); sel.addRange(range);
+  sel.removeAllRanges();
+  sel.addRange(range);
 
   const token = document.createElement('span');
-  token.className = 'gap-token'; token.contentEditable = 'false';
-  token.dataset.answer = answer; token.dataset.gapNum = gapCounter;
-  token.innerHTML = `<span class="gap-num">${gapCounter}</span><span class="gap-answer">${answer}</span><span class="gap-del" onclick="removeGap(this)">×</span>`;
+  token.className = 'gap-token';
+  token.contentEditable = 'false';
+  token.dataset.answer = answer;
+  token.dataset.gapNum = num;
+  token.innerHTML = `<span class="gap-num">${num}</span><span class="gap-answer">${answer}</span><span class="gap-del" onclick="removeGap(this)" title="Remove gap">×</span>`;
 
-  range.deleteContents(); range.insertNode(token);
-  range.setStartAfter(token); range.collapse(true);
-  sel.removeAllRanges(); sel.addRange(range);
+  range.deleteContents();
+  range.insertNode(token);
+  range.setStartAfter(token);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
 
-  cancelGap(); updatePreview(); updateGapCounter(); renumberGaps();
+  cancelGap();
+  updatePreview();
+  updateGapCounter();
+  renumberGaps();
 }
 
-function cancelGap() { gapPopup.style.display='none'; pendingGapRange=null; }
+function cancelGap() {
+  gapPopup.style.display = 'none';
+  pendingGapRange = null;
+}
 
 function removeGap(delBtn) {
-  delBtn.closest('.gap-token')?.remove();
-  updatePreview(); updateGapCounter(); renumberGaps();
+  const token = delBtn.closest('.gap-token');
+  if (!token) return;
+  token.remove();
+  updatePreview();
+  updateGapCounter();
+  renumberGaps();
 }
 
 function renumberGaps() {
-  document.querySelectorAll('.gap-token').forEach((g,i) => {
-    g.dataset.gapNum = i+1;
-    g.querySelector('.gap-num').textContent = i+1;
+  const allGaps = document.querySelectorAll('.gap-token');
+  allGaps.forEach((gap, i) => {
+    gap.dataset.gapNum = i + 1;
+    gap.querySelector('.gap-num').textContent = i + 1;
   });
-  gapCounter = document.querySelectorAll('.gap-token').length;
+  gapCounter = allGaps.length;
 }
 
-/* ═══════════════════════════════════════════
-   GAP COUNTER
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// GAP COUNTER
+// ═══════════════════════════════════════════════════════
 function updateGapCounter() {
   const total = document.querySelectorAll('.gap-token').length;
   document.getElementById('gap-total').textContent = total;
-  const rangeVal = document.getElementById('q-range').value.trim();
-  const hint = document.getElementById('gap-range-hint');
-  if (rangeVal && rangeVal.includes('-')) {
-    const [s,e] = rangeVal.split('-').map(Number);
-    const expected = e-s+1;
-    if (total===expected) { hint.textContent=`✅ ${total}/${expected} filled`; hint.style.color='var(--accent-2)'; }
-    else { hint.textContent=`${total}/${expected} filled`; hint.style.color=total>expected?'var(--danger)':'var(--muted)'; }
-  } else { hint.textContent=''; }
+  const range = document.getElementById('q-range').value.trim();
+  if (range && range.includes('-')) {
+    const [start, end] = range.split('-').map(Number);
+    const expected = end - start + 1;
+    const hint = document.getElementById('gap-range-hint');
+    if (total === expected) {
+      hint.textContent = `✅ ${total}/${expected} gaps filled`;
+      hint.style.color = 'var(--accent2)';
+    } else {
+      hint.textContent = `${total}/${expected} gaps filled`;
+      hint.style.color = total > expected ? 'var(--danger)' : 'var(--muted)';
+    }
+  } else {
+    document.getElementById('gap-range-hint').textContent = '';
+  }
 }
 
-/* ═══════════════════════════════════════════
-   LIVE PREVIEW (student view)
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════
+function getEditorData(editor) {
+  // Returns array of {type, content/answer/num}
+  const result = [];
+  editor.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (node.textContent) result.push({ type: 'text', content: node.textContent });
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.classList.contains('gap-token')) {
+        result.push({ type: 'gap', answer: node.dataset.answer, num: node.dataset.gapNum });
+      } else if (node.tagName === 'STRONG' || node.classList.contains('bold-token')) {
+        result.push({ type: 'bold', content: node.textContent });
+      } else {
+        result.push({ type: 'text', content: node.textContent });
+      }
+    }
+  });
+  return result;
+}
+
+function renderEditorToHTML(editor, forPreview = true) {
+  let html = '';
+  editor.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      html += escHtml(node.textContent);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.classList.contains('gap-token')) {
+        const num = node.dataset.gapNum;
+        if (forPreview) {
+          html += `<span class="preview-gap">${num}</span>`;
+        } else {
+          html += `[[GAP:${node.dataset.answer}]]`;
+        }
+      } else if (node.tagName === 'STRONG' || node.classList.contains('bold-token')) {
+        html += `<span class="preview-bold">${escHtml(node.textContent)}</span>`;
+      } else {
+        html += escHtml(node.textContent);
+      }
+    }
+  });
+  return html;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 function updatePreview() {
-  const range       = document.getElementById('q-range').value.trim() || '1-10';
+  const range = document.getElementById('q-range').value.trim() || '1-10';
   const instruction = document.getElementById('q-instruction').value.trim() || 'Complete the notes below.';
-  const body        = document.getElementById('preview-body');
+
+  let html = '';
+  html += `<div class="q-header">Questions ${range}</div>`;
+  html += `<div class="q-instruction">${instruction.replace(/NO MORE THAN ONE WORD AND\/OR NUMBER/gi, '<b>NO MORE THAN ONE WORD AND/OR NUMBER</b>')}</div>`;
 
   if (sections.length === 0) {
-    body.innerHTML = `<div class="pv-empty"><div class="pv-empty-icon">📋</div><div>Add sections on the right<br>to see student view here</div></div>`;
-    return;
+    html += '<div style="color:#999;font-size:12px;text-align:center;padding:20px 0;">No sections yet...</div>';
   }
 
-  // ── Build notes doc HTML ──
-  let docHtml = `
-    <div class="pv-banner">
-      <div class="pv-range">Questions ${escHtml(range)}</div>
-      <div class="pv-instr">${instruction.replace(/NO MORE THAN ONE WORD AND\/OR A? NUMBER/gi, '<strong>$&</strong>')}</div>
-    </div>
-  `;
-
-  // Collect gaps for answer strip
-  const gaps = [];
-
-  sections.forEach(sec => {
-    if (sec.type==='heading') {
-      if (sec.title) docHtml += `<div class="pv-heading">${escHtml(sec.title)}</div>`;
-    } else if (sec.type==='subheading') {
-      if (sec.title) docHtml += `<div class="pv-subheading">${escHtml(sec.title)}</div>`;
-    } else if (sec.type==='bullets') {
-      if (sec.title) docHtml += `<div class="pv-subheading">${escHtml(sec.title)}</div>`;
-      const container = document.getElementById('bullets_'+sec.id);
+  sections.forEach(section => {
+    if (section.type === 'heading') {
+      if (section.title) html += `<div class="p-heading">${escHtml(section.title)}</div>`;
+    } else if (section.type === 'subheading') {
+      if (section.title) html += `<div class="p-subheading">${escHtml(section.title)}</div>`;
+    } else if (section.type === 'bullets') {
+      if (section.title) html += `<div class="p-subheading">${escHtml(section.title)}</div>`;
+      const container = document.getElementById('bullets_' + section.id);
       if (container) {
-        container.querySelectorAll('.bullet-editor').forEach(editor => {
-          let lineHtml = '';
-          editor.childNodes.forEach(node => {
-            if (node.nodeType===Node.TEXT_NODE) {
-              lineHtml += escHtml(node.textContent);
-            } else if (node.nodeType===Node.ELEMENT_NODE) {
-              if (node.classList.contains('gap-token')) {
-                const num = node.dataset.gapNum;
-                lineHtml += `<span class="pv-gap"><span class="pv-gap-num">${num}</span></span>`;
-                gaps.push(parseInt(num));
-              } else if (node.tagName==='STRONG') {
-                lineHtml += `<span class="pv-bold">${escHtml(node.textContent)}</span>`;
-              } else {
-                lineHtml += escHtml(node.textContent);
-              }
-            }
-          });
-          if (lineHtml.trim()) {
-            docHtml += `<div class="pv-bullet"><div class="pv-dot"></div><div>${lineHtml}</div></div>`;
+        const editors = container.querySelectorAll('.bullet-editor');
+        editors.forEach(editor => {
+          const content = renderEditorToHTML(editor, true);
+          if (content.trim()) {
+            html += `<div class="p-bullet">${content}</div>`;
           }
         });
       }
     }
   });
 
-  // ── Answer inputs strip ──
-  if (gaps.length > 0) {
-    gaps.sort((a,b)=>a-b);
-    docHtml += `<div class="pv-answers"><div class="pv-answers-label">✏️ Your Answers</div>`;
-    gaps.forEach(num => {
-      docHtml += `
-        <div class="pv-answer-row">
-          <div class="pv-ans-num">${num}</div>
-          <div class="pv-ans-input"></div>
-        </div>`;
-    });
-    docHtml += `</div>`;
-  }
-
-  body.innerHTML = docHtml;
+  document.getElementById('preview-doc').innerHTML = html;
+  updateGapCounter();
+  updateJsonOutput();
 }
 
-function escHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-/* ═══════════════════════════════════════════
-   JSON
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// JSON OUTPUT
+// ═══════════════════════════════════════════════════════
 function buildJsonData() {
-  const range       = document.getElementById('q-range').value.trim();
+  const range = document.getElementById('q-range').value.trim();
   const instruction = document.getElementById('q-instruction').value.trim();
-  const result = { range, instruction, sections:[], gaps:[] };
+  const result = { range, instruction, sections: [] };
 
   sections.forEach(section => {
-    const sObj = { type:section.type, title:section.title };
-    if (section.type==='bullets') {
+    const sObj = { type: section.type, title: section.title };
+    if (section.type === 'bullets') {
       sObj.items = [];
-      const container = document.getElementById('bullets_'+section.id);
+      const container = document.getElementById('bullets_' + section.id);
       if (container) {
-        container.querySelectorAll('.bullet-editor').forEach(editor => {
+        const editors = container.querySelectorAll('.bullet-editor');
+        editors.forEach(editor => {
           const parts = [];
           editor.childNodes.forEach(node => {
-            if (node.nodeType===Node.TEXT_NODE && node.textContent)
-              parts.push({type:'text',value:node.textContent});
-            else if (node.nodeType===Node.ELEMENT_NODE) {
-              if (node.classList.contains('gap-token'))
-                parts.push({type:'gap',answer:node.dataset.answer,num:parseInt(node.dataset.gapNum)});
-              else if (node.tagName==='STRONG')
-                parts.push({type:'bold',value:node.textContent});
-              else
-                parts.push({type:'text',value:node.textContent});
+            if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+              parts.push({ type: 'text', value: node.textContent });
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+              if (node.classList.contains('gap-token')) {
+                parts.push({ type: 'gap', answer: node.dataset.answer, num: parseInt(node.dataset.gapNum) });
+              } else if (node.tagName === 'STRONG') {
+                parts.push({ type: 'bold', value: node.textContent });
+              } else {
+                parts.push({ type: 'text', value: node.textContent });
+              }
             }
           });
-          if (parts.some(p=>p.value?.trim()||p.type==='gap')) sObj.items.push({parts});
+          if (parts.some(p => p.value?.trim() || p.type === 'gap')) {
+            sObj.items.push({ parts });
+          }
         });
       }
     }
     result.sections.push(sObj);
   });
 
-  document.querySelectorAll('.gap-token').forEach(t => {
-    result.gaps.push({num:parseInt(t.dataset.gapNum),answer:t.dataset.answer});
+  // Also collect all gaps flat
+  result.gaps = [];
+  document.querySelectorAll('.gap-token').forEach(token => {
+    result.gaps.push({ num: parseInt(token.dataset.gapNum), answer: token.dataset.answer });
   });
 
   return result;
 }
 
+function updateJsonOutput() {
+  const data = buildJsonData();
+  document.getElementById('json-output').textContent = JSON.stringify(data, null, 2);
+}
+
 function toggleJson() {
   const panel = document.getElementById('json-panel');
   panel.classList.toggle('open');
-  if (panel.classList.contains('open'))
-    document.getElementById('json-output').textContent = JSON.stringify(buildJsonData(), null, 2);
+  if (panel.classList.contains('open')) updateJsonOutput();
 }
 
-/* ═══════════════════════════════════════════
-   SAVE
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════════
 async function saveExercise() {
   const data = buildJsonData();
-  if (data.gaps.length===0) { showStatus('save-status','error','⚠️ No gaps added yet!'); return; }
 
-  const btn = document.getElementById('save-btn');
-  btn.disabled=true; btn.textContent='⏳ Saving...';
-  showStatus('save-status','','<div class="spinner"></div> Saving...');
-  document.getElementById('save-status').className='status-msg show';
+  // Validate
+  if (data.gaps.length === 0) {
+    showSaveStatus('error', '⚠️ No gaps added yet!');
+    return;
+  }
 
+  showSaveStatus('loading', 'Saving...');
   try {
     const res = await fetch('/teacher/add-listening-fitg', {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Server error '+res.status);
-    showStatus('save-status','success','✅ Saved successfully!');
-    sections=[]; gapCounter=0;
-    document.getElementById('sections-list').innerHTML='';
-    document.getElementById('q-range').value='1-10';
-    updateGapCounter(); updatePreview();
-  } catch(err) {
-    showStatus('save-status','error','❌ '+err.message);
-  } finally {
-    btn.disabled=false; btn.textContent='💾 Save Exercise';
+    if (!res.ok) throw new Error('Server error ' + res.status);
+    showSaveStatus('success', '✅ Saved successfully!');
+  } catch (err) {
+    showSaveStatus('error', '❌ ' + err.message);
   }
 }
 
-function showStatus(id, type, html) {
-  const el = document.getElementById(id);
-  el.className='status-msg show '+type; el.innerHTML=html;
+function showSaveStatus(type, msg) {
+  const el = document.getElementById('save-status');
+  el.className = 'save-status show ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
+  if (type === 'loading') {
+    el.innerHTML = `<div class="spinner"></div> ${msg}`;
+    el.style.background = 'rgba(79,142,247,.1)';
+    el.style.color = 'var(--accent)';
+    el.style.border = '1px solid rgba(79,142,247,.3)';
+  } else {
+    el.innerHTML = msg;
+  }
+  if (type !== 'loading') {
+    setTimeout(() => { el.className = 'save-status'; }, 3000);
+  }
 }
 
-/* ═══════════════════════════════════════════
-   DRAG & DROP
-═══════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// DRAG & DROP REORDER
+// ═══════════════════════════════════════════════════════
+let dragSrcId = null;
+
 function setupDrag(card, sectionId) {
-  card.addEventListener('dragstart', e => { dragSrcId=sectionId; card.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
-  card.addEventListener('dragend',   () => card.classList.remove('dragging'));
-  card.addEventListener('dragover',  e => { e.preventDefault(); card.classList.add('drag-over'); });
+  card.addEventListener('dragstart', e => {
+    dragSrcId = sectionId;
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+  card.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
   card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
   card.addEventListener('drop', e => {
-    e.preventDefault(); card.classList.remove('drag-over');
-    if (dragSrcId===sectionId) return;
-    const si = sections.findIndex(s=>s.id===dragSrcId);
-    const di = sections.findIndex(s=>s.id===sectionId);
-    if (si===-1||di===-1) return;
-    const [moved] = sections.splice(si,1);
-    sections.splice(di,0,moved);
+    e.preventDefault();
+    card.classList.remove('drag-over');
+    if (dragSrcId === sectionId) return;
+    const srcIdx = sections.findIndex(s => s.id === dragSrcId);
+    const dstIdx = sections.findIndex(s => s.id === sectionId);
+    if (srcIdx === -1 || dstIdx === -1) return;
+    const [moved] = sections.splice(srcIdx, 1);
+    sections.splice(dstIdx, 0, moved);
     const list = document.getElementById('sections-list');
-    const sc = document.getElementById('card_'+dragSrcId);
-    const dc = document.getElementById('card_'+sectionId);
-    if (si<di) list.insertBefore(sc, dc.nextSibling);
-    else       list.insertBefore(sc, dc);
+    const srcCard = document.getElementById('card_' + dragSrcId);
+    const dstCard = document.getElementById('card_' + sectionId);
+    if (srcIdx < dstIdx) {
+      list.insertBefore(srcCard, dstCard.nextSibling);
+    } else {
+      list.insertBefore(srcCard, dstCard);
+    }
     updatePreview();
   });
 }
+
+// ═══════════════════════════════════════════════════════
+// INIT — load example matching the screenshot
+// ═══════════════════════════════════════════════════════
+function initExample() {
+  // Heading: Building Work
+  addSection('heading');
+  const h = sections[0];
+  h.title = 'Building Work';
+  document.querySelector(`input[oninput="onTitleChange('${h.id}', this.value)"]`).value = 'Building Work';
+
+  // Sub-heading: Address
+  addSection('subheading');
+  const addr = sections[1];
+  addr.title = 'Address: 15 Hill Street';
+  document.querySelector(`input[oninput="onTitleChange('${addr.id}', this.value)"]`).value = 'Address: 15 Hill Street';
+
+  // Sub-heading: Contact Information + bullets
+  addSection('subheading');
+  const ci = sections[2];
+  ci.title = 'Contact Information';
+  document.querySelector(`input[oninput="onTitleChange('${ci.id}', this.value)"]`).value = 'Contact Information';
+
+  addSection('bullets');
+  const bg1 = sections[3];
+  bg1.title = '';
+
+  updatePreview();
+}
+
+// Start with empty (let teacher build from scratch)
+updatePreview();
 </script>
 </body>
 </html>

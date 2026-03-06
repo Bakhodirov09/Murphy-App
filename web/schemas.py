@@ -84,6 +84,7 @@ class SaveVocabResultsSchema(BaseModel):
 
 
 class AddIELTSListeningSchema(BaseModel):
+    test_number: int
     condition: str
     audio_id: str
     script: str

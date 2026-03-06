@@ -493,7 +493,7 @@
           const res = await fetch('/teacher/add-book-unit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ book_id: bookId, unit: Number(number.value) })
+            body: JSON.stringify({ book_id: bookId, unit: Number(number.value), level: result.book.level })
           });
           saveBtn.innerHTML = res.status === 201 ? 'Added successfully :)' : 'Something went wrong :(';
         });

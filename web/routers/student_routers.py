@@ -10,8 +10,8 @@ from sqlalchemy.orm import selectinload
 from web.data import tashkent
 from web.general import db_dependency, create_token, decode_jwt, JWTBearer, templates
 from web.schemas import GroupDaysRequest, SaveResultsSchema, SaveVocabResultsSchema
-from web.models import GroupsModel, StudentsModel, WeeksModel, WeekScheduleModel, MurphyUnitsModel, EssentialUnitsModel, \
-    MurphyExercisesModel, MurphyBooksModel, StudentResultsModel, FilesModel
+from web.models import GroupsModel, StudentsModel, WeeksModel, WeekScheduleModel, UnitsModel, EssentialUnitsModel, \
+    ExercisesModel, BooksModel, StudentResultsModel, FilesModel
 
 router = APIRouter(dependencies=[Depends(JWTBearer(type='student'))])
 
@@ -186,10 +186,10 @@ async def get_student_weeks(request: Request, db: db_dependency):
         }
         if is_available:
 
-            murphy_units = db.query(MurphyUnitsModel).filter(
-                MurphyUnitsModel.book_id == week_info.murphy_book,
-                MurphyUnitsModel.unit_number >= week_info.murphy_from_unit,
-                MurphyUnitsModel.unit_number <= week_info.murphy_to_unit,
+            murphy_units = db.query(UnitsModel).filter(
+                UnitsModel.book_id == week_info.murphy_book,
+                UnitsModel.unit_number >= week_info.murphy_from_unit,
+                UnitsModel.unit_number <= week_info.murphy_to_unit,
             ).all()
 
             correct_count = 0
@@ -242,10 +242,10 @@ async def get_week(request: Request, db: db_dependency, id: UUID = Query(...)):
     week = db.query(WeeksModel).filter(WeeksModel.id == id).first()
     if not week:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    murphy_units = db.query(MurphyUnitsModel).filter(
-        MurphyUnitsModel.book_id == week.murphy_book,
-        MurphyUnitsModel.unit_number >= week.murphy_from_unit,
-        MurphyUnitsModel.unit_number <= week.murphy_to_unit,
+    murphy_units = db.query(UnitsModel).filter(
+        UnitsModel.book_id == week.murphy_book,
+        UnitsModel.unit_number >= week.murphy_from_unit,
+        UnitsModel.unit_number <= week.murphy_to_unit,
     )
     vocabulary_units = db.query(EssentialUnitsModel).filter(
         EssentialUnitsModel.book_id == week.essential_book,
@@ -293,9 +293,9 @@ async def get_vocabulary_words(db: db_dependency, id: UUID = Query(...)):
 
 @router.get('/get-exercise', status_code=status.HTTP_200_OK)
 async def get_exercise(db: db_dependency, id: UUID = Query(...)):
-    exercise = db.query(MurphyExercisesModel).filter(
-        MurphyExercisesModel.id == id
-    ).options(selectinload(MurphyExercisesModel.questions)).first()
+    exercise = db.query(ExercisesModel).filter(
+        ExercisesModel.id == id
+    ).options(selectinload(ExercisesModel.questions)).first()
 
     if not exercise:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

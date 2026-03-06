@@ -1,14 +1,25 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, Enum, BigInteger
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, BigInteger, Enum
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from web.data import tashkent
 from web.database import Base
-
 import enum
-from sqlalchemy import Enum
 
+# ====== Enums for models ======
+class LevelsEnum(str, enum.Enum):
+    UPPER_INTERMEDIATE = 'UPPER-INTERMEDIATE'
+    IELTS = 'IELTS'
+
+class IELTSModule(str, enum.Enum):
+    READING = "READING"
+    LISTENING = "LISTENING"
+    DICTATION = "DICTATION"
+
+class DaysEnum(str, enum.Enum):
+    ODD_DAYS = 'Odd Days'
+    EVEN_DAYS = 'Even Days'
 
 class BaseModel(Base):
     __abstract__ = True
@@ -36,8 +47,8 @@ class GroupsModel(BaseModel):
     __tablename__ = "groups"
 
     group_name = Column(String(50), unique=True, nullable=False)
-    group_days = Column(Enum('Odd Days', 'Even Days', name='days_enum'), nullable=False)
-    group_level = Column(Enum('Upper-Intermediate', 'IELTS', name='level_enum'), nullable=False)
+    group_days = Column(Enum(DaysEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
+    group_level = Column(Enum(LevelsEnum), nullable=False)
 
     students = relationship(
         "StudentsModel",
@@ -74,8 +85,10 @@ class StudentResultsModel(BaseModel):
     fails_count = Column(Integer, default=0)
     passed = Column(Boolean, default=False)
 
-    exercise_id = Column(UUID(as_uuid=True), ForeignKey('murphy_exercises.id', ondelete='CASCADE'))
-    exercise_question_id = Column(UUID(as_uuid=True), ForeignKey('murphy_exercise_questions.id', ondelete='CASCADE'))
+    exercise_id = Column(UUID(as_uuid=True), ForeignKey('book_exercises.id', ondelete='CASCADE'), nullable=True)
+    exercise_question_id = Column(UUID(as_uuid=True), ForeignKey('exercise_questions.id', ondelete='CASCADE'), nullable=True)
+    ielts_question_id = Column(UUID(as_uuid=True), ForeignKey('ielts_questions.id', ondelete='CASCADE'), nullable=True)
+
     vocabulary_unit_id = Column(UUID(as_uuid=True), ForeignKey('essential_units.id', ondelete='CASCADE'))
     vocabulary_id = Column(UUID(as_uuid=True), ForeignKey('essential_words.id', ondelete='CASCADE'))
 
@@ -85,8 +98,9 @@ class StudentResultsModel(BaseModel):
     vocabulary = relationship("EssentialWordsModel", back_populates="results")
     vocabulary_unit = relationship("EssentialUnitsModel", back_populates="results")
 
-    exercise = relationship("MurphyExercisesModel", back_populates="results")
-    exercise_question = relationship("MurphyExerciseQuestionsModel", back_populates="results")
+    exercise = relationship("ExercisesModel", back_populates="results")
+    exercise_question = relationship("ExerciseQuestionsModel", back_populates="results")
+    ielts_question = relationship("IELTSQuestionsModel", back_populates='results')
 
 
 class WeekScheduleModel(BaseModel):
@@ -97,11 +111,10 @@ class WeekScheduleModel(BaseModel):
     week_number = Column(Integer, nullable=False)
     lesson_date = Column(DateTime(timezone=True), nullable=False)
 
-
 class WeeksModel(BaseModel):
     __tablename__ = "weeks"
 
-    level = Column(Enum('Upper-Intermediate', 'IELTS', name='level_enum'), nullable=False)
+    level = Column(Enum(LevelsEnum), nullable=False)
     week_number = Column(Integer, index=True, nullable=False)
     week_topic = Column(String(100), nullable=True)
 
@@ -109,12 +122,11 @@ class WeeksModel(BaseModel):
     essential_from_unit = Column(Integer, index=True, nullable=False)
     essential_to_unit = Column(Integer, index=True, nullable=False)
 
-    murphy_book = Column(UUID, ForeignKey('murphy_books.id', ondelete='SET NULL'))
-    murphy_from_unit = Column(Integer, index=True, nullable=False)
-    murphy_to_unit = Column(Integer, index=True, nullable=False)
+    book = Column(UUID, ForeignKey('books.id', ondelete='SET NULL'))
+    book_from_unit = Column(Integer, index=True, nullable=False)
+    book_to_unit = Column(Integer, index=True, nullable=False)
 
     keys = Column(Integer, default=10, nullable=False)
-
 
 class EssentialBooksModel(BaseModel):
     __tablename__ = 'essential_books'
@@ -126,7 +138,6 @@ class EssentialBooksModel(BaseModel):
         back_populates='book',
         cascade='all, delete-orphan'
     )
-
 
 class EssentialUnitsModel(BaseModel):
     __tablename__ = 'essential_units'
@@ -142,7 +153,6 @@ class EssentialUnitsModel(BaseModel):
     )
 
     results = relationship('StudentResultsModel', back_populates='vocabulary_unit')
-
 
 class EssentialWordsModel(BaseModel):
     __tablename__ = 'essential_words'
@@ -161,72 +171,110 @@ class EssentialWordsModel(BaseModel):
     results = relationship('StudentResultsModel', back_populates='vocabulary')
 
 
-class MurphyBooksModel(BaseModel):
-    __tablename__ = 'murphy_books'
+class BooksModel(BaseModel):
+    __tablename__ = 'books'
 
     book_name = Column(String(150), nullable=False)
     level = Column(
-        Enum('Upper-Intermediate', 'IELTS', name="book_level_enum", create_type=True),
+        Enum(LevelsEnum),
         default='Upper-Intermediate',
         nullable=True
     )
 
+    # Units for Murpyh-Book
     units = relationship(
-        'MurphyUnitsModel',
+        'UnitsModel',
         back_populates='book',
         cascade='all, delete-orphan',
-        order_by="MurphyUnitsModel.unit_number"
+        order_by="UnitsModel.unit_number"
     )
 
+    # Units for IELTS Book
+    ielts_tests = relationship(
+        'IELTSTestsModel',
+        back_populates='book',
+        cascade='all, delete-orphan',
+        order_by="IELTSTestsModel.test_number"
+    )
 
-class MurphyUnitsModel(BaseModel):
-    __tablename__ = 'murphy_units'
+# ======== Model for Murphy-Book =======
+class UnitsModel(BaseModel):
+    __tablename__ = 'book_units'
 
-    book_id = Column(UUID, ForeignKey('murphy_books.id', ondelete='CASCADE'))
+    book_id = Column(UUID, ForeignKey('books.id', ondelete='CASCADE'))
     unit_number = Column(Integer, nullable=False)
 
-    book = relationship('MurphyBooksModel', back_populates='units')
-    exercises = relationship('MurphyExercisesModel', back_populates='unit', cascade='all, delete-orphan')
-    ielts_exercises = relationship("IELTSMaterialsModel", back_populates='unit')
+    book = relationship('BooksModel', back_populates='units')
+    exercises = relationship('ExercisesModel', back_populates='unit', cascade='all, delete-orphan')
 
+class ExercisesModel(BaseModel):
+    __tablename__ = "book_exercises"
 
-class MurphyExercisesModel(BaseModel):
-    __tablename__ = "murphy_exercises"
-
-    unit_id = Column(UUID(as_uuid=True), ForeignKey("murphy_units.id"), nullable=False)
+    unit_id = Column(UUID(as_uuid=True), ForeignKey("book_units.id"), nullable=False)
     exercise_type = Column(Integer, nullable=False)
     exercise_number = Column(Integer, nullable=False)
     condition = Column(Text, nullable=False)
 
-    unit = relationship('MurphyUnitsModel', back_populates='exercises')
-    questions = relationship('MurphyExerciseQuestionsModel', back_populates='exercise', cascade='all, delete-orphan')
+    unit = relationship('UnitsModel', back_populates='exercises')
+    questions = relationship('ExerciseQuestionsModel', back_populates='exercise', cascade='all, delete-orphan')
     results = relationship('StudentResultsModel', back_populates='exercise')
 
+class ExerciseQuestionsModel(BaseModel):
+    __tablename__ = "exercise_questions"
 
-class MurphyExerciseQuestionsModel(BaseModel):
-    __tablename__ = "murphy_exercise_questions"
-
-    exercise_id = Column(UUID(as_uuid=True), ForeignKey("murphy_exercises.id"), nullable=False)
+    exercise_id = Column(UUID(as_uuid=True), ForeignKey("book_exercises.id"), nullable=False)
     field = Column(JSONB, nullable=False)
 
-    exercise = relationship('MurphyExercisesModel', back_populates='questions')
+    exercise = relationship('ExercisesModel', back_populates='questions')
     results = relationship('StudentResultsModel', back_populates='exercise_question')
 
+# ======== Models for IELTS Book =======
+class IELTSTestsModel(BaseModel):
+    __tablename__ = 'ielts_tests'
 
-class IELTSMaterialsModel(BaseModel):
-    __tablename__ = "ielts_materials"
+    book_id = Column(UUID, ForeignKey('books.id', ondelete='CASCADE'))
+    test_number = Column(Integer, nullable=False)
 
-    condition = Column(String, nullable=False)
-    type = Column(Enum('Listening', 'Reading', name='ielts_material_type_enum'), nullable=False)
-    script = Column(Text, nullable=True)
-    cleaned_script = Column(Text, nullable=True)
-    removed_words = Column(JSONB, nullable=True)
-    status = Column(String, default="pending")
-    audio_id = Column(UUID, nullable=True)
-    unit_id = Column(UUID(as_uuid=True), ForeignKey("murphy_units.id"), nullable=False)
+    book = relationship('BooksModel', back_populates='ielts_tests')
+    sections = relationship(
+        'IELTSSectionsModel',
+        back_populates='test',
+        cascade='all, delete-orphan'
+    )
 
-    unit = relationship('MurphyUnitsModel', back_populates='ielts_exercises')
+class IELTSSectionsModel(BaseModel):
+    __tablename__ = 'ielts_sections'
 
+    test_id = Column(UUID, ForeignKey('ielts_tests.id', ondelete='CASCADE'))
+    module = Column(Enum(IELTSModule), nullable=False)
+    section_number = Column(Integer, nullable=True)
+
+    # Section content
+    passage_text = Column(Text, nullable=True)  # For reading
+    audio_file_id = Column(UUID, ForeignKey('files.id'), nullable=True)  # For listening
+    transcript = Column(Text, nullable=True)  # For listening and dictation
+    cleaned_transcript = Column(Text, nullable=True)  # For dictation
+    removed_words = Column(JSONB, nullable=True)  # For dictation
+    status = Column(String, default='pending', nullable=False)  # Loading for listening
+
+    test = relationship('IELTSTestsModel', back_populates='sections')
+    questions = relationship(
+        'IELTSQuestionsModel',
+        back_populates='section',
+        cascade='all, delete-orphan'
+    )
+
+class IELTSQuestionsModel(BaseModel):
+    __tablename__ = 'ielts_questions'
+
+    section_id = Column(UUID, ForeignKey('ielts_sections.id', ondelete='CASCADE'))
+    question_number = Column(Integer, nullable=False)
+    question_type = Column(String(50), nullable=False) # multiple choice, matching, fill in the gaps etc
+
+    question_data = Column(JSONB, nullable=False)
+
+    section = relationship('IELTSSectionsModel', back_populates='questions')
+    results = relationship('StudentResultsModel', back_populates='ielts_question')
 
 class FilesModel(BaseModel):
     __tablename__ = "files"
