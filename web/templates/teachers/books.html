@@ -405,7 +405,9 @@
         addUnitBtn.dataset.value = bookId;
         booksDiv.appendChild(addUnitBtn);
 
-        for (const unit of result.book.units) {
+        const units = result.book.units?.length ? result.book.units : result.book.ielts_tests
+
+        for (const unit of ) {
           const unitDiv = document.createElement('div');
           unitDiv.classList.add('unit');
 
