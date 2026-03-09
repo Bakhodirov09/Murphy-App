@@ -331,9 +331,9 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
     # 5. All Murphy units + exercises + questions — 1 query
     murphy_filters = [
         and_(
-            UnitsModel.book_id == w.murphy_book,
-            UnitsModel.unit_number >= w.murphy_from_unit,
-            UnitsModel.unit_number <= w.murphy_to_unit,
+            UnitsModel.book_id == w.book,
+            UnitsModel.unit_number >= w.book_from_unit,
+            UnitsModel.unit_number <= w.book_to_unit,
         )
         for w in weeks_list
     ]
@@ -406,8 +406,8 @@ async def get_group_students(month: str, db: db_dependency, id: UUID = Query(...
     for w in weeks_list:
         murphy_by_week[w.id] = [
             mu for mu in murphy_units
-            if mu.book_id == w.murphy_book
-               and w.murphy_from_unit <= mu.unit_number <= w.murphy_to_unit
+            if mu.book_id == w.book
+               and w.book_from_unit <= mu.unit_number <= w.book_to_unit
         ]
         vocab_by_week[w.id] = [
             v for v in vocabularies
@@ -455,9 +455,9 @@ async def add_week(data: AddWeekSchema, db: db_dependency):
         essential_book=data.essential_book,
         essential_from_unit=data.essential_from_unit,
         essential_to_unit=data.essential_to_unit,
-        murphy_book=data.murphy_book,
-        murphy_from_unit=data.murphy_from_unit,
-        murphy_to_unit=data.murphy_to_unit,
+        book=data.murphy_book,
+        book_from_unit=data.murphy_from_unit,
+        book_to_unit=data.murphy_to_unit,
         keys=data.keys,
         week_topic=data.week_topic,
     ))
@@ -536,9 +536,9 @@ async def get_results(
                 .selectinload(ExercisesModel.questions)
             )
             .filter(
-                UnitsModel.book_id == week.murphy_book,
-                UnitsModel.unit_number >= week.murphy_from_unit,
-                UnitsModel.unit_number <= week.murphy_to_unit,
+                UnitsModel.book_id == week.book,
+                UnitsModel.unit_number >= week.book_from_unit,
+                UnitsModel.unit_number <= week.book_to_unit,
             )
             .all()
         )
