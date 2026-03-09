@@ -176,7 +176,7 @@ class BooksModel(BaseModel):
 
     book_name = Column(String(150), nullable=False)
     level = Column(
-        Enum(LevelsEnum),
+        Enum(LevelsEnum, values_callable=lambda x: [e.value for e in x]),
         default='Upper-Intermediate',
         nullable=True
     )

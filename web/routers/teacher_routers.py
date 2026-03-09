@@ -280,7 +280,6 @@ async def get_level_weeks(db: db_dependency, level: str = Query(...)):
 
 @router.get('/get-clear-groups', status_code=status.HTTP_200_OK)
 async def get_clear_groups(db: db_dependency, days: DaysEnum = Query(...)):
-    print(f"ccc {days}")
     groups = db.query(GroupsModel).filter(GroupsModel.group_days == days.value).all()
     return {'success': True, 'groups': groups}
 
