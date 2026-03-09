@@ -415,7 +415,7 @@
           headerDiv.classList.add('unit-header');
 
           const unitH1 = document.createElement('h1');
-          unitH1.innerHTML = `Unit ${unit.unit_number}`;
+          unitH1.innerHTML = unit.unit_number ? `Unit ${unit.unit_number}` : `Section ${unit.test_number}`;
           const toggleBtn = document.createElement('button');
           toggleBtn.innerHTML = '⌄';
           toggleBtn.classList.add('toggle-btn');
