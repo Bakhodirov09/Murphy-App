@@ -48,7 +48,7 @@ class GroupsModel(BaseModel):
 
     group_name = Column(String(50), unique=True, nullable=False)
     group_days = Column(Enum(DaysEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
-    group_level = Column(Enum(LevelsEnum), nullable=False)
+    group_level = Column(Enum(LevelsEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
 
     students = relationship(
         "StudentsModel",
