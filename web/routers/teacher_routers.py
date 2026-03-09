@@ -156,7 +156,7 @@ async def get_book(db: db_dependency, book_id: UUID = Query(...)):
         raise HTTPException(status_code=404, detail="Book not found")
 
     for unit in book.units:
-        if book.level == "UPPER-INTERMEDIATE":
+        if book.level == "Upper-Intermediate":
             unit.ielts_exercises = []
         else:
             unit.exercises = []
