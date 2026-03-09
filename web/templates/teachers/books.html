@@ -430,7 +430,7 @@
           const addExerciseBtn = document.createElement('button');
           addExerciseBtn.classList.add('add_exercise_btn');
           addExerciseBtn.dataset.value = unit.id;
-          addExerciseBtn.innerHTML = unit.unit_number ? `<span>+</span> Add exercise to Unit ${unit.unit_number}`; : `<span>+</span> Add exercise to Section ${unit.unit_number}`;
+          addExerciseBtn.innerHTML = unit.unit_number ? `<span>+</span> Add exercise to Unit ${unit.unit_number}` : `<span>+</span> Add exercise to Section ${unit.unit_number}`;
           unitExercises.appendChild(addExerciseBtn);
 
           const exercises = unit.exercises?.length ? unit.exercises : unit.ielts_exercises ?? [];
