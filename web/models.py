@@ -9,7 +9,7 @@ import enum
 
 # ====== Enums for models ======
 class LevelsEnum(str, enum.Enum):
-    UPPER_INTERMEDIATE = 'UPPER-INTERMEDIATE'
+    UPPER_INTERMEDIATE = 'Upper-Intermediate'
     IELTS = 'IELTS'
 
 class IELTSModule(str, enum.Enum):
