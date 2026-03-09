@@ -114,7 +114,7 @@ class WeekScheduleModel(BaseModel):
 class WeeksModel(BaseModel):
     __tablename__ = "weeks"
 
-    level = Column(Enum(LevelsEnum), nullable=False)
+    level = Column(Enum(LevelsEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
     week_number = Column(Integer, index=True, nullable=False)
     week_topic = Column(String(100), nullable=True)
 
