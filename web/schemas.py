@@ -87,8 +87,21 @@ class AddIELTSListeningSchema(BaseModel):
     test_number: int
     condition: str
     audio_id: str
-    script: str
     unit_id: str
+
+class AddIELTSReadingSchema(BaseModel):
+    test_number: int
+    condition: str
+    passage: str
+    questions: list
+    unit_id: str
+
+class CheckDictationSchema(BaseModel):
+    section_id: str
+    week_id: str
+    segments: list
+    script: str
+    student_script: str
 
 
 class SendOTPSchema(BaseModel):

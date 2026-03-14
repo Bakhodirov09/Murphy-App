@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      viewport-fit=cover">
+    <title>Listening Task</title>
+    <style>
+    .alert {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92vw, 420px);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 9999;
+  }
+  .alert.show { top: 16px; }
+
+  .alert-icon {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; color: #fff; font-weight: bold; flex-shrink: 0;
+  }
+  .alert-msg {
+    color: #fff; font-size: 15px; font-weight: 500; flex: 1;
+  }
+  .alert-close {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.22);
+    border: none; cursor: pointer;
+    color: #fff; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .alert-close:hover { background: rgba(255,255,255,0.38); }
+
+  .info    { background: linear-gradient(135deg, #4f8ef7, #3a6fd8); }
+  .success { background: linear-gradient(135deg, #34c47c, #1fa85e); }
+  .error   { background: linear-gradient(135deg, #c91d57, #d93535); }
+  .warning { background: linear-gradient(135deg, #f7a934, #d4831a); }
+
+  .label { color: #666; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+
+  button.trigger {
+    width: 220px; padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: #fff; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background 10s;
+  }
+  .re-play-btn {
+        background-color: #f5c518;
+        border: none;
+        outline: none;
+        width: 25px;
+        border-radius: 50%;
+        text-align: center;
+        cursor: pointer;
+  }
+  button.trigger:hover { background: rgba(255,255,255,0.13); }
+      * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        button,
+        input,
+        textarea {
+            touch-action: manipulation;
+        }
+      .wrap {
+        background: #12151a;
+        min-height: calc(var(--vh, 1vh) * 100);
+        min-height: -webkit-fill-available;
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        padding-top: calc(14px + env(safe-area-inset-top));
+        border-bottom: 0.5px solid rgba(255,255,255,0.08);
+      }
+      .close-btn {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        border: none;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .task-title { font-size: 15px; font-weight: 500; }
+      .progress-label { font-size: 13px; color: rgba(255,255,255,0.45); }
+      .progress-bar-wrap { height: 2px; background: rgba(255,255,255,0.08); }
+      .progress-bar-fill { height: 2px; background: #f5c518; transition: width 0.3s; }
+      .instruction { padding: 14px 20px 10px; font-size: 13px; font-weight: 500; color: #fff; }
+
+      .audio-card {
+        margin: 0 14px 14px;
+        background: #1e2229;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .play-btn {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: #f5c518;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .play-btn svg { fill: #000; }
+      .waveform-area { flex: 1; overflow: hidden; cursor: pointer; }
+      .waveform { display: flex; align-items: center; gap: 2px; height: 36px; }
+      .waveform .bar { background: rgba(255,255,255,0.2); border-radius: 2px; flex-shrink: 0; transition: background 0.1s; }
+      .waveform .bar.played { background: #f5c518; }
+      .time-display { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 4px; }
+      .speed-btn {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        padding: 5px 9px;
+        border-radius: 20px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .sentence-card {
+        margin: 0 14px 10px;
+        background: #1e2229;
+        border-radius: 12px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 58px;
+      }
+      .missed-words {
+        display: grid;
+        grid-template-columns: 1fr 1fr 40px;
+        width: 100%;
+        gap: 8px;
+        border-radius: 12px;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        min-height: 58px;
+      }
+      .missed-word {
+        display: flex;
+        gap: 10px;
+      }
+
+      .missed-word input {
+        background-color: #f5c518;
+        color: #000;
+        border: none;
+        padding: 5px;
+        border-radius: 6px;
+        font-size: 16px; /* prevents iOS zoom */
+        -webkit-appearance: none;
+        appearance: none;
+        overflow: hidden;
+      }
+
+      .missed-word input.incorrect {
+        color: white;
+        background-color: #c91d57;
+      }
+      .missed-word input.correct {
+        color: white;
+        background-color: #329961;
+      }
+
+      .blank-input {
+        background: #f5c518;
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 16px; /* 16px min prevents iOS Safari auto-zoom */
+        font-weight: 500;
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
+        -webkit-appearance: none;
+        appearance: none;
+
+        min-width: 80px;
+        width: 80px;
+        max-width: 100%;
+
+        min-height: 32px;
+        height: 32px;
+        max-height: 220px;
+
+        resize: none;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+
+        display: inline-block;
+        vertical-align: middle;
+        transition: width 0.18s ease, height 0.12s ease;
+      }
+
+      .blank-input.correct { background: #329961; color: #fff; }
+      .blank-input.wrong   { background: #c91d57; color: #fff; }
+
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        position: sticky;
+        bottom: 0;
+        background: #12151a;
+        margin-top: 50px;
+      }
+      .nav-btn {
+        flex: 1;
+        padding: 11px;
+        border-radius: 10px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        touch-action: manipulation;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .missed-header {
+        display: none;
+        grid-template-columns: 1fr 1fr 40px;
+        width: 100%;
+        font-size: 13px;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 6px;
+        margin-left: 20px;
+      }
+      .nav-btn.prev { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+      .nav-btn.check { background: #f5c518; color: #000; position: fixed; width: 100%; bottom: 0;}
+      .nav-btn.check:disabled { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.3); cursor: not-allowed; }
+      @media (max-width: 480px) {
+
+      .missed-header {
+        margin-left: 0;
+        padding-left: 4px;
+      }
+
+      .missed-header.active {
+        display: grid;
+      }
+
+      .missed-word {
+        gap: 6px;
+      }
+
+      .missed-word input {
+        width: 100%;
+        font-size: 16px;
+      }
+
+      .re-play-btn {
+        width: 70px;
+        height: 32px;
+      }
+
+      .audio-card {
+        padding: 12px;
+      }
+
+      .sentence-card {
+        padding: 14px;
+      }
+
+    }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="alert" id="alert">
+      <div class="alert-icon" id="alert-icon"></div>
+      <span class="alert-msg" id="alert-msg"></span>
+  <button class="alert-close" onclick="hideAlert()">✕</button>
+</div>
+  <div class="topbar">
+    <button class="close-btn">✕</button>
+    <span class="task-title">Task 1</span>
+    <span class="progress-label" id="prog-label">1 of 1</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:100%"></div></div>
+  <div class="instruction">Listen to the conversations and answer the questions.</div>
+
+  <div class="audio-card">
+    <button class="play-btn" id="play-btn">
+      <svg id="play-icon" width="14" height="16" viewBox="0 0 14 16"><path d="M0 0 L14 8 L0 16 Z"/></svg>
+    </button>
+    <div class="waveform-area" id="waveform-area">
+      <div class="waveform" id="waveform"></div>
+      <div class="time-display" id="time-disp">00:00 / 00:00</div>
+    </div>
+    <button class="speed-btn" id="speed-btn">1x</button>
+  </div>
+
+  <div class="sentence-card">
+    <textarea class="blank-input" data-answer="test" placeholder="Type here..." autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off"></textarea>
+  </div>
+
+  <div style="flex:1"></div>
+  <div class="missed-header">
+    <span>You wrote</span>
+    <span>Rewrite here</span>
+    <span></span>
+  </div>
+  <div class="missed-words"></div>
+
+  <div class="nav-row">
+    <button class="nav-btn check" id="check-btn" disabled="">Check</button>
+  </div>
+</div>
+<script>
+const queryString = window.location.search;
+const params = new URLSearchParams(queryString);
+const dictationId = params.get('id');
+
+async function fetchDictation(id) {
+    const response = await fetch(`/student/get-exercise?level=IELTS&id=${id}`);
+    return await response.json();
+}
+
+const audio = new Audio();
+let current = 0;
+let totalBars = 80;
+const speeds = [1, 1.5, 0.75];
+const speedLabels = ['1x', '1.5x', '0.75x'];
+let speedIdx = 0;
+let hideTimer
+
+function showAlert(msg, type, icon) {
+    const el = document.getElementById('alert');
+    clearTimeout(hideTimer);
+
+    // reset
+    el.className = 'alert ' + type;
+    document.getElementById('alert-msg').innerHTML = msg;
+    document.getElementById('alert-icon').textContent = icon;
+
+    // show
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => el.classList.add('show'));
+    });
+
+    hideTimer = setTimeout(hideAlert, 10000);
+}
+
+function cleanText(text) {
+    text = text.toLowerCase();
+    text = text.replace(/-/g, " ");
+    text = text.replace(/[^\w\s']/g, "");
+    text = text.replace(/\s+/g, " ");
+    return text.trim().trim();
+}
+
+function normalizeWord(word) {
+    // "hard working" -> "hardworking"
+    // "hard-working" -> "hardworking"
+    return word.replace(/-/g, "").replace(/\s/g, "");
+}
+
+// ── Hamma narsa shu yerda boshlanadi ──────────────────────────────────────
+async function init() {
+    const result = await fetchDictation(dictationId);
+
+    const AUDIO_FILE_ID = result.exercise.audio_file_id;
+    await initAudio(AUDIO_FILE_ID);
+
+    buildWaveform();
+    updateProgress();
+    const input = document.querySelector('.blank-input');
+    const checkBtn = document.querySelector('#check-btn');
+    input.addEventListener('input', ()=> {
+        checkBtn.disabled = input.value.length < 100
+    })
+    checkBtn.addEventListener('click', checkAnswer)
+    async function checkAnswer() {
+        checkBtn.innerHTML = 'Please wait, being checked...'
+        checkBtn.disabled = true
+        const results = {
+            section_id: params.get('id'),
+            week_id: params.get('week_id'),
+            script: result.exercise.transcript,
+            segments: result.exercise.segments,
+            student_script: input.value
+        }
+        const student_result = await fetch('/student/check-dictation', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(results)
+        })
+        const student_result_json = await student_result.json()
+        input.style.color = '#fff'
+        if (student_result_json.ok == true) {
+            input.classList.add('correct')
+            checkBtn.innerHTML = 'Finish'
+            checkBtn.addEventListener('click', ()=> {
+                window.location.replace(`/student/week?id=${params.get('week_id')}`)
+            })
+        } else {
+            input.classList.add('wrong')
+            showAlert(`You have missed ${student_result_json.missed.length} words, and write them on their sentence.`, 'error', '⚠')
+            const header = document.querySelector('.missed-header')
+            header.classList.add('active')
+
+            const wrap = document.querySelector('.wrap');
+            const missedWordsDiv = document.querySelector('.missed-words');
+            missedWordsDiv.innerHTML = ''
+            for (word of student_result_json.missed) {
+                const missedWordDiv = document.createElement('div');
+                missedWordDiv.classList.add('missed-word')
+
+                const incorrectWordInput = document.createElement('input')
+                incorrectWordInput.type = 'text'
+                incorrectWordInput.value = word['wrote']
+                incorrectWordInput.disabled = true
+                incorrectWordInput.classList.add('incorrect')
+
+                const correctWordInput = document.createElement('input')
+                correctWordInput.dataset.answer = word.sentence
+                correctWordInput.type = 'text'
+
+                const replayBtn = document.createElement('button')
+                replayBtn.classList.add('re-play-btn')
+                replayBtn.innerHTML += '<ion-icon name="play-outline"></ion-icon>'
+                replayBtn.dataset.start = word.segment_start
+                replayBtn.dataset.end = word.segment_end
+                replayBtn.addEventListener('click', e => {
+                    const btn   = e.currentTarget;
+                    const start = parseFloat(btn.dataset.start);
+                    const end   = parseFloat(btn.dataset.end);
+
+                    audio.currentTime = start;
+                    audio.play();
+
+                    setTimeout(() => {
+                        audio.pause();
+                    }, (end - start) * 1000);
+                });
+
+                missedWordDiv.appendChild(incorrectWordInput)
+                missedWordDiv.appendChild(correctWordInput)
+                missedWordDiv.appendChild(replayBtn)
+                missedWordsDiv.appendChild(missedWordDiv)
+            }
+            checkBtn.remove()
+            wrap.appendChild(checkBtn)
+            checkBtn.innerHTML = 'Check'
+            checkBtn.removeEventListener('click', checkAnswer)
+            checkBtn.addEventListener('click', () => {
+                const newAnswers = document.querySelectorAll('input[data-answer]');
+                missedWordsDiv.remove()
+                for (answer of newAnswers) {
+                    let value = cleanText(answer.value)
+                    let correct = cleanText(answer.dataset.answer)
+                    value = normalizeWord(value)
+                    correct = normalizeWord(correct)
+                    console.log(value)
+                    console.log(correct)
+                    if (value == correct) {
+                        showAlert('Now you see your mistake(s). Please do the exercise again. <br> Your answer was not saved due to your mistake(s)', 'info', 'ℹ')
+                        setTimeout(() => {
+                            window.location.replace(`/student/week?id=${params.get('week_id')}`)
+                        }, 10000);
+                    } else {
+                        console.log(false)
+                    }
+                }
+            })
+        }
+        checkBtn.disabled = false
+    }
+}
+
+async function initAudio(fileId) {
+    try {
+        const res = await fetch(`/student/file/${fileId}`, { credentials: 'include' });
+        const blob = await res.blob();
+        audio.src = URL.createObjectURL(blob);
+    } catch(e) {
+        console.error("Audio yuklashda xato", e);
+    }
+}
+
+function fmt(s) {
+    const m = String(Math.floor(s / 60)).padStart(2, '0');
+    const sec = String(Math.floor(s % 60)).padStart(2, '0');
+    return `${m}:${sec}`;
+}
+
+function buildWaveform() {
+    const wf = document.getElementById('waveform');
+    wf.innerHTML = '';
+    for (let i = 0; i < totalBars; i++) {
+        const h = 6 + Math.random() * 22;
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.cssText = `width:3px;height:${h}px`;
+        bar.id = 'bar-' + i;
+        wf.appendChild(bar);
+    }
+}
+
+function updateWaveform() {
+    if (!audio.duration) return;
+    const percent = audio.currentTime / audio.duration;
+    const played = Math.floor(percent * totalBars);
+    document.querySelectorAll('.bar').forEach((bar, i) => {
+        bar.classList.toggle('played', i < played);
+    });
+    document.getElementById('time-disp').textContent =
+        `${fmt(audio.currentTime)} / ${fmt(audio.duration)}`;
+}
+
+audio.addEventListener('timeupdate', updateWaveform);
+audio.addEventListener('loadedmetadata', () => {
+    document.getElementById('time-disp').textContent = `00:00 / ${fmt(audio.duration)}`;
+});
+audio.addEventListener('ended', () => {
+    document.getElementById('play-icon').innerHTML = '<path d="M0 0 L14 8 L0 16 Z"/>';
+});
+
+document.getElementById('waveform-area').addEventListener('click', e => {
+    if (!audio.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = ratio * audio.duration;
+});
+
+function togglePlay() {
+    const icon = document.getElementById('play-icon');
+    if (audio.paused) {
+        audio.play();
+        icon.innerHTML = '<rect x="0" y="0" width="5" height="16" rx="1"/><rect x="9" y="0" width="5" height="16" rx="1"/>';
+    } else {
+        audio.pause();
+        icon.innerHTML = '<path d="M0 0 L14 8 L0 16 Z"/>';
+    }
+}
+
+function toggleSpeed() {
+    speedIdx = (speedIdx + 1) % speeds.length;
+    audio.playbackRate = speeds[speedIdx];
+    document.getElementById('speed-btn').textContent = speedLabels[speedIdx];
+}
+
+function updateProgress() {
+    document.getElementById('prog-label').textContent = `${current + 1} of 1`;
+    document.getElementById('prog-fill').style.width = `100%`;
+}
+
+function autoGrow(input) {
+    input.style.width = '80px';
+    const wouldBeWidth = input.scrollWidth + 28;
+    const maxW = parseFloat(getComputedStyle(input).maxWidth) || window.innerWidth - 60;
+
+    if (wouldBeWidth <= maxW) {
+        input.style.width = wouldBeWidth + 'px';
+        input.style.height = '32px';
+    } else {
+        input.style.width = '100%';
+        input.style.height = '32px';
+        input.style.height = input.scrollHeight + 'px';
+    }
+}
+
+const blankInput = document.querySelector('.blank-input');
+blankInput.addEventListener('input', () => autoGrow(blankInput));
+setTimeout(() => autoGrow(blankInput), 100);
+
+document.getElementById('play-btn').onclick = togglePlay;
+document.getElementById('speed-btn').onclick = toggleSpeed;
+
+function prevQ() {
+    if (current > 0) {
+        current--;
+        document.querySelector('.blank-input').value = "";
+        autoGrow(document.querySelector('.blank-input'));
+        audio.currentTime = 0;
+        buildWaveform();
+        updateProgress();
+    }
+}
+
+function hideAlert() {
+    document.getElementById('alert').classList.remove('show');
+}
+
+function setRealHeight() {
+    document.documentElement.style.setProperty(
+        '--vh',
+        `${window.innerHeight * 0.01}px`
+    );
+}
+
+setRealHeight();
+window.addEventListener('resize', setRealHeight);
+
+// ── Start ─────────────────────────────────────────────────────────────────
+init().catch(err => console.error('Init error:', err));
+</script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+</html>

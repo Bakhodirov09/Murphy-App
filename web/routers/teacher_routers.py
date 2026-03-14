@@ -7,17 +7,18 @@ from fastapi import APIRouter, Depends, status, Request, Query, HTTPException, U
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import selectinload
 
-from web.general import JWTBearer, db_dependency, decode_jwt
+from web.general import JWTBearer, db_dependency, decode_jwt, get_transcribe_with_ai
 from web.general import templates
 from web.models import (
     GroupsModel, WeeksModel, WeekScheduleModel,
     EssentialUnitsModel, UnitsModel, StudentResultsModel,
     EssentialBooksModel, EssentialWordsModel, BooksModel,
-    ExercisesModel, ExerciseQuestionsModel, StudentsModel, FilesModel, IELTSSectionsModel, IELTSTestsModel, DaysEnum
+    ExercisesModel, ExerciseQuestionsModel, StudentsModel, FilesModel, IELTSSectionsModel, IELTSTestsModel, DaysEnum,
+    IELTSModule, IELTSQuestionsModel
 )
 from web.schemas import (
     AddWeekSchema, AddWordSchema, AddEssentialUnitSchema,
-    AddExerciseSchema, AddExerciseQuestionSchema, AddIELTSListeningSchema,
+    AddExerciseSchema, AddExerciseQuestionSchema, AddIELTSListeningSchema, AddIELTSReadingSchema,
 )
 
 router = APIRouter(dependencies=[Depends(JWTBearer(type='teacher'))])
@@ -611,13 +612,13 @@ async def file_upload(db: db_dependency, file: UploadFile = File()):
         await file.close()
 
 
-@router.get('/add-ielts-listening-dictation-test', status_code=status.HTTP_200_OK)
+@router.get('/add-dictation-test', status_code=status.HTTP_200_OK)
 async def add_ielts_listening_task(request: Request):
     ctx = await get_teacher_context(request)
-    return templates.TemplateResponse("teachers/add_ielts_listening.html", ctx)
+    return templates.TemplateResponse("teachers/add_dictation_listening.html", ctx)
 
 
-@router.post('/add-ielts-listening-dictation', status_code=201)
+@router.post('/add-dictation', status_code=201)
 async def add_ielts_listening(
         data: AddIELTSListeningSchema,
         background_tasks: BackgroundTasks,
@@ -630,38 +631,55 @@ async def add_ielts_listening(
     if not audio:
         raise HTTPException(404, 'Audio not found')
 
-    test = IELTSTestsModel(
-
+    dictation = IELTSSectionsModel(
+        test_id=data.unit_id,
+        module=IELTSModule.DICTATION,
+        section_number=data.test_number,
+        audio_file_id=audio.id
     )
 
-    listening = IELTSMaterialsModel(
-        condition=data.condition,
-        type='Listening',
-        script=data.script,
-        audio_id=data.audio_id,
-        status="processing",
-        unit_id=data.unit_id
-    )
-
-    db.add(listening)
+    db.add(dictation)
     db.commit()
-    db.refresh(listening)
+    db.refresh(dictation)
 
-    # background_tasks.add_task(
-    #     process_script_with_ai,
-    #     listening.id
-    # )
+    background_tasks.add_task(
+        get_transcribe_with_ai,
+        audio.file_path, dictation.id
+    )
 
     return {
         "ok": True,
         "message": "Audio added. Ai is working on.",
-        "id": listening.id
+        "id": dictation.id
     }
 
-@router.get('/add-ielts-reading-fill-the-gap', status_code=status.HTTP_200_OK)
+@router.get('/add-ielts-reading-test', status_code=status.HTTP_200_OK)
 async def add_ielts_reading(request: Request):
     ctx = await get_teacher_context(request)
     return templates.TemplateResponse("teachers/add_ielts_reading.html", ctx)\
+
+@router.post('/add-reading-part1', status_code=status.HTTP_201_CREATED)
+async def add_ielts_reading(data: AddIELTSReadingSchema, db: db_dependency):
+    reading = IELTSSectionsModel(
+        test_id=data.unit_id,
+        module=IELTSModule.READING,
+        section_number=data.test_number,
+        passage_text=data.passage,
+        status='ready'
+    )
+    db.add(reading)
+    counter = 1
+    for q in data.questions:
+        question = IELTSQuestionsModel(
+            section_id=reading.id,
+            question_number=counter,
+            question_type=q['type'],
+            question_data=q
+        )
+        db.add(question)
+    db.commit()
+    db.close()
+    return {'ok': True}
 
 @router.get('/add-ielts-listening-fill-the-gap', status_code=status.HTTP_200_OK)
 async def add_ielts_reading(request: Request):

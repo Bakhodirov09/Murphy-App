@@ -194,7 +194,14 @@
 
     <div class="exercise-form">
 
-      <!-- ── NEW: Condition input with Bold S button ── -->
+      <!-- ── Test Number ── -->
+      <div class="form-group">
+        <label>🔢 Test Number</label>
+        <input type="number" id="test-number" placeholder="e.g. 1" min="1" style="max-width:200px;" />
+        <div style="margin-top:6px;font-size:12px;color:var(--muted);">💡 Cambridge book test raqamini kiriting (1, 2, 3...)</div>
+      </div>
+
+      <!-- ── Condition input with Bold S button ── -->
       <div class="form-group">
         <label>📋 Exercise Condition</label>
         <div class="input-with-tools" style="position:relative;">
@@ -242,16 +249,6 @@
           <div class="progress-label" id="progress-label">Loading...</div>
         </div>
         <div class="status-msg" id="upload-status"></div>
-      </div>
-
-      <!-- Script -->
-      <div class="form-group">
-        <label>📝 Script (Audio Text)</label>
-        <textarea
-          class="script-textarea"
-          id="script-text"
-          placeholder="Write or Paste the script of audio..."
-        ></textarea>
       </div>
 
       <div style="display:flex;gap:12px;">
@@ -307,7 +304,6 @@
     const selectedText = sel.toString().trim();
     if (!selectedText) return;
 
-    // Make sure selection is inside the condition element
     const range = sel.getRangeAt(0);
     if (!conditionEl.contains(range.commonAncestorContainer)) return;
 
@@ -316,7 +312,6 @@
     range.deleteContents();
     range.insertNode(strong);
 
-    // Move cursor after the strong tag
     range.setStartAfter(strong);
     range.collapse(true);
     sel.removeAllRanges();
@@ -325,11 +320,11 @@
 
   // ── Save ──────────────────────────────────────────────────────────────────
   async function saveListening() {
-    const condition = document.getElementById('condition').innerHTML.trim();
-    const script    = document.getElementById('script-text').value.trim();
+    const condition  = document.getElementById('condition').innerHTML.trim();
+    const testNumber = document.getElementById('test-number').value.trim();
 
+    if (!testNumber) { showStatus('save-status', 'error', '⚠️ Please, enter test number!'); return; }
     if (!audioFile)  { showStatus('save-status', 'error', '⚠️ Please, upload audio file!'); return; }
-    if (!script)     { showStatus('save-status', 'error', '⚠️ Please, write the audio script!'); return; }
     if (!condition)  { showStatus('save-status', 'error', '⚠️ Please, write the exercise condition!'); return; }
 
     const btn = document.getElementById('save-btn');
@@ -349,7 +344,7 @@
       const uploadRes = await fetch('/teacher/upload', { method: 'POST', body: formData });
       clearInterval(iv); setProgress(100, '✓ Audio uploaded');
 
-      if (!uploadRes.ok) throw new Error('Error while uploading audio!: ' + uploadRes.status + '\n PLEASE SEND TO THE DEVELOPER!!!');
+      if (!uploadRes.ok) throw new Error('Error while uploading audio!: ' + uploadRes.status + '\n PLEASE EITHER TAKE A PICTURE OR SCREENSHOT AND SEND TO THE DEVELOPER!!!');
       const uploadData = await uploadRes.json();
       if (!uploadData.ok) throw new Error(uploadData.error || 'Server error');
       uploadedAudioId = uploadData.id;
@@ -357,10 +352,15 @@
       document.getElementById('save-status').innerHTML = '<div class="spinner"></div> Saving...';
       const urlParams = new URLSearchParams(window.location.search);
       const unitId = urlParams.get('unit_id');
-      const saveRes = await fetch('/teacher/add-ielts-listening', {
+      const saveRes = await fetch('/teacher/add-dictation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ audio_id: uploadedAudioId, script, condition, unit_id: unitId}),
+        body: JSON.stringify({
+          audio_id: uploadedAudioId,
+          condition,
+          unit_id: unitId,
+          test_number: parseInt(testNumber)   // ✅ yangi field
+        }),
       });
       if (!saveRes.ok) throw new Error('Error while saving task: ' + saveRes.status);
 
@@ -368,10 +368,10 @@
       showStatus('save-status', 'success', '✅ Saved successfully');
 
       // Reset form
-      document.getElementById('script-text').value = '';
-      document.getElementById('condition').innerHTML = '';
       audioFile = null; uploadedAudioId = null; audioInput.value = '';
       document.getElementById('audio-preview').classList.remove('show');
+      document.getElementById('test-number').value = '';
+      document.getElementById('condition').innerHTML = '';
       const player = document.getElementById('audio-player');
       player.pause(); player.src = ''; player.style.display = 'none';
 

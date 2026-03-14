@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, BigInteger, Enum
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, String, Boolean, BigInteger, Enum, Float
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from web.data import tashkent
@@ -87,7 +87,10 @@ class StudentResultsModel(BaseModel):
 
     exercise_id = Column(UUID(as_uuid=True), ForeignKey('book_exercises.id', ondelete='CASCADE'), nullable=True)
     exercise_question_id = Column(UUID(as_uuid=True), ForeignKey('exercise_questions.id', ondelete='CASCADE'), nullable=True)
+    ielts_section_id = Column(UUID(as_uuid=True), ForeignKey('ielts_sections.id'), nullable=True)
     ielts_question_id = Column(UUID(as_uuid=True), ForeignKey('ielts_questions.id', ondelete='CASCADE'), nullable=True)
+
+    answer_given = Column(JSONB, nullable=False)
 
     vocabulary_unit_id = Column(UUID(as_uuid=True), ForeignKey('essential_units.id', ondelete='CASCADE'))
     vocabulary_id = Column(UUID(as_uuid=True), ForeignKey('essential_words.id', ondelete='CASCADE'))
@@ -100,6 +103,7 @@ class StudentResultsModel(BaseModel):
 
     exercise = relationship("ExercisesModel", back_populates="results")
     exercise_question = relationship("ExerciseQuestionsModel", back_populates="results")
+    ielts_section = relationship("IELTSSectionsModel", back_populates='results')
     ielts_question = relationship("IELTSQuestionsModel", back_populates='results')
 
 
@@ -109,6 +113,7 @@ class WeekScheduleModel(BaseModel):
     group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id", ondelete='CASCADE'), nullable=False)
 
     week_number = Column(Integer, nullable=False)
+    week_id = Column(ForeignKey("weeks.id", ondelete='CASCADE'), nullable=False)
     lesson_date = Column(DateTime(timezone=True), nullable=False)
 
 class WeeksModel(BaseModel):
@@ -253,14 +258,18 @@ class IELTSSectionsModel(BaseModel):
     passage_text = Column(Text, nullable=True)  # For reading
     audio_file_id = Column(UUID, ForeignKey('files.id'), nullable=True)  # For listening
     transcript = Column(Text, nullable=True)  # For listening and dictation
-    cleaned_transcript = Column(Text, nullable=True)  # For dictation
-    removed_words = Column(JSONB, nullable=True)  # For dictation
     status = Column(String, default='pending', nullable=False)  # Loading for listening
+    segments = Column(JSONB, nullable=True)
 
     test = relationship('IELTSTestsModel', back_populates='sections')
     questions = relationship(
         'IELTSQuestionsModel',
         back_populates='section',
+        cascade='all, delete-orphan'
+    )
+    results = relationship(
+        'StudentResultsModel',
+        back_populates='ielts_section',
         cascade='all, delete-orphan'
     )
 

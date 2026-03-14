@@ -491,7 +491,8 @@
         answers.results.push(questionResult)
     })
     async function fetchExercise() {
-        const response = await fetch(`/student/get-exercise?id=${id}`)
+        const level = localStorage.getItem('level')
+        const response = await fetch(`/student/get-exercise?id=${id}&level=${level}`)
         const result = await response.json()
         const condition = document.querySelector('.condition')
         condition.innerHTML = result.exercise.condition
@@ -1056,6 +1057,8 @@
             const span = document.querySelector('.answer-blank');
             span.click()
             await fetchVoice()
+        } else if (result.exercise.module == 'DICTATION') {
+            window.location.replace(`/student/dictation?id=${result.exercise.id}&week_id=${params.get('week_id')}`);
         }
     }
 

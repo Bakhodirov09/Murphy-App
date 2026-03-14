@@ -655,16 +655,12 @@
                 <label class="day-btn"><input type="radio" name="day_type" value="1"> *Even Days</label>
                 <button class="btn active" style="width: 300px; background: rgb(0, 31, 63); color: white; cursor: pointer;">Yes, only these days.</button>
               </div>`;
-            cookieStore.set('token', result.detail.new_token);
             const yesBtn = document.querySelector('.btn.active');
             yesBtn.addEventListener('click', async () => {
               const selected = document.querySelector('input[name="day_type"]:checked');
               const d = { days: selected.value, group: localStorage.getItem('group'), level: localStorage.getItem('level') };
               const r = await fetch('/student/create-group', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(d) });
               if (r.status == 201) {
-                localStorage.removeItem('group');
-                localStorage.removeItem('role');
-                localStorage.removeItem('level');
                 window.location.href = '/student/dashboard';
               }
             });

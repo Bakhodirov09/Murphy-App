@@ -18,7 +18,6 @@
     body{margin:0;background:var(--bg);color:#1f2d3d;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.3;}
     .app{display:flex;min-height:100vh;gap:24px;padding:28px;}
 
-    /* Sidebar */
     .sidebar{width:260px;background:linear-gradient(180deg,#0f1724,#0b1220);color:#dbe7ff;border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(2,6,23,0.3);flex-shrink:0;display:flex;flex-direction:column;gap:18px;}
     .logo{display:flex;align-items:center;gap:12px}
     .logo .dot{width:38px;height:38px;border-radius:50%;background:linear-gradient(45deg,#6c5ce7,#00b894);display:flex;align-items:center;justify-content:center;font-weight:700}
@@ -28,14 +27,12 @@
     .nav a.active{background:rgba(255,255,255,0.06)}
     .sidebar .spacer{flex:1}
 
-    /* Main */
     .main{flex:1;display:flex;flex-direction:column;gap:18px;min-width:0;}
     .topbar{display:flex;align-items:center;gap:16px}
     .profile{display:flex;align-items:center;margin-left:auto;}
     .avatar{margin-left:20px;width:44px;height:44px;border-radius:50%;background:linear-gradient(45deg,#ffd166,#ef476f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
     h1.page-title{font-size:24px;margin:0 0 4px}
 
-    /* Form card */
     .exercise-form{background:var(--panel);padding:32px;border-radius:16px;box-shadow:var(--card-shadow);}
     .form-group{margin-bottom:24px;}
     label{display:block;font-weight:600;margin-bottom:8px;color:#333;font-size:15px;}
@@ -45,13 +42,10 @@
     textarea:focus{border-color:var(--accent);}
     textarea::placeholder{color:#aaa;}
 
-    /* Section divider */
     .section-divider{display:flex;align-items:center;gap:12px;margin:28px 0 20px;}
     .section-divider span{font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
     .section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:#e8eaf0;}
 
-    /* Passage editor */
-    .passage-wrap{position:relative;}
     .passage-editor{width:100%;min-height:220px;padding:14px 16px;border:2px solid #e0e0e0;border-radius:8px;font-size:15px;line-height:1.8;font-family:'Inter',sans-serif;outline:none;background:white;color:#1f2d3d;transition:border-color .2s;}
     .passage-editor:focus{border-color:var(--accent);}
     .passage-editor strong{background:#d4edff;padding:2px 4px;border-radius:3px;font-weight:700;}
@@ -59,19 +53,17 @@
     .toolbar-btn{background:#eef0f5;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#555;transition:all .2s;}
     .toolbar-btn:hover{background:var(--accent);color:#fff;}
 
-    /* Question type selector */
-    .type-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-    .type-tab{padding:9px 18px;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;color:#666;background:#fff;transition:all .2s;user-select:none;}
-    .type-tab:hover{border-color:var(--accent);color:var(--accent);}
-    .type-tab.active{border-color:var(--accent);background:var(--accent);color:#fff;}
+    /* ── Per-question type selector ── */
+    .q-type-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #eee;}
+    .q-type-chip{padding:5px 12px;border:2px solid #e0e0e0;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;color:#666;background:#fff;transition:all .2s;user-select:none;}
+    .q-type-chip:hover{border-color:var(--accent);color:var(--accent);}
+    .q-type-chip.active{border-color:var(--accent);background:var(--accent);color:#fff;}
 
-    /* Questions builder */
     .questions-list{display:flex;flex-direction:column;gap:12px;}
     .question-card{background:#fafbfd;border:2px solid #e8eaf0;border-radius:10px;padding:16px;position:relative;transition:border-color .2s;}
     .question-card:hover{border-color:#c5cbe0;}
     .question-card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
     .q-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-    .q-type-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:#eef0f5;color:var(--muted);}
     .q-remove{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px 8px;border-radius:6px;transition:all .2s;}
     .q-remove:hover{background:#ffeaea;color:var(--danger);}
     .q-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;}
@@ -80,41 +72,30 @@
     .q-row input,.q-row select,.q-row textarea{flex:1;}
     .q-row textarea{min-height:60px;resize:vertical;}
 
-    /* Options for TFNG / YNNG */
     .options-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
     .option-chip{padding:6px 14px;border:2px solid #e0e0e0;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;color:#666;background:#fff;transition:all .2s;user-select:none;}
     .option-chip:hover{border-color:var(--accent);}
-    .option-chip.selected{border-color:var(--accent);background:var(--accent);color:#fff;}
     .option-chip.true-sel{border-color:#00b894;background:#00b894;color:#fff;}
     .option-chip.false-sel{border-color:#ff7675;background:#ff7675;color:#fff;}
     .option-chip.ng-sel{border-color:#fdcb6e;background:#fdcb6e;color:#fff;}
     .option-chip.yes-sel{border-color:#00b894;background:#00b894;color:#fff;}
     .option-chip.no-sel{border-color:#ff7675;background:#ff7675;color:#fff;}
 
-    /* Add question btn */
     .add-q-btn{display:flex;align-items:center;gap:8px;padding:11px 20px;background:transparent;border:2px dashed #c5cbe0;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);transition:all .2s;width:100%;justify-content:center;margin-top:8px;}
     .add-q-btn:hover{border-color:var(--accent);color:var(--accent);background:#f3f1ff;}
 
-    /* Matching special */
-    .matching-pair{display:flex;gap:8px;align-items:center;}
-    .matching-pair span{font-size:18px;color:var(--muted);}
-
-    /* Headings pool */
     .headings-pool{display:flex;flex-direction:column;gap:8px;}
     .heading-row{display:flex;gap:8px;align-items:center;}
     .heading-row input{flex:1;}
     .heading-row-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;transition:all .2s;padding:4px 8px;border-radius:6px;}
     .heading-row-remove:hover{background:#ffeaea;color:var(--danger);}
 
-    /* Buttons */
     .btn{padding:12px 24px;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:15px;transition:all 0.2s;font-family:'Inter',sans-serif;}
     .btn:hover{background:#5f4ed1;transform:translateY(-1px);}
     .btn:disabled{cursor:not-allowed;transform:none;opacity:0.5;}
     .btn-success{background:var(--accent-2);}
     .btn-success:hover{background:#00a383;}
-    .btn-sm{padding:7px 14px;font-size:13px;}
 
-    /* Status */
     .status-msg{display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;font-size:13.5px;font-weight:500;margin-top:12px;}
     .status-msg.show{display:flex;}
     .status-msg.success{background:#f0fdf8;border:1.5px solid #b2dfdb;color:#00897b;}
@@ -122,12 +103,24 @@
     .spinner{width:16px;height:16px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* Condition editable */
     .condition-editable{width:100%;padding:12px 60px 12px 16px;border:2px solid #e0e0e0;border-radius:8px;font-size:15px;font-family:'Inter',sans-serif;min-height:48px;line-height:1.5;outline:none;background:white;transition:border-color .2s;}
     .condition-editable:focus{border-color:var(--accent);}
     .condition-editable strong{background:#d4edff;padding:2px 4px;border-radius:3px;font-weight:700;}
     .bold-condition-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#74b9ff;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;transition:all .2s;}
     .bold-condition-btn:hover{background:#0984e3;}
+
+    /* ── Completion widget ── */
+    .completion-editor{width:100%;min-height:140px;padding:14px 16px;border:2px solid #e0e0e0;border-radius:8px;font-size:15px;line-height:2;font-family:'Inter',sans-serif;outline:none;background:white;color:#1f2d3d;transition:border-color .2s;white-space:pre-wrap;}
+    .completion-editor:focus{border-color:var(--accent);}
+    .completion-editor strong{background:#d4edff;padding:2px 4px;border-radius:3px;}
+    .gaps-list{display:flex;flex-direction:column;gap:8px;}
+    .gap-row{display:flex;align-items:center;gap:10px;background:#f0f7ff;border:2px solid #b3d4ff;border-radius:8px;padding:10px 14px;}
+    .gap-badge{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .gap-row input{flex:1;padding:8px 12px;border:2px solid #e0e0e0;border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;}
+    .gap-row input:focus{border-color:var(--accent);}
+    .gap-row .wl{width:70px;flex:none;}
+    .gap-row .wl-label{font-size:12px;color:var(--muted);white-space:nowrap;font-weight:600;}
+    .empty-gaps{text-align:center;padding:12px;color:var(--muted);font-size:13px;border:2px dashed #e0e0e0;border-radius:8px;}
 
     @media(max-width:1100px){.sidebar{display:none}}
   </style>
@@ -176,6 +169,13 @@
     <div class="exercise-form">
 
       <!-- Condition -->
+      <!-- Test Number -->
+      <div class="form-group">
+        <label>🔢 Test Number</label>
+        <input type="number" id="test-number" placeholder="e.g. 1" min="1" style="max-width:200px;" />
+        <div style="margin-top:6px;font-size:12px;color:var(--muted);">💡 Cambridge book test raqamini kiriting (1, 2, 3...)</div>
+      </div>
+
       <div class="form-group">
         <label>📋 Exercise Condition</label>
         <div style="position:relative;">
@@ -192,34 +192,14 @@
         <label>📄 Reading Passage</label>
         <div class="passage-toolbar">
           <button class="toolbar-btn" onclick="makeBold('passage')">B Bold</button>
-          <button class="toolbar-btn" onclick="document.getElementById('passage').focus()">Clear Format</button>
         </div>
-        <div class="passage-wrap">
-          <div class="passage-editor" id="passage" contenteditable="true"
-               style="min-height:280px;"
-               data-placeholder="Paste or type the reading passage here..."></div>
-        </div>
+        <div class="passage-editor" id="passage" contenteditable="true" style="min-height:280px;"></div>
         <div style="margin-top:6px;font-size:12px;color:var(--muted);">
           💡 Select text in the passage and click <strong>B Bold</strong> to highlight key words
         </div>
       </div>
 
-      <!-- Question Type -->
-      <div class="section-divider"><span>Question Setup</span></div>
-
-      <div class="form-group">
-        <label>🧩 Question Type</label>
-        <div class="type-tabs" id="type-tabs">
-          <div class="type-tab active" data-type="tfng" onclick="selectType(this)">True / False / Not Given</div>
-          <div class="type-tab" data-type="ynng" onclick="selectType(this)">Yes / No / Not Given</div>
-          <div class="type-tab" data-type="sentence" onclick="selectType(this)">Sentence Completion</div>
-          <div class="type-tab" data-type="shortanswer" onclick="selectType(this)">Short-Answer</div>
-          <div class="type-tab" data-type="matching" onclick="selectType(this)">Matching Information</div>
-          <div class="type-tab" data-type="headings" onclick="selectType(this)">Matching Headings</div>
-        </div>
-      </div>
-
-      <!-- Headings Pool (only for headings type) -->
+      <!-- Headings Pool (global, shown when any question uses headings type) -->
       <div class="form-group" id="headings-pool-wrap" style="display:none;">
         <label>📑 Available Headings List</label>
         <div class="headings-pool" id="headings-pool"></div>
@@ -227,8 +207,9 @@
       </div>
 
       <!-- Questions -->
+      <div class="section-divider"><span>Questions</span></div>
+
       <div class="form-group">
-        <label>❓ Questions</label>
         <div class="questions-list" id="questions-list"></div>
         <button class="add-q-btn" id="add-q-btn" onclick="addQuestion()">+ Add Question</button>
       </div>
@@ -243,28 +224,81 @@
 </div>
 
 <script>
-  let currentType = 'tfng';
   let questionCount = 0;
   let headingCount = 0;
 
-  // ── Placeholder support for contenteditable ────────────────────────────────
-  document.getElementById('passage').addEventListener('focus', function(){
-    if(this.innerHTML === '' || this.innerHTML === '<br>') this.innerHTML = '';
-  });
+  const TYPE_LABELS = {
+    tfng: 'T / F / NG',
+    ynng: 'Y / N / NG',
+    sentence: 'Sentence Completion',
+    shortanswer: 'Short Answer',
+    matching: 'Matching Info',
+    headings: 'Matching Headings'
+  };
 
-  // ── Type selector ──────────────────────────────────────────────────────────
-  function selectType(el) {
-    document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    currentType = el.dataset.type;
-
-    // Clear questions
-    document.getElementById('questions-list').innerHTML = '';
-    questionCount = 0;
-
-    // Show/hide headings pool
-    document.getElementById('headings-pool-wrap').style.display =
-      currentType === 'headings' ? 'block' : 'none';
+  // ── Completion widget functions ───────────────────────────────────────────
+  const cardGapAnswers = new WeakMap();
+  function getCardGapStore(card) {
+    if (!cardGapAnswers.has(card)) cardGapAnswers.set(card, {});
+    return cardGapAnswers.get(card);
+  }
+  function insertGap(btn) {
+    const card = btn.closest('.question-card');
+    const editor = card.querySelector('.completion-editor');
+    editor.focus();
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const existing = getGapNums(editor);
+    let num = 1; while (existing.includes(num)) num++;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    const text = document.createTextNode(`[${num}]`);
+    range.insertNode(text);
+    range.setStartAfter(text); range.collapse(true);
+    sel.removeAllRanges(); sel.addRange(range);
+    syncGaps(editor);
+  }
+  function makeBoldCompletion(btn) {
+    const editor = btn.closest('.question-card').querySelector('.completion-editor');
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const text = sel.toString().trim(); if (!text) return;
+    const range = sel.getRangeAt(0);
+    if (!editor.contains(range.commonAncestorContainer)) return;
+    const strong = document.createElement('strong');
+    strong.textContent = text;
+    range.deleteContents(); range.insertNode(strong);
+    range.setStartAfter(strong); range.collapse(true);
+    sel.removeAllRanges(); sel.addRange(range);
+  }
+  function getGapNums(editor) {
+    const text = editor.innerText || '';
+    return [...new Set([...text.matchAll(/\[(\d+)\]/g)].map(m=>parseInt(m[1])))].sort((a,b)=>a-b);
+  }
+  function syncGaps(editor) {
+    if (!(editor instanceof HTMLElement)) return;
+    const card = editor.closest('.question-card'); if (!card) return;
+    const store = getCardGapStore(card);
+    const list = card.querySelector('.gaps-list');
+    const nums = getGapNums(editor);
+    list.querySelectorAll('.gap-row').forEach(row => {
+      const n = parseInt(row.dataset.gap);
+      store[n] = { answer: row.querySelector('.ans-input').value, wordLimit: row.querySelector('.wl').value };
+    });
+    if (nums.length === 0) { list.innerHTML = '<div class="empty-gaps">No gaps yet. Insert [N] in the text above.</div>'; return; }
+    list.innerHTML = '';
+    nums.forEach(n => {
+      const saved = store[n] || { answer:'', wordLimit:'1' };
+      const row = document.createElement('div');
+      row.className = 'gap-row'; row.dataset.gap = n;
+      row.innerHTML = `
+        <div class="gap-badge">${n}</div>
+        <input class="ans-input" type="text" placeholder="Answer for gap ${n}..." value="${saved.answer}">
+        <span class="wl-label">Word limit</span>
+        <input class="wl" type="number" min="1" value="${saved.wordLimit||1}" title="Word limit">
+      `;
+      list.appendChild(row);
+    });
   }
 
   // ── Bold helper ────────────────────────────────────────────────────────────
@@ -292,14 +326,22 @@
     const pool = document.getElementById('headings-pool');
     const row = document.createElement('div');
     row.className = 'heading-row';
-    row.dataset.hid = headingCount;
-    const letter = String.fromCharCode(64 + headingCount); // A, B, C...
+    const letter = String.fromCharCode(64 + headingCount);
     row.innerHTML = `
       <span style="font-weight:700;color:var(--accent);min-width:24px;">${letter}</span>
       <input type="text" placeholder="Heading ${letter}..." />
-      <button class="heading-row-remove" onclick="this.parentElement.remove()">✕</button>
+      <button class="heading-row-remove" onclick="this.parentElement.remove(); checkHeadingsPool();">✕</button>
     `;
     pool.appendChild(row);
+    document.getElementById('headings-pool-wrap').style.display = 'block';
+  }
+
+  function checkHeadingsPool() {
+    // Hide headings pool if no heading-type questions exist
+    const hasHeadingQ = [...document.querySelectorAll('.question-card')].some(c => c.dataset.type === 'headings');
+    if (!hasHeadingQ && document.querySelectorAll('#headings-pool .heading-row').length === 0) {
+      document.getElementById('headings-pool-wrap').style.display = 'none';
+    }
   }
 
   // ── Add Question ──────────────────────────────────────────────────────────
@@ -309,31 +351,37 @@
     const card = document.createElement('div');
     card.className = 'question-card';
     card.dataset.qid = questionCount;
+    card.dataset.type = 'tfng'; // default
 
-    let inner = '';
-    const badgeMap = {
-      tfng: 'T/F/NG', ynng: 'Y/N/NG',
-      sentence: 'Sentence Completion', shortanswer: 'Short Answer',
-      matching: 'Matching Info', headings: 'Matching Headings'
-    };
-    const badge = badgeMap[currentType] || currentType;
+    card.innerHTML = buildCardHTML(questionCount, 'tfng');
+    list.appendChild(card);
+  }
 
-    const headerHTML = `
-      <div class="question-card-header">
-        <div class="q-num">${questionCount}</div>
-        <span class="q-type-badge">${badge}</span>
-        <button class="q-remove" onclick="removeQuestion(this)">✕</button>
+  function buildCardHTML(num, type) {
+    const typeSelector = `
+      <div class="q-type-selector">
+        ${Object.entries(TYPE_LABELS).map(([t, label]) =>
+          `<div class="q-type-chip ${t === type ? 'active' : ''}" data-type="${t}" onclick="changeQuestionType(this)">${label}</div>`
+        ).join('')}
       </div>
     `;
 
-    if (currentType === 'tfng' || currentType === 'ynng') {
-      const opts = currentType === 'tfng'
-        ? ['True', 'False', 'Not Given']
-        : ['Yes', 'No', 'Not Given'];
-      const cssSuffix = currentType === 'tfng'
-        ? ['true', 'false', 'ng']
-        : ['yes', 'no', 'ng'];
-      inner = headerHTML + `
+    const headerHTML = `
+      <div class="question-card-header">
+        <div class="q-num">${num}</div>
+        <button class="q-remove" onclick="removeQuestion(this)">✕</button>
+      </div>
+      ${typeSelector}
+    `;
+
+    return headerHTML + buildTypeFields(type);
+  }
+
+  function buildTypeFields(type) {
+    if (type === 'tfng' || type === 'ynng') {
+      const opts = type === 'tfng' ? ['True','False','Not Given'] : ['Yes','No','Not Given'];
+      const css  = type === 'tfng' ? ['true','false','ng']        : ['yes','no','ng'];
+      return `
         <div class="q-row">
           <label style="padding-top:0">Statement</label>
           <textarea placeholder="Write the statement..."></textarea>
@@ -341,62 +389,43 @@
         <div style="margin-top:8px;">
           <div style="font-size:13px;font-weight:600;color:#555;margin-bottom:6px;">Correct Answer</div>
           <div class="options-row">
-            ${opts.map((o,i) => `<div class="option-chip" data-val="${o}" data-css="${cssSuffix[i]}" onclick="selectChip(this, '${currentType}')">${o}</div>`).join('')}
+            ${opts.map((o,i) => `<div class="option-chip" data-val="${o}" data-css="${css[i]}" onclick="selectChip(this)">${o}</div>`).join('')}
           </div>
           <input type="hidden" class="answer-hidden" value="">
         </div>
       `;
     }
-    else if (currentType === 'sentence') {
-      inner = headerHTML + `
-        <div class="q-row">
-          <label>Before gap</label>
-          <input type="text" placeholder="The company was founded in ...">
+    if (type === 'sentence') return `
+      <div style="margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:600;color:#555;margin-bottom:6px;">📝 Completion Text</div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <button class="toolbar-btn" onclick="insertGap(this)">＋ Insert Gap [N]</button>
+          <button class="toolbar-btn" onclick="makeBoldCompletion(this)">B Bold</button>
         </div>
-        <div class="q-row">
-          <label>After gap</label>
-          <input type="text" placeholder="... by two engineers.">
+        <div class="completion-editor" contenteditable="true" spellcheck="false"
+             oninput="syncGaps(this)" onkeyup="syncGaps(this)" onpaste="setTimeout(()=>syncGaps(this),50)"
+             style="min-height:140px;line-height:2;white-space:pre-wrap;"></div>
+        <div style="margin-top:5px;font-size:12px;color:var(--muted);">
+          💡 Click <strong style="color:#0984e3;">＋ Insert Gap</strong> to add [1], [2]... at cursor. Or type manually.
         </div>
-        <div class="q-row">
-          <label>Answer</label>
-          <input type="text" placeholder="Correct word(s) to fill the gap">
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#555;margin-bottom:8px;">✏️ Gap Answers</div>
+        <div class="gaps-list">
+          <div class="empty-gaps">No gaps yet.</div>
         </div>
-        <div class="q-row" style="margin-top:4px;">
-          <label>Word limit</label>
-          <input type="number" placeholder="e.g. 2" style="max-width:100px;flex:none;">
-        </div>
-      `;
-    }
-    else if (currentType === 'shortanswer') {
-      inner = headerHTML + `
-        <div class="q-row">
-          <label>Question</label>
-          <textarea placeholder="Write the question..."></textarea>
-        </div>
-        <div class="q-row">
-          <label>Answer</label>
-          <input type="text" placeholder="Short answer (key words)">
-        </div>
-        <div class="q-row">
-          <label>Word limit</label>
-          <input type="number" placeholder="e.g. 3" style="max-width:100px;flex:none;">
-        </div>
-      `;
-    }
-    else if (currentType === 'matching') {
-      inner = headerHTML + `
-        <div class="q-row">
-          <label>Information</label>
-          <textarea placeholder="Piece of information to match to a paragraph/section..."></textarea>
-        </div>
-        <div class="q-row">
-          <label>Answer</label>
-          <input type="text" placeholder="Paragraph letter, e.g. B or C">
-        </div>
-      `;
-    }
-    else if (currentType === 'headings') {
-      // Build heading options from the pool
+      </div>
+    `;
+    if (type === 'shortanswer') return `
+      <div class="q-row"><label>Question</label><textarea placeholder="Write the question..."></textarea></div>
+      <div class="q-row"><label>Answer</label><input type="text" placeholder="Short answer (key words)"></div>
+      <div class="q-row"><label>Word limit</label><input type="number" placeholder="e.g. 3" style="max-width:100px;flex:none;"></div>
+    `;
+    if (type === 'matching') return `
+      <div class="q-row"><label>Information</label><textarea placeholder="Piece of information to match..."></textarea></div>
+      <div class="q-row"><label>Answer</label><input type="text" placeholder="Paragraph letter, e.g. B"></div>
+    `;
+    if (type === 'headings') {
       const poolRows = document.querySelectorAll('#headings-pool .heading-row');
       let opts = '<option value="">— select heading —</option>';
       poolRows.forEach((r, i) => {
@@ -404,20 +433,41 @@
         const val = r.querySelector('input').value || `Heading ${letter}`;
         opts += `<option value="${letter}">${letter}. ${val}</option>`;
       });
-      inner = headerHTML + `
-        <div class="q-row">
-          <label>Paragraph/Section</label>
-          <input type="text" placeholder="e.g. Paragraph A">
-        </div>
-        <div class="q-row">
-          <label>Correct Heading</label>
-          <select>${opts}</select>
-        </div>
+      return `
+        <div class="q-row"><label>Paragraph</label><input type="text" placeholder="e.g. Paragraph A"></div>
+        <div class="q-row"><label>Correct Heading</label><select>${opts}</select></div>
       `;
     }
+    return '';
+  }
 
-    card.innerHTML = inner;
-    list.appendChild(card);
+  // ── Change question type inline ───────────────────────────────────────────
+  function changeQuestionType(chip) {
+    const card = chip.closest('.question-card');
+    const newType = chip.dataset.type;
+    const oldType = card.dataset.type;
+    card.dataset.type = newType;
+
+    // Update chip active state
+    card.querySelectorAll('.q-type-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+
+    // Replace only the fields part (keep header + type selector)
+    const fieldsWrap = card.querySelector('.q-fields');
+    if (fieldsWrap) fieldsWrap.remove();
+
+    const div = document.createElement('div');
+    div.className = 'q-fields';
+    div.innerHTML = buildTypeFields(newType);
+    card.appendChild(div);
+
+    // Show/hide headings pool
+    if (newType === 'headings') {
+      document.getElementById('headings-pool-wrap').style.display = 'block';
+      if (document.querySelectorAll('#headings-pool .heading-row').length === 0) addHeading();
+    } else {
+      checkHeadingsPool();
+    }
   }
 
   function removeQuestion(btn) {
@@ -427,17 +477,14 @@
       c.querySelector('.q-num').textContent = i + 1;
     });
     questionCount = document.querySelectorAll('.question-card').length;
+    checkHeadingsPool();
   }
 
   // ── Chip selection ─────────────────────────────────────────────────────────
-  function selectChip(chip, type) {
+  function selectChip(chip) {
     const group = chip.closest('.options-row');
-    group.querySelectorAll('.option-chip').forEach(c => {
-      c.className = 'option-chip'; // reset
-    });
-    const css = chip.dataset.css;
-    chip.classList.add(css + '-sel');
-
+    group.querySelectorAll('.option-chip').forEach(c => c.className = 'option-chip');
+    chip.classList.add(chip.dataset.css + '-sel');
     chip.closest('.question-card').querySelector('.answer-hidden').value = chip.dataset.val;
   }
 
@@ -446,31 +493,32 @@
     const cards = document.querySelectorAll('.question-card');
     const result = [];
     cards.forEach((card, idx) => {
-      const q = { number: idx + 1, type: currentType };
+      const type = card.dataset.type;
+      const q = { number: idx + 1, type };
 
-      if (currentType === 'tfng' || currentType === 'ynng') {
+      if (type === 'tfng' || type === 'ynng') {
         q.statement = card.querySelector('textarea').value.trim();
         q.answer = card.querySelector('.answer-hidden').value;
-      }
-      else if (currentType === 'sentence') {
-        const inputs = card.querySelectorAll('input[type="text"], input[type="number"]');
-        q.before = inputs[0].value.trim();
-        q.after = inputs[1].value.trim();
-        q.answer = inputs[2].value.trim();
-        q.word_limit = inputs[3].value || '2';
-      }
-      else if (currentType === 'shortanswer') {
+      } else if (type === 'sentence') {
+        const editor = card.querySelector('.completion-editor');
+        q.completion_text = editor ? editor.innerHTML : '';
+        q.gaps = [];
+        card.querySelectorAll('.gap-row').forEach(row => {
+          q.gaps.push({
+            gap_number: parseInt(row.dataset.gap),
+            answer: row.querySelector('.ans-input').value.trim(),
+            word_limit: parseInt(row.querySelector('.wl').value || '1')
+          });
+        });
+      } else if (type === 'shortanswer') {
         q.question = card.querySelector('textarea').value.trim();
         q.answer = card.querySelector('input[type="text"]').value.trim();
         q.word_limit = card.querySelector('input[type="number"]').value || '3';
-      }
-      else if (currentType === 'matching') {
+      } else if (type === 'matching') {
         q.information = card.querySelector('textarea').value.trim();
         q.answer = card.querySelector('input[type="text"]').value.trim();
-      }
-      else if (currentType === 'headings') {
-        const inputs = card.querySelectorAll('input');
-        q.paragraph = inputs[0].value.trim();
+      } else if (type === 'headings') {
+        q.paragraph = card.querySelector('input[type="text"]').value.trim();
         q.answer = card.querySelector('select').value;
       }
 
@@ -480,8 +528,7 @@
   }
 
   function collectHeadings() {
-    const rows = document.querySelectorAll('#headings-pool .heading-row');
-    return Array.from(rows).map((r, i) => ({
+    return Array.from(document.querySelectorAll('#headings-pool .heading-row')).map((r, i) => ({
       letter: String.fromCharCode(65 + i),
       text: r.querySelector('input').value.trim()
     }));
@@ -489,18 +536,19 @@
 
   // ── Save ──────────────────────────────────────────────────────────────────
   async function saveReading() {
-    const condition = document.getElementById('condition').innerHTML.trim();
-    const passage   = document.getElementById('passage').innerHTML.trim();
-    const questions = collectQuestions();
+    const condition  = document.getElementById('condition').innerHTML.trim();
+    const passage    = document.getElementById('passage').innerHTML.trim();
+    const testNumber = document.getElementById('test-number').value.trim();
+    const questions  = collectQuestions();
 
+    if (!testNumber) { showStatus('save-status', 'error', '⚠️ Please enter test number!'); return; }
     if (!condition) { showStatus('save-status', 'error', '⚠️ Please write the exercise condition!'); return; }
     if (!passage || passage === '<br>') { showStatus('save-status', 'error', '⚠️ Please enter the reading passage!'); return; }
     if (questions.length === 0) { showStatus('save-status', 'error', '⚠️ Please add at least one question!'); return; }
 
-    // Validate questions
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
-      if ((currentType === 'tfng' || currentType === 'ynng') && !q.answer) {
+      if ((q.type === 'tfng' || q.type === 'ynng') && !q.answer) {
         showStatus('save-status', 'error', `⚠️ Question ${i+1}: Please select an answer!`); return;
       }
     }
@@ -508,25 +556,21 @@
     const btn = document.getElementById('save-btn');
     btn.disabled = true; btn.textContent = '⏳ Saving...';
 
-    const payload = {
-      condition,
-      passage,
-      question_type: currentType,
-      questions,
-    };
-
-    if (currentType === 'headings') {
-      payload.headings_pool = collectHeadings();
-    }
+    const hasHeadings = questions.some(q => q.type === 'headings');
+    const payload = { condition, passage, questions, test_number: parseInt(testNumber) };
+    if (hasHeadings) payload.headings_pool = collectHeadings();
 
     try {
       showStatus('save-status', '', '<div class="spinner"></div> Saving...');
       document.getElementById('save-status').className = 'status-msg show';
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const unitId = urlParams.get('unit_id');
+
       const res = await fetch('/teacher/add-reading-part1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, unit_id: unitId }),
       });
 
       if (!res.ok) throw new Error('Server error: ' + res.status);
@@ -535,11 +579,12 @@
 
       showStatus('save-status', 'success', '✅ Saved successfully!');
 
-      // Reset
       document.getElementById('condition').innerHTML = '';
       document.getElementById('passage').innerHTML = '';
       document.getElementById('questions-list').innerHTML = '';
       document.getElementById('headings-pool').innerHTML = '';
+      document.getElementById('headings-pool-wrap').style.display = 'none';
+      document.getElementById('test-number').value = '';
       questionCount = 0; headingCount = 0;
 
     } catch (err) {
@@ -550,12 +595,44 @@
     }
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
   function showStatus(id, type, html) {
     const el = document.getElementById(id);
     el.className = 'status-msg show ' + type;
     el.innerHTML = html;
   }
+
+  // Wrap initial fields in .q-fields on add
+  const _origAdd = addQuestion;
+  window.addQuestion = function() {
+    questionCount++;
+    const list = document.getElementById('questions-list');
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.dataset.qid = questionCount;
+    card.dataset.type = 'tfng';
+
+    const typeSelector = `
+      <div class="q-type-selector">
+        ${Object.entries(TYPE_LABELS).map(([t, label]) =>
+          `<div class="q-type-chip ${t === 'tfng' ? 'active' : ''}" data-type="${t}" onclick="changeQuestionType(this)">${label}</div>`
+        ).join('')}
+      </div>
+    `;
+    const header = `
+      <div class="question-card-header">
+        <div class="q-num">${questionCount}</div>
+        <button class="q-remove" onclick="removeQuestion(this)">✕</button>
+      </div>
+      ${typeSelector}
+    `;
+    const fieldsDiv = document.createElement('div');
+    fieldsDiv.className = 'q-fields';
+    fieldsDiv.innerHTML = buildTypeFields('tfng');
+
+    card.innerHTML = header;
+    card.appendChild(fieldsDiv);
+    list.appendChild(card);
+  };
 </script>
 </body>
 </html>
