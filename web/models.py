@@ -90,7 +90,7 @@ class StudentResultsModel(BaseModel):
     ielts_section_id = Column(UUID(as_uuid=True), ForeignKey('ielts_sections.id'), nullable=True)
     ielts_question_id = Column(UUID(as_uuid=True), ForeignKey('ielts_questions.id', ondelete='CASCADE'), nullable=True)
 
-    answer_given = Column(JSONB, nullable=False)
+    answer_given = Column(JSONB, nullable=False, default='{"ok": true}')
 
     vocabulary_unit_id = Column(UUID(as_uuid=True), ForeignKey('essential_units.id', ondelete='CASCADE'))
     vocabulary_id = Column(UUID(as_uuid=True), ForeignKey('essential_words.id', ondelete='CASCADE'))
