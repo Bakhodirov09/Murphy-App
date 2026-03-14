@@ -113,7 +113,7 @@ class WeekScheduleModel(BaseModel):
     group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id", ondelete='CASCADE'), nullable=False)
 
     week_number = Column(Integer, nullable=False)
-    week_id = Column(ForeignKey("weeks.id", ondelete='CASCADE'), nullable=False)
+    week_id = Column(ForeignKey("weeks.id", ondelete='CASCADE'), nullable=True)
     lesson_date = Column(DateTime(timezone=True), nullable=False)
 
 class WeeksModel(BaseModel):
