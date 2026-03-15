@@ -275,7 +275,7 @@ async def add_word(data: AddWordSchema, db: db_dependency):
 
 @router.get('/level-weeks', status_code=status.HTTP_200_OK)
 async def get_level_weeks(db: db_dependency, level: str = Query(...)):
-    weeks = db.query(WeeksModel).filter(WeeksModel.level == level).all()
+    weeks = db.query(WeeksModel).filter(WeeksModel.level == level).order_by(WeeksModel.week_number).all()
     return {'success': True, 'weeks': weeks}
 
 

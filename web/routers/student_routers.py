@@ -121,7 +121,7 @@ async def create_group(request: Request, data: GroupDaysRequest, db: db_dependen
     student.group_id = new_group.id
     db.commit()
 
-    weeks = db.query(WeeksModel).filter(WeeksModel.level == decoded_token['level']).all()
+    weeks = db.query(WeeksModel).filter(WeeksModel.level == decoded_token['level']).order_by(WeeksModel.week_number).all()
     week_day = 2 if data.days == 0 else 1
     first_lesson = await get_first_lesson_date(0, week_day)
     if decoded_token['level'] in 'Upper-Intermediate':
