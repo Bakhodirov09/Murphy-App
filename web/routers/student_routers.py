@@ -266,11 +266,18 @@ async def get_week(request: Request, db: db_dependency, id: UUID = Query(...)):
     for murphy in murphy_units:
         exercises = murphy.sections if hasattr(murphy, 'sections') else murphy.exercises
         for e in exercises:
-            results = db.query(StudentResultsModel).filter(
-                StudentResultsModel.student_id == decoded_token['student_id'],
-                StudentResultsModel.exercise_id == e.id,
-                StudentResultsModel.passed == True,
-            ).all()
+            if week.level == LevelsEnum.UPPER_INTERMEDIATE:
+                results = db.query(StudentResultsModel).filter(
+                    StudentResultsModel.student_id == decoded_token['student_id'],
+                    StudentResultsModel.exercise_id == e.id,
+                    StudentResultsModel.passed == True,
+                ).all()
+            else:
+                results = db.query(StudentResultsModel).filter(
+                    StudentResultsModel.student_id == decoded_token['student_id'],
+                    StudentResultsModel.ielts_section_id == e.id,
+                    StudentResultsModel.passed == True,
+                ).all()
             if not hasattr(e, 'status') or e.status == "ready":
                 murphy_exercises.append({
                     'id': e.id,
