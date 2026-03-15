@@ -11,7 +11,7 @@ async def link_btn(chat_id):
             [
                 InlineKeyboardButton(
                     text='Murphy-Homework Web-Site',
-                    web_app=WebAppInfo(url=f'https://babc48280d92.ngrok-free.app?chat_id={chat_id}')
+                    web_app=WebAppInfo(url=f'https://e6d63879e4b7.ngrok-free.app?chat_id={chat_id}')
                 )
             ]
         ]
