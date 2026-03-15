@@ -14,7 +14,7 @@ from web.models import (
     EssentialUnitsModel, UnitsModel, StudentResultsModel,
     EssentialBooksModel, EssentialWordsModel, BooksModel,
     ExercisesModel, ExerciseQuestionsModel, StudentsModel, FilesModel, IELTSSectionsModel, IELTSTestsModel, DaysEnum,
-    IELTSModule, IELTSQuestionsModel
+    IELTSModule, IELTSQuestionsModel, LevelsEnum
 )
 from web.schemas import (
     AddWeekSchema, AddWordSchema, AddEssentialUnitSchema,
@@ -527,46 +527,77 @@ async def get_results(
             'missing_count': len(full_results) - len(submitted),
         }
 
-    elif type == 'Exercise':
-        # Get ALL murphy units + exercises + questions for this week
-        murphy_units = (
-            db.query(UnitsModel)
-            .options(
-                selectinload(UnitsModel.exercises)
-                .selectinload(ExercisesModel.questions)
-            )
-            .filter(
-                UnitsModel.book_id == week.book,
-                UnitsModel.unit_number >= week.book_from_unit,
-                UnitsModel.unit_number <= week.book_to_unit,
-            )
-            .all()
-        )
 
+    elif type == 'Exercise':
+        # Determine if this is an IELTS book
+        book = db.query(BooksModel).filter(BooksModel.id == week.book).first()
+        is_ielts = book.level == LevelsEnum.IELTS
+        if is_ielts:
+            # Get units with IELTS sections + their questions
+            murphy_units = (
+                db.query(UnitsModel)
+                .options(
+                    selectinload(UnitsModel.exercises)
+                    .selectinload(ExercisesModel.ielts_sections)
+                    .selectinload(IELTSSectionsModel.questions)
+                )
+                .filter(
+                    UnitsModel.book_id == week.book,
+                    UnitsModel.unit_number >= week.book_from_unit,
+                    UnitsModel.unit_number <= week.book_to_unit,
+                )
+                .all()
+            )
+        else:
+            # Regular murphy units with exercises + questions
+            murphy_units = (
+                db.query(UnitsModel)
+                .options(
+                    selectinload(UnitsModel.exercises)
+                    .selectinload(ExercisesModel.questions)
+                )
+                .filter(
+                    UnitsModel.book_id == week.book,
+                    UnitsModel.unit_number >= week.book_from_unit,
+                    UnitsModel.unit_number <= week.book_to_unit,
+                )
+                .all()
+            )
         # Get student's submitted exercise results for this week
         submitted = db.query(StudentResultsModel).filter(
             StudentResultsModel.student_id == student_id,
             StudentResultsModel.week_id == week_id,
             StudentResultsModel.type == 'Exercise',
         ).all()
-
         # Build lookup: exercise_id → result
         result_by_exercise = {r.exercise_id: r for r in submitted}
-
         # Merge: every exercise + student result (None if not submitted)
         full_results = []
+
         for unit in murphy_units:
             for exercise in unit.exercises:
+                if is_ielts:
+                    # Flatten questions from all IELTS sections of this exercise
+                    questions = [
+                        q
+                        for section in exercise.ielts_sections
+                        for q in section.questions
+                    ]
+                else:
+                    questions = exercise.questions
+
                 full_results.append({
                     'exercise': exercise,
                     'unit': unit,
-                    'result': result_by_exercise.get(exercise.id, None),  # None = not submitted
+                    'questions': questions,
+                    'result': result_by_exercise.get(exercise.id, None),
                     'submitted': exercise.id in result_by_exercise,
                 })
 
         return {
             'ok': True,
             'type': 'Exercise',
+            'is_ielts': is_ielts,
             'student': student,
             'week': week,
             'results': full_results,
