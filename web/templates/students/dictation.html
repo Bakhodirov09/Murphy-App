@@ -267,7 +267,7 @@
         margin-left: 20px;
       }
       .nav-btn.prev { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
-      .nav-btn.check { background: #f5c518; color: #000; position: fixed; width: 100%; bottom: 0;}
+      .nav-btn.check { background: #f5c518; color: #000; position: fixed; width: 100%; bottom: 0; transition: bottom 0.2s ease; }
       .nav-btn.check:disabled { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.3); cursor: not-allowed; }
       @media (max-width: 480px) {
 
@@ -498,7 +498,7 @@ async function init() {
                     console.log(value)
                     console.log(correct)
                     if (value == correct) {
-                        showAlert('Now you see your mistake(s). Please do the exercise again. <br> Your answer was not saved due to your mistake(s)', 'info', 'ℹ')
+                        showAlert('Now you know your mistake(s). Please do the exercise again. <br> <br> YOUR ANSWER WASN'T SAVED DUE TO YOUR MISTAKE(S)', 'info', 'ℹ')
                         setTimeout(() => {
                             window.location.replace(`/student/week?id=${params.get('week_id')}`)
                         }, 10000);
@@ -634,6 +634,19 @@ function setRealHeight() {
 }
 
 setRealHeight();
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        const keyboardHeight = window.innerHeight - window.visualViewport.height;
+        const checkBtn = document.getElementById('check-btn');
+        if (keyboardHeight > 100) {
+            // keyboard is open — push button below screen
+            checkBtn.style.bottom = `-${checkBtn.offsetHeight + 10}px`;
+        } else {
+            // keyboard closed — bring button back
+            checkBtn.style.bottom = '0px';
+        }
+    });
+}
 window.addEventListener('resize', setRealHeight);
 
 // ── Start ─────────────────────────────────────────────────────────────────
