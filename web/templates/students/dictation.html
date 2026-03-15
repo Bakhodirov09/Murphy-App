@@ -498,7 +498,7 @@ async function init() {
                     console.log(value)
                     console.log(correct)
                     if (value == correct) {
-                        showAlert('Now you know your mistake(s). Please do the exercise again. <br> <br> YOUR ANSWER WASN'T SAVED DUE TO YOUR MISTAKE(S)', 'info', 'ℹ')
+                        showAlert("Now you know your mistake(s). Please do the exercise again. <br> <br> YOUR ANSWER WASN'T SAVED DUE TO YOUR MISTAKE(S)", 'info', 'ℹ')
                         setTimeout(() => {
                             window.location.replace(`/student/week?id=${params.get('week_id')}`)
                         }, 10000);
