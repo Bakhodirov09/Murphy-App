@@ -489,7 +489,6 @@ async function init() {
             checkBtn.removeEventListener('click', checkAnswer)
             checkBtn.addEventListener('click', () => {
                 const newAnswers = document.querySelectorAll('input[data-answer]');
-                missedWordsDiv.remove()
                 for (answer of newAnswers) {
                     let value = cleanText(answer.value)
                     let correct = cleanText(answer.dataset.answer)

@@ -167,88 +167,111 @@ async def get_student_weeks(request: Request, db: db_dependency):
 
     today = datetime.now(tz=tashkent)
 
-    # --- Batch fetch all WeeksModel at once ---
+    # --- Batch fetch all WeeksModel ---
     week_ids = [w.week_id for w in group_weeks]
     weeks_map = {
         w.id: w for w in db.query(WeeksModel).filter(WeeksModel.id.in_(week_ids)).all()
     }
 
-    # --- Collect available weeks only ---
     available_week_infos = [
         weeks_map[w.week_id] for w in group_weeks
         if w.lesson_date <= today and w.week_id in weeks_map
     ]
 
-    # --- Batch fetch all murphy UnitsModel ---
-    from sqlalchemy import and_, or_, tuple_
-    # Build all (book_id, from, to) ranges
-    murphy_units_all = []
-    vocab_units_all = []
+    # --- Batch fetch books to know IELTS vs Murphy ---
+    book_ids = list({wi.book for wi in available_week_infos if wi.book})
+    books_map = {
+        b.id: b for b in db.query(BooksModel).filter(BooksModel.id.in_(book_ids)).all()
+    } if book_ids else {}
 
-    for wi in available_week_infos:
-        murphy_units_all += db.query(UnitsModel).filter(
+    ielts_week_infos  = [wi for wi in available_week_infos if books_map.get(wi.book) and books_map[wi.book].level == LevelsEnum.IELTS]
+    murphy_week_infos = [wi for wi in available_week_infos if books_map.get(wi.book) and books_map[wi.book].level != LevelsEnum.IELTS]
+
+    # --- Batch fetch Murphy: units -> exercises -> questions ---
+    murphy_units_all = []
+    for wi in murphy_week_infos:
+        murphy_units_all += db.query(UnitsModel).options(
+            selectinload(UnitsModel.exercises).selectinload(ExercisesModel.questions)
+        ).filter(
             UnitsModel.book_id == wi.book,
             UnitsModel.unit_number >= wi.book_from_unit,
             UnitsModel.unit_number <= wi.book_to_unit,
         ).all()
 
-        vocab_units_all += db.query(EssentialUnitsModel).filter(
+    # --- Batch fetch IELTS: tests -> sections ---
+    ielts_tests_all = []
+    for wi in ielts_week_infos:
+        ielts_tests_all += db.query(IELTSTestsModel).options(
+            selectinload(IELTSTestsModel.sections)
+        ).filter(
+            IELTSTestsModel.book_id == wi.book,
+            IELTSTestsModel.test_number >= wi.book_from_unit,
+            IELTSTestsModel.test_number <= wi.book_to_unit,
+        ).all()
+
+    # --- Batch fetch Vocab: essential units -> words ---
+    vocab_units_all = []
+    for wi in available_week_infos:
+        vocab_units_all += db.query(EssentialUnitsModel).options(
+            selectinload(EssentialUnitsModel.words)
+        ).filter(
             EssentialUnitsModel.book_id == wi.essential_book,
             EssentialUnitsModel.unit_number >= wi.essential_from_unit,
             EssentialUnitsModel.unit_number <= wi.essential_to_unit,
         ).all()
 
-    # --- Collect all question IDs and word IDs ---
-    all_question_ids = [
-        q.id
-        for unit in murphy_units_all
-        for e in unit.exercises
-        for q in e.questions
-    ]
-    all_word_ids = [
-        w.id
-        for unit in vocab_units_all
-        for w in unit.words
-    ]
+    # --- Collect all IDs for batch result queries ---
+    all_question_ids = [q.id for u in murphy_units_all for e in u.exercises for q in e.questions]
+    all_section_ids  = [s.id for t in ielts_tests_all for s in t.sections]
+    all_word_ids     = [w.id for u in vocab_units_all for w in u.words]
 
-    # --- Single query for all StudentResults ---
+    # --- 3 queries total for ALL student results ---
     passed_question_ids = set()
-    passed_vocab_ids = set()
+    passed_section_ids  = set()
+    passed_vocab_ids    = set()
 
     if all_question_ids:
         rows = db.query(StudentResultsModel.exercise_question_id).filter(
             StudentResultsModel.student_id == student.id,
             StudentResultsModel.exercise_question_id.in_(all_question_ids),
-            StudentResultsModel.passed == True
+            StudentResultsModel.passed == True,
         ).all()
         passed_question_ids = {r[0] for r in rows}
+
+    if all_section_ids:
+        rows = db.query(StudentResultsModel.ielts_section_id).filter(
+            StudentResultsModel.student_id == student.id,
+            StudentResultsModel.ielts_section_id.in_(all_section_ids),
+            StudentResultsModel.passed == True,
+        ).all()
+        passed_section_ids = {r[0] for r in rows}
 
     if all_word_ids:
         rows = db.query(StudentResultsModel.vocabulary_id).filter(
             StudentResultsModel.student_id == student.id,
             StudentResultsModel.vocabulary_id.in_(all_word_ids),
-            StudentResultsModel.passed == True
+            StudentResultsModel.passed == True,
         ).all()
         passed_vocab_ids = {r[0] for r in rows}
 
-    # --- Build per-week unit/word lookup ---
-    # Map week_info.id -> its units/words
-    murphy_units_by_week: dict[int, list] = {}
-    vocab_units_by_week: dict[int, list] = {}
+    # --- Build per-week lookups (pure Python, no DB) ---
+    murphy_units_by_week = {
+        wi.id: [u for u in murphy_units_all
+                if u.book_id == wi.book and wi.book_from_unit <= u.unit_number <= wi.book_to_unit]
+        for wi in murphy_week_infos
+    }
+    ielts_tests_by_week = {
+        wi.id: [t for t in ielts_tests_all
+                if t.book_id == wi.book and wi.book_from_unit <= t.test_number <= wi.book_to_unit]
+        for wi in ielts_week_infos
+    }
+    vocab_units_by_week = {
+        wi.id: [u for u in vocab_units_all
+                if u.book_id == wi.essential_book and wi.essential_from_unit <= u.unit_number <= wi.essential_to_unit]
+        for wi in available_week_infos
+    }
 
-    for wi in available_week_infos:
-        murphy_units_by_week[wi.id] = [
-            unit for unit in murphy_units_all
-            if unit.book_id == wi.book
-            and wi.book_from_unit <= unit.unit_number <= wi.book_to_unit
-        ]
-        vocab_units_by_week[wi.id] = [
-            unit for unit in vocab_units_all
-            if unit.book_id == wi.essential_book
-            and wi.essential_from_unit <= unit.unit_number <= wi.essential_to_unit
-        ]
-
-    # --- Build result ---
+    # --- Build final result ---
     result = []
     for week in group_weeks:
         is_available = week.lesson_date <= today
@@ -262,28 +285,39 @@ async def get_student_weeks(request: Request, db: db_dependency):
             "week_number": week.week_number,
             "is_available": is_available,
             "topic": week_info.week_topic,
-            "progress": 0
+            "progress": 0,
         }
 
         if is_available:
             correct_count = 0
             overall = 0
+            book = books_map.get(week_info.book)
+            is_ielts = book and book.level == LevelsEnum.IELTS
 
-            for unit in murphy_units_by_week.get(week_info.id, []):
-                for e in unit.exercises:
-                    overall += len(e.questions)
-                    for q in e.questions:
-                        if q.id in passed_question_ids:
+            if is_ielts:
+                # IELTS: 1 section = 1 unit of progress
+                for test in ielts_tests_by_week.get(week_info.id, []):
+                    for section in test.sections:
+                        overall += 1
+                        if section.id in passed_section_ids:
                             correct_count += 1
+            else:
+                # Murphy: 1 question = 1 unit of progress
+                for unit in murphy_units_by_week.get(week_info.id, []):
+                    for e in unit.exercises:
+                        overall += len(e.questions)
+                        for q in e.questions:
+                            if q.id in passed_question_ids:
+                                correct_count += 1
 
+            # Vocab is same for both
             for unit in vocab_units_by_week.get(week_info.id, []):
-                word_count = len(unit.words)
-                overall += word_count
+                overall += len(unit.words)
                 for w in unit.words:
                     if w.id in passed_vocab_ids:
                         correct_count += 1
 
-            if correct_count and overall:
+            if overall:
                 week_data['progress'] = round((correct_count / overall) * 100)
 
         result.append(week_data)

@@ -483,7 +483,6 @@ async def get_results(
         raise HTTPException(status_code=404, detail="Student not found")
 
     if type == 'Vocab':
-        # Get ALL vocabulary units + words for this week
         vocab_units = (
             db.query(EssentialUnitsModel)
             .options(selectinload(EssentialUnitsModel.words))
@@ -495,24 +494,21 @@ async def get_results(
             .all()
         )
 
-        # Get student's submitted vocab results for this week
         submitted = db.query(StudentResultsModel).filter(
             StudentResultsModel.student_id == student_id,
             StudentResultsModel.week_id == week_id,
             StudentResultsModel.type == 'Vocab',
         ).all()
 
-        # Build lookup: word_id → result
         result_by_word = {r.vocabulary_id: r for r in submitted}
 
-        # Merge: every word + student result (None if not submitted)
         full_results = []
         for unit in vocab_units:
             for word in unit.words:
                 full_results.append({
                     'word': word,
                     'unit': unit,
-                    'result': result_by_word.get(word.id, None),  # None = not submitted
+                    'result': result_by_word.get(word.id, None),
                     'submitted': word.id in result_by_word,
                 })
 
@@ -527,30 +523,26 @@ async def get_results(
             'missing_count': len(full_results) - len(submitted),
         }
 
-
     elif type == 'Exercise':
-        # Determine if this is an IELTS book
         book = db.query(BooksModel).filter(BooksModel.id == week.book).first()
         is_ielts = book.level == LevelsEnum.IELTS
+
         if is_ielts:
-            # Get units with IELTS sections + their questions
-            murphy_units = (
-                db.query(UnitsModel)
+            units = (
+                db.query(IELTSTestsModel)
                 .options(
-                    selectinload(UnitsModel.exercises)
-                    .selectinload(ExercisesModel.ielts_sections)
+                    selectinload(IELTSTestsModel.sections)
                     .selectinload(IELTSSectionsModel.questions)
                 )
                 .filter(
-                    UnitsModel.book_id == week.book,
-                    UnitsModel.unit_number >= week.book_from_unit,
-                    UnitsModel.unit_number <= week.book_to_unit,
+                    IELTSTestsModel.book_id == week.book,
+                    IELTSTestsModel.test_number >= week.book_from_unit,
+                    IELTSTestsModel.test_number <= week.book_to_unit,
                 )
                 .all()
             )
         else:
-            # Regular murphy units with exercises + questions
-            murphy_units = (
+            units = (
                 db.query(UnitsModel)
                 .options(
                     selectinload(UnitsModel.exercises)
@@ -563,36 +555,41 @@ async def get_results(
                 )
                 .all()
             )
-        # Get student's submitted exercise results for this week
+
         submitted = db.query(StudentResultsModel).filter(
             StudentResultsModel.student_id == student_id,
             StudentResultsModel.week_id == week_id,
             StudentResultsModel.type == 'Exercise',
         ).all()
-        # Build lookup: exercise_id → result
-        result_by_exercise = {r.exercise_id: r for r in submitted}
-        # Merge: every exercise + student result (None if not submitted)
+
+        # ✅ Key by ielts_section_id for IELTS, exercise_id for Murphy
+        if is_ielts:
+            result_by_exercise = {r.ielts_section_id: r for r in submitted}
+        else:
+            result_by_exercise = {r.exercise_id: r for r in submitted}
+
         full_results = []
 
-        for unit in murphy_units:
-            for exercise in unit.exercises:
-                if is_ielts:
-                    # Flatten questions from all IELTS sections of this exercise
-                    questions = [
-                        q
-                        for section in exercise.ielts_sections
-                        for q in section.questions
-                    ]
-                else:
-                    questions = exercise.questions
-
-                full_results.append({
-                    'exercise': exercise,
-                    'unit': unit,
-                    'questions': questions,
-                    'result': result_by_exercise.get(exercise.id, None),
-                    'submitted': exercise.id in result_by_exercise,
-                })
+        if is_ielts:
+            for test in units:
+                for section in test.sections:  # ✅ IELTSTestsModel -> .sections
+                    full_results.append({
+                        'exercise': section,
+                        'unit': test,
+                        'questions': section.questions,
+                        'result': result_by_exercise.get(section.id, None),
+                        'submitted': section.id in result_by_exercise,
+                    })
+        else:
+            for unit in units:
+                for exercise in unit.exercises:  # ✅ UnitsModel -> .exercises
+                    full_results.append({
+                        'exercise': exercise,
+                        'unit': unit,
+                        'questions': exercise.questions,
+                        'result': result_by_exercise.get(exercise.id, None),
+                        'submitted': exercise.id in result_by_exercise,
+                    })
 
         return {
             'ok': True,
