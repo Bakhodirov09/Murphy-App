@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3490897a-a4dc-4c86-ba8f-1ebd4af7584d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/web/templates/students/dictation.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/templates/students/reading.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/general.py" beforeDir="false" afterPath="$PROJECT_DIR$/web/general.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/web/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/routers/student_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/web/routers/student_routers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/routers/teacher_routers.py" beforeDir="false" afterPath="$PROJECT_DIR$/web/routers/teacher_routers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/web/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/templates/students/exercise.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/templates/students/exercise.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/templates/teachers/add_ielts_listening.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/templates/teachers/add_dictation_listening.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/templates/teachers/add_ielts_reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/templates/teachers/add_ielts_reading.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/templates/teachers/books.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/templates/teachers/books.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

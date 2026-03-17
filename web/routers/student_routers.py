@@ -156,21 +156,105 @@ async def create_group(request: Request, data: GroupDaysRequest, db: db_dependen
 async def get_student_weeks(request: Request, db: db_dependency):
     token = request.cookies.get('token')
     decoded_token = await decode_jwt(token)
+
     student = db.query(StudentsModel).filter(
         StudentsModel.id == decoded_token['student_id']
     ).first()
+
     group_weeks = db.query(WeekScheduleModel).filter(
         WeekScheduleModel.group_id == student.group_id
     ).all()
-    today = datetime.now(tz=tashkent)
-    result = list()
 
+    today = datetime.now(tz=tashkent)
+
+    # --- Batch fetch all WeeksModel at once ---
+    week_ids = [w.week_id for w in group_weeks]
+    weeks_map = {
+        w.id: w for w in db.query(WeeksModel).filter(WeeksModel.id.in_(week_ids)).all()
+    }
+
+    # --- Collect available weeks only ---
+    available_week_infos = [
+        weeks_map[w.week_id] for w in group_weeks
+        if w.lesson_date <= today and w.week_id in weeks_map
+    ]
+
+    # --- Batch fetch all murphy UnitsModel ---
+    from sqlalchemy import and_, or_, tuple_
+    # Build all (book_id, from, to) ranges
+    murphy_units_all = []
+    vocab_units_all = []
+
+    for wi in available_week_infos:
+        murphy_units_all += db.query(UnitsModel).filter(
+            UnitsModel.book_id == wi.book,
+            UnitsModel.unit_number >= wi.book_from_unit,
+            UnitsModel.unit_number <= wi.book_to_unit,
+        ).all()
+
+        vocab_units_all += db.query(EssentialUnitsModel).filter(
+            EssentialUnitsModel.book_id == wi.essential_book,
+            EssentialUnitsModel.unit_number >= wi.essential_from_unit,
+            EssentialUnitsModel.unit_number <= wi.essential_to_unit,
+        ).all()
+
+    # --- Collect all question IDs and word IDs ---
+    all_question_ids = [
+        q.id
+        for unit in murphy_units_all
+        for e in unit.exercises
+        for q in e.questions
+    ]
+    all_word_ids = [
+        w.id
+        for unit in vocab_units_all
+        for w in unit.words
+    ]
+
+    # --- Single query for all StudentResults ---
+    passed_question_ids = set()
+    passed_vocab_ids = set()
+
+    if all_question_ids:
+        rows = db.query(StudentResultsModel.exercise_question_id).filter(
+            StudentResultsModel.student_id == student.id,
+            StudentResultsModel.exercise_question_id.in_(all_question_ids),
+            StudentResultsModel.passed == True
+        ).all()
+        passed_question_ids = {r[0] for r in rows}
+
+    if all_word_ids:
+        rows = db.query(StudentResultsModel.vocabulary_id).filter(
+            StudentResultsModel.student_id == student.id,
+            StudentResultsModel.vocabulary_id.in_(all_word_ids),
+            StudentResultsModel.passed == True
+        ).all()
+        passed_vocab_ids = {r[0] for r in rows}
+
+    # --- Build per-week unit/word lookup ---
+    # Map week_info.id -> its units/words
+    murphy_units_by_week: dict[int, list] = {}
+    vocab_units_by_week: dict[int, list] = {}
+
+    for wi in available_week_infos:
+        murphy_units_by_week[wi.id] = [
+            unit for unit in murphy_units_all
+            if unit.book_id == wi.book
+            and wi.book_from_unit <= unit.unit_number <= wi.book_to_unit
+        ]
+        vocab_units_by_week[wi.id] = [
+            unit for unit in vocab_units_all
+            if unit.book_id == wi.essential_book
+            and wi.essential_from_unit <= unit.unit_number <= wi.essential_to_unit
+        ]
+
+    # --- Build result ---
+    result = []
     for week in group_weeks:
         is_available = week.lesson_date <= today
-
-        week_info = db.query(WeeksModel).filter(
-            WeeksModel.id == week.week_id
-        ).first()
+        week_info = weeks_map.get(week.week_id)
+        if not week_info:
+            continue
 
         week_data = {
             "id": week_info.id,
@@ -180,47 +264,28 @@ async def get_student_weeks(request: Request, db: db_dependency):
             "topic": week_info.week_topic,
             "progress": 0
         }
+
         if is_available:
-
-            murphy_units = db.query(UnitsModel).filter(
-                UnitsModel.book_id == week_info.book,
-                UnitsModel.unit_number >= week_info.book_from_unit,
-                UnitsModel.unit_number <= week_info.book_to_unit,
-            ).all()
-
             correct_count = 0
-            overall_questions_words = 0
-            for unit in murphy_units:
+            overall = 0
+
+            for unit in murphy_units_by_week.get(week_info.id, []):
                 for e in unit.exercises:
-                    overall_questions_words += len(e.questions)
+                    overall += len(e.questions)
                     for q in e.questions:
-                        sr = db.query(StudentResultsModel).filter(
-                            StudentResultsModel.student_id == student.id,
-                            StudentResultsModel.exercise_question_id == q.id,
-                            StudentResultsModel.passed == True
-                        ).first()
-                        if sr:
+                        if q.id in passed_question_ids:
                             correct_count += 1
 
-            vocab_units = db.query(EssentialUnitsModel).filter(
-                EssentialUnitsModel.book_id == week_info.essential_book,
-                EssentialUnitsModel.unit_number >= week_info.essential_from_unit,
-                EssentialUnitsModel.unit_number <= week_info.essential_to_unit,
-            ).all()
-            for unit in vocab_units:
+            for unit in vocab_units_by_week.get(week_info.id, []):
+                word_count = len(unit.words)
+                overall += word_count
                 for w in unit.words:
-                    overall_questions_words += len(unit.words)
-                    sr = db.query(StudentResultsModel).filter(
-                        StudentResultsModel.student_id == student.id,
-                        StudentResultsModel.vocabulary_id == w.id,
-                        StudentResultsModel.passed == True
-                    ).first()
-                    if sr:
+                    if w.id in passed_vocab_ids:
                         correct_count += 1
-            progress = 0
-            if correct_count != 0:
-                progress = round((correct_count / overall_questions_words) * 100)
-            week_data['progress'] = progress
+
+            if correct_count and overall:
+                week_data['progress'] = round((correct_count / overall) * 100)
+
         result.append(week_data)
 
     return {'success': True, 'student': student, 'weeks': result}
