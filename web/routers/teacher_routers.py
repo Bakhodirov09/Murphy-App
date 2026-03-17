@@ -524,7 +524,9 @@ async def get_results(
         }
 
     elif type == 'Exercise':
+        print(week.book)
         book = db.query(BooksModel).filter(BooksModel.id == week.book).first()
+        print(book)
         is_ielts = book.level == LevelsEnum.IELTS
 
         if is_ielts:
