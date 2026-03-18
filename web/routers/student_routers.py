@@ -21,6 +21,7 @@ async def get_first_lesson_date(months_ago: int, weekday: int):
 
     return target_month + timedelta(days=offset)
 
+
 @router.get('/dashboard', status_code=status.HTTP_200_OK)
 async def dashboard(db: db_dependency, request: Request):
     token = request.cookies.get('token')
@@ -28,8 +29,24 @@ async def dashboard(db: db_dependency, request: Request):
     student = db.query(StudentsModel).filter(
         StudentsModel.id == decoded_token['student_id']
     ).first()
+
     if not student:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={'success': False, 'message': 'User Not Found'})
+        # Agar user topilmasa cookie-ni delete qilib, window.close() qilish uchun HTML qaytaramiz
+        response_content = """
+        <html>
+            <body>
+                <script>
+                    // Cookie-ni o'chirish
+                    document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    // Oyna yopish
+                    window.close();
+                </script>
+            </body>
+        </html>
+        """
+        return HTMLResponse(content=response_content, status_code=200)
+
+    # Agar student topilsa normal dashboardni qaytarish
     return templates.TemplateResponse('/students/dashboard.html', {
         'request': request,
         'level': decoded_token['level'],
