@@ -1059,6 +1059,8 @@
             await fetchVoice()
         } else if (result.exercise.module == 'DICTATION') {
             window.location.replace(`/student/dictation?id=${result.exercise.id}&week_id=${params.get('week_id')}`);
+        } else if (result.exercise.module == 'READING') {
+            window.location.replace(`/student/reading?id=${result.exercise.id}&week_id=${params.get('week_id')}`);
         }
     }
 

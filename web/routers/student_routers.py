@@ -636,3 +636,9 @@ async def check_dictation(request: Request, data: CheckDictationSchema, db: db_d
         db.add(result_db)
     db.commit()
     return {'ok': not result, 'missed': result}
+
+@router.get('/reading', status_code=status.HTTP_200_OK)
+async def get_reading(request: Request):
+    return templates.TemplateResponse('/students/reading.html', {
+        'request': request,
+    })
