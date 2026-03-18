@@ -352,55 +352,130 @@ async def week(request: Request):
 async def get_week(request: Request, db: db_dependency, id: UUID = Query(...)):
     token = request.cookies.get('token')
     decoded_token = await decode_jwt(token)
+    student_id = decoded_token['student_id']
+
     week = db.query(WeeksModel).filter(WeeksModel.id == id).first()
     if not week:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    if week.level == LevelsEnum.UPPER_INTERMEDIATE:
-        murphy_units = db.query(UnitsModel).filter(
-            UnitsModel.book_id == week.book,
-            UnitsModel.unit_number >= week.book_from_unit,
-            UnitsModel.unit_number <= week.book_to_unit,
+
+    is_ielts = week.level == LevelsEnum.IELTS
+
+    # --- Fetch vocab units + words ---
+    vocabulary_units = (
+        db.query(EssentialUnitsModel)
+        .options(selectinload(EssentialUnitsModel.words))
+        .filter(
+            EssentialUnitsModel.book_id == week.essential_book,
+            EssentialUnitsModel.unit_number >= week.essential_from_unit,
+            EssentialUnitsModel.unit_number <= week.essential_to_unit,
         )
-    else:
-        murphy_units = db.query(IELTSTestsModel).filter(
-            IELTSTestsModel.test_number >= week.book_from_unit,
-            IELTSTestsModel.test_number <= week.book_to_unit,
-        )
-    vocabulary_units = db.query(EssentialUnitsModel).filter(
-        EssentialUnitsModel.book_id == week.essential_book,
-        EssentialUnitsModel.unit_number >= week.essential_from_unit,
-        EssentialUnitsModel.unit_number <= week.essential_to_unit,
+        .all()
     )
-    vocabularies = list()
-    murphy_exercises = list()
-    for vocabulary in vocabulary_units:
-        results = db.query(StudentResultsModel).filter(
-            StudentResultsModel.student_id == decoded_token['student_id'],
-            StudentResultsModel.vocabulary_unit_id == vocabulary.id,
-            StudentResultsModel.passed == True
+
+    # --- Fetch murphy/ielts units ---
+    if is_ielts:
+        units = (
+            db.query(IELTSTestsModel)
+            .options(
+                selectinload(IELTSTestsModel.sections)
+                .selectinload(IELTSSectionsModel.questions)
+            )
+            .filter(
+                IELTSTestsModel.book_id == week.book,  # ✅ was missing!
+                IELTSTestsModel.test_number >= week.book_from_unit,
+                IELTSTestsModel.test_number <= week.book_to_unit,
+            )
+            .all()
+        )
+        all_sections = [s for t in units for s in t.sections]
+    else:
+        units = (
+            db.query(UnitsModel)
+            .options(
+                selectinload(UnitsModel.exercises)
+                .selectinload(ExercisesModel.questions)
+            )
+            .filter(
+                UnitsModel.book_id == week.book,
+                UnitsModel.unit_number >= week.book_from_unit,
+                UnitsModel.unit_number <= week.book_to_unit,
+            )
+            .all()
+        )
+        all_sections = [e for u in units for e in u.exercises]
+
+    # --- Batch fetch ALL student results at once ---
+    all_vocab_unit_ids = [v.id for v in vocabulary_units]
+    all_section_ids    = [s.id for s in all_sections]
+
+    passed_vocab_results: dict[UUID, list] = {v_id: [] for v_id in all_vocab_unit_ids}
+    if all_vocab_unit_ids:
+        vocab_results = db.query(StudentResultsModel).filter(
+            StudentResultsModel.student_id == student_id,
+            StudentResultsModel.vocabulary_unit_id.in_(all_vocab_unit_ids),
+            StudentResultsModel.passed == True,
         ).all()
-        vocabularies.append({'id': vocabulary.id, 'words': vocabulary.words, 'percent': round((len(results) / len(vocabulary.words)) * 100)})
-    for murphy in murphy_units:
-        exercises = murphy.sections if hasattr(murphy, 'sections') else murphy.exercises
-        for e in exercises:
-            if week.level == LevelsEnum.UPPER_INTERMEDIATE:
-                results = db.query(StudentResultsModel).filter(
-                    StudentResultsModel.student_id == decoded_token['student_id'],
-                    StudentResultsModel.exercise_id == e.id,
-                    StudentResultsModel.passed == True,
-                ).all()
-            else:
-                results = db.query(StudentResultsModel).filter(
-                    StudentResultsModel.student_id == decoded_token['student_id'],
-                    StudentResultsModel.ielts_section_id == e.id,
-                    StudentResultsModel.passed == True,
-                ).all()
-            if not hasattr(e, 'status') or e.status == "ready":
-                murphy_exercises.append({
-                    'id': e.id,
-                    'percent': round((len(results) / len(e.questions)) * 100) if e.questions else 0
-                })
-    return {'success': True, 'week': week.week_number, 'vocabularies': vocabularies, 'murphy_exercises': murphy_exercises}
+        for r in vocab_results:
+            passed_vocab_results[r.vocabulary_unit_id].append(r)
+
+    passed_exercise_results: dict[UUID, list] = {s_id: [] for s_id in all_section_ids}
+    if all_section_ids:
+        if is_ielts:
+            exercise_results = db.query(StudentResultsModel).filter(
+                StudentResultsModel.student_id == student_id,
+                StudentResultsModel.ielts_section_id.in_(all_section_ids),
+                StudentResultsModel.passed == True,
+            ).all()
+            for r in exercise_results:
+                passed_exercise_results[r.ielts_section_id].append(r)
+        else:
+            exercise_results = db.query(StudentResultsModel).filter(
+                StudentResultsModel.student_id == student_id,
+                StudentResultsModel.exercise_id.in_(all_section_ids),
+                StudentResultsModel.passed == True,
+            ).all()
+            for r in exercise_results:
+                passed_exercise_results[r.exercise_id].append(r)
+
+    # --- Build vocabularies ---
+    vocabularies = []
+    for vocab_unit in vocabulary_units:
+        results = passed_vocab_results.get(vocab_unit.id, [])
+        word_count = len(vocab_unit.words)
+        percent = round((len(results) / word_count) * 100) if word_count else 0
+        vocabularies.append({
+            'id': vocab_unit.id,
+            'words': vocab_unit.words,
+            'percent': percent,
+        })
+
+    # --- Build murphy/ielts exercises ---
+    murphy_exercises = []
+    for section in all_sections:
+        # Skip not-ready IELTS sections
+        if hasattr(section, 'status') and section.status != 'ready':
+            continue
+
+        results = passed_exercise_results.get(section.id, [])
+
+        if is_ielts:
+            # ✅ For IELTS: section is either passed or not = 100 or 0
+            percent = 100 if results else 0
+        else:
+            q_count = len(section.questions)
+            percent = round((len(results) / q_count) * 100) if q_count else 0
+
+        murphy_exercises.append({
+            'id': section.id,
+            'percent': percent,
+        })
+
+    return {
+        'success': True,
+        'week': week.week_number,
+        'vocabularies': vocabularies,
+        'murphy_exercises': murphy_exercises,
+    }
 
 @router.get('/exercise', status_code=status.HTTP_200_OK)
 async def exercise_page(request: Request):
