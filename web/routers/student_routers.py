@@ -5,6 +5,7 @@ from fastapi import APIRouter, Request, HTTPException, status, Depends, Query
 from fastapi.responses import JSONResponse, FileResponse
 from uuid import UUID
 from sqlalchemy.orm import selectinload
+from starlette.responses import HTMLResponse
 
 from web.data import tashkent
 from web.general import db_dependency, create_token, decode_jwt, JWTBearer, templates, check_student_answer, clean_text
