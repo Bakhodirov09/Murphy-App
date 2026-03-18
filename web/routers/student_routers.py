@@ -32,22 +32,22 @@ async def dashboard(db: db_dependency, request: Request):
     ).first()
 
     if not student:
-        # Agar user topilmasa cookie-ni delete qilib, window.close() qilish uchun HTML qaytaramiz
+        # HTML sahifa + cookie delete backenddan
         response_content = """
         <html>
             <body>
                 <script>
-                    // Cookie-ni o'chirish
-                    document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
                     // Oyna yopish
                     window.close();
                 </script>
             </body>
         </html>
         """
-        return HTMLResponse(content=response_content, status_code=200)
+        response = HTMLResponse(content=response_content, status_code=200)
+        # Backenddan cookie-ni o'chirish
+        response.delete_cookie(key="token", path="/")
+        return response
 
-    # Agar student topilsa normal dashboardni qaytarish
     return templates.TemplateResponse('/students/dashboard.html', {
         'request': request,
         'level': decoded_token['level'],
