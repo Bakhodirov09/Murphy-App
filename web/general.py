@@ -154,7 +154,7 @@ def get_transcribe_with_ai(file, dictation_id: str):
         db.close()
 
 
-async def send_otp_for_teacher(phone_number):
+def send_otp_for_teacher(phone_number):
     code = ''
     for _ in range(6):
         code += str(random.randint(0, 9))
@@ -166,8 +166,10 @@ async def send_otp_for_teacher(phone_number):
         }
     )
     if response_data["messages"][0]["status"] == "0":
-        return {'ok': True, 'code': code}
+        return {'ok': True, 'code': code, 'data': response_data}
     return {'ok': False}
+
+print(send_otp_for_teacher('998949306222'))
 
 def clean_text(text: str):
     text = text.lower()
